@@ -1,0 +1,10 @@
+*.Rproj
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+Rplots.pdf
+
+.snakemake
+**.DS_Store

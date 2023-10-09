@@ -1,0 +1,17 @@
+sample,batch,condition,pair,file
+7002-1,batch1,CO2-1percent,R1,NG-29805_7002_1_lib621033_8228_4_1.fastq.gz
+7002-1,batch1,CO2-1percent,R2,NG-29805_7002_1_lib621033_8228_4_2.fastq.gz
+7002-2,batch1,CO2-1percent,R1,NG-29805_7002_2_lib621035_8228_4_1.fastq.gz
+7002-2,batch1,CO2-1percent,R2,NG-29805_7002_2_lib621035_8228_4_2.fastq.gz
+7002-3,batch2,CO2-1percent,R1,NG-29805_7002_3_lib621037_10087_2_1.fastq.gz
+7002-3,batch2,CO2-1percent,R2,NG-29805_7002_3_lib621037_10087_2_2.fastq.gz
+7002-4,batch1,CO2-1percent,R1,NG-29805_7002_4_lib621039_8228_4_1.fastq.gz
+7002-4,batch1,CO2-1percent,R2,NG-29805_7002_4_lib621039_8228_4_2.fastq.gz
+7002-5,batch2,CO2-15percent,R1,NG-29805_7002_5_lib621034_10087_2_1.fastq.gz
+7002-5,batch2,CO2-15percent,R2,NG-29805_7002_5_lib621034_10087_2_2.fastq.gz
+7002-6,batch2,CO2-15percent,R1,NG-29805_7002_6_lib621036_10087_2_1.fastq.gz
+7002-6,batch2,CO2-15percent,R2,NG-29805_7002_6_lib621036_10087_2_2.fastq.gz
+7002-7,batch2,CO2-15percent,R1,NG-29805_7002_7_lib621038_10087_2_1.fastq.gz
+7002-7,batch2,CO2-15percent,R2,NG-29805_7002_7_lib621038_10087_2_2.fastq.gz
+7002-8,batch1,CO2-15percent,R1,NG-29805_7002_8_lib621040_8228_4_1.fastq.gz
+7002-8,batch1,CO2-15percent,R2,NG-29805_7002_8_lib621040_8228_4_2.fastq.gz
