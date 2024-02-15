@@ -38,7 +38,15 @@ tibble(lib = colnames(raw.counts)[-1]) %>%
   mutate_at('condition', str_remove, 'percent$') %>%
   mutate_at('condition', str_replace, '-', '.') %>%
   # as factors in numeric order
-  mutate_at('condition', ~ fct_reorder(.x, as.numeric(.x))) -> meta
+  mutate_at('condition', ~ fct_reorder(.x, as.numeric(.x))) |>
+  rename(CO2 = condition) |>
+  mutate(
+    photons = ifelse(
+      CO2 %in% c(1, 15),
+      150,
+      250
+    )
+  ) -> meta
 
 write_tsv(meta, 'data/C_meta.tsv')
 write_tsv(raw.counts, 'data/C_raw-counts.tsv')
