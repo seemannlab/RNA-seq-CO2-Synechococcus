@@ -1,0 +1,353 @@
+
+################################################################################
+# Verify that size-factor normalization works
+
+rule D_verify:
+    threads: 4
+    input:
+        script = 'scripts/D_verify.R',
+        xs = [
+            'data/C_raw-counts.tsv',
+            'data/C_meta.tsv'
+        ]
+    output:
+        'analysis/D_refgenes-overview.tsv',
+        'analysis/D_size-factors.jpeg',
+        'analysis/D_pca-norm-coding-genes-without-air.jpeg',
+        'analysis/D_pca-norm-coding-genes-with-air.jpeg',
+        'analysis/D_upset.jpeg',
+    shell:
+        "{input.script}"
+        
+        
+# followup on potential batch effect in PCA
+rule D2_batch:
+    input:
+        script = 'scripts/D2_batch.R',
+        xs = [
+            'data/C_meta.tsv',
+            'data/B_characteristics.tsv',
+            'analysis/E_vst.tsv'
+        ]
+    output:
+        'analysis/D2_correlations.jpeg',
+        'analysis/D2_glm-combinations.jpeg',
+    shell:
+        "{input.script}"
+        rule E_dge:
+    input:
+        script = 'scripts/E_dge.R',
+        xs = [
+            'data/C_annotation.tsv',
+            'data/C_meta.tsv',
+            'data/C_raw-counts.tsv'
+        ]
+    output:
+        'analysis/E_normalized-counts.tsv',
+        'analysis/E_dge-stagewise-analysis.tsv',
+        'analysis/E_pca.jpeg',
+        'analysis/E_volcano.jpeg',
+        'analysis/E_indirect-logFC.jpeg',
+        'analysis/E_overview-by-type.tsv',
+        'analysis/E_overview-by-logFC.tsv',
+        'analysis/E_vst.tsv',
+        'analysis/E_heatmap.jpeg',
+        'analysis/E_logFC-cor.jpeg',
+        'analysis/E_logFC-min3-cor.jpeg',
+        'analysis/E_logFC-heatmap.jpeg',
+        'analysis/E_logFC-min3-heatmap.jpeg'
+    shell:
+        "{input.script}"
+        
+################################################################################
+# Comparisons to Differential expression analysis on subsets
+
+rule E2_dge:
+    input:
+        script = 'scripts/E2_dge-batch.R',
+        xs = [
+            'data/C_annotation.tsv',
+            'data/C_meta.tsv',
+            'data/C_raw-counts.tsv',
+            'analysis/E_dge-stagewise-analysis.tsv'
+        ]
+    output:
+        'analysis/E2_logFC-comparisons.jpeg',
+        'analysis/E2_set-intersections.jpeg',
+        'analysis/E2_stagewise-batch3-only.tsv',
+        'analysis/E2_stagewise-no-air.tsv',
+        'analysis/E2_venn-overall.jpg',
+        'analysis/E2_logFC-cmp.jpeg'
+    shell:
+        "{input.script}"
+        
+################################################################################
+# Normalize the public counts for use in co-expression
+
+rule F_public:
+    input:
+        script = 'scripts/F_public.R',
+        xs = [
+            'data/C_public-meta.tsv',
+            'data/A_public-stat.tsv',
+            'data/C_annotation.tsv',
+            'data/C_public-raw-counts.tsv'
+        ]
+    output:
+        'analysis/F_public-normalized-counts.tsv',
+        'analysis/F_public-vst.tsv',
+        'analysis/F_public-pca.jpeg',
+    shell:
+        "{input.script}"
+
+################################################################################
+# Perform (i) WGCNA and (ii) Pearson clustering both with/without public data
+
+rule G_wgcna:
+    input:
+        script = 'scripts/G_wgcna.R',
+        xs = [
+            'data/C_annotation.tsv',
+            'analysis/E_dge-stagewise-analysis.tsv',
+            'analysis/E_vst.tsv',
+            'analysis/E_normalized-counts.tsv',
+            'data/C_meta.tsv',
+            'analysis/F_public-vst.tsv',
+            'analysis/F_public-normalized-counts.tsv',
+            'data/C_public-meta.tsv'
+        ]
+    output:
+        'analysis/G_pearson-cor/CO2--size-factor-normalized.tsv.gz',
+        'analysis/G_pearson-cor/CO2--variance-stabilized.tsv.gz',
+        'analysis/G_pearson-cor/Incl-public-data--size-factor-normalized.tsv.gz',
+        'analysis/G_pearson-cor/Incl-public-data--variance-stabilized.tsv.gz',
+        'analysis/G_pearson-cor/Incl-public-averaged-data--size-factor-normalized.tsv.gz',
+        'analysis/G_pearson-cor/Incl-public-averaged-data--variance-stabilized.tsv.gz',
+        'analysis/G_wgcna-tom/CO2--size-factor-normalized.tsv.gz',
+        'analysis/G_wgcna-tom/CO2--variance-stabilized.tsv.gz',
+        'analysis/G_wgcna-tom/Incl-public-data--size-factor-normalized.tsv.gz',
+        'analysis/G_wgcna-tom/Incl-public-data--variance-stabilized.tsv.gz',
+        'analysis/G_wgcna-tom/Incl-public-averaged-data--size-factor-normalized.tsv.gz',
+        'analysis/G_wgcna-tom/Incl-public-averaged-data--variance-stabilized.tsv.gz',
+        'analysis/G_wgca-modules.tsv'
+    shell:
+        "{input.script}"
+        
+
+################################################################################
+# H: Benchmark co-expression methods
+# - Download STRING associations
+# - Benchmark recall for (i) WGCNA and (ii) Pearson clustering
+#   both with/without public data
+
+
+rule H_string:
+    output:
+        'data/H_string/associations.txt.gz',
+        'data/H_string/physical.txt.gz'
+    shell:
+        """
+        base=https://stringdb-downloads.org/download/protein
+
+        curl -L $base.links.detailed.v12.0/32049.protein.links.detailed.v12.0.txt.gz > {output[0]}
+        curl -L $base.physical.links.detailed.v12.0/32049.protein.physical.links.detailed.v12.0.txt.gz > {output[1]}
+        """
+
+
+rule H_benchmark:
+    threads: 16
+    input:
+        script = 'scripts/H_benchmark.R',
+        xs = [
+            'data/H_string/associations.txt.gz'
+        ]
+    output:
+        'analysis/H_networks-hist.jpeg',
+        'analysis/H_string-hist.jpeg',
+        'analysis/H_enrichment-data.tsv.gz'
+    shell:
+        "{input.script}"
+  
+
+rule H_plot:
+    input:
+        script = 'scripts/H_plotting.R',
+        xs = [
+            'analysis/H_enrichment-data.tsv.gz'
+        ]
+    output:
+        'analysis/H_enrich-curve.jpeg',
+        'analysis/H_roc-curve.jpeg',
+        'analysis/H_roc-areas.tsv',
+        'analysis/H_roc-areas-wide.tsv'
+    shell:
+        "{input.script}"
+
+
+################################################################################
+# export analysis results for visualization in stringApp
+
+rule K_string:
+    input:
+        script = 'scripts/K_string.R',
+        xs = [
+            'data/C_annotation.tsv',
+            'analysis/E_dge-stagewise-analysis.tsv',
+            'analysis/E_vst.tsv',
+            'data/C_meta.tsv',
+            'data/H_string/associations.txt.gz'
+        ]
+    output:
+        'analysis/K_string-cutoff.jpeg',
+        'analysis/K_string-loci.txt',
+        'analysis/K_string-z-expression.tsv'
+    shell:
+        "{input.script}"
+
+
+# related to H_benchmark, check for enrichment of scores by eg neighboring genes
+
+rule K2_neighborhood:
+    input:
+        script = 'scripts/K2_tu-enrich.R',
+        xs = [
+            'data/C_annotation.tsv',
+            'data/H_string/associations.txt.gz',
+            'raw-data/PCC7002-genome.gff.gz'
+        ]
+    output:
+        'analysis/K2_association-enrichment.jpeg',
+        'analysis/K2_gap-lengths.jpeg'
+    shell:
+        "{input.script}"
+        
+################################################################################
+################################################################################
+# Load clustering results directly from Cytoscape
+# !!! Cytoscape must be running in the background for this work
+
+rule L_clustering:
+    input:
+        script = 'scripts/L_cluster-overview.R',
+        xs = [
+            'data/C_annotation.tsv',
+            'analysis/E_dge-stagewise-analysis.tsv',
+            'data/C_meta.tsv',
+            'analysis/E_vst.tsv'
+        ]
+    output:
+        'analysis/L_mcl-clustering.tsv',
+        'analysis/L_cluster-enrichment-export-commands.txt',
+        directory('analysis/L_cluster-enrichment/'),
+        'analysis/L_string-enrichment.tsv',
+        'analysis/L_string-enrichment-genes.tsv',
+        directory('analysis/L_geneset-heatmaps/')
+    threads: 8
+    shell:
+        "{input.script}"
+        
+################################################################################
+################################################################################
+# Investigate amino acid composition
+
+rule I_aa:
+    input:
+        script = 'scripts/I_aa-composition.R',
+        xs = [
+            'raw-data/co2-adaptation-counts.tsv',
+            'raw-data/PCC7002-genome.gff.gz',
+            'data/C_annotation.tsv',
+            'data/C_meta.tsv',
+            'analysis/E_dge-stagewise-analysis.tsv',
+            'analysis/E_normalized-counts.tsv',
+            'analysis/E_vst.tsv'
+        ]
+    output:
+        'analysis/I_AA-dist-cor.jpeg',
+        'analysis/I_AA-expr-cor.jpeg',
+        'analysis/I_AA-freq-pca.jpeg',
+        'analysis/I_frequencies.tsv',
+        'analysis/I_length-expression-cor.jpeg',
+        'analysis/I_peptides.faa',
+        'analysis/I_freqs-overall.jpeg'
+    shell:
+        "{input.script}"
+
+
+################################################################################
+################################################################################
+# SignalP
+# Prediction of signal peptides for all coding genes in the genome
+# https://services.healthtech.dtu.dk/services/SignalP-6.0/
+# Challange: The software is only available for academic use, and may not be
+# freely shared, therefore this rule needs some additional care.
+#
+# Suggestion:
+# - Create a conda/mamba environment with the signalp6 placeholder
+#   mamba create -n signalp6 -c predector signalp6
+# - Activate environment and keep stacked to still use snakemake from a base env
+#   mamba activate --stack signalp6
+# - Manually download the software from the SignalP website
+# - "Incooperate" the software into the environment
+#   signalp6-register signalp-6.0*.fast.tar.gz
+# - Run snakemake for this rule
+#   snakemake -j all J_signalp
+
+rule J_signalp:
+    input:  
+        'analysis/I_peptides.faa',
+    output:
+        directory('analysis/J_signalp')
+    threads: 8
+    shell:
+        """
+        signalp6 --organism other         \
+            --mode fast --format all      \
+            --fastafile {input}           \
+            --output_dir {output}
+        # somehow this parameter seems to not work, but 8 is supposedly default
+        # --torch_num_threads
+        """
+        
+# process the SignalP predictions
+
+rule J_process:
+    input:
+        script = 'scripts/J_signalp.R',
+        xs = [
+          'analysis/J_signalp'
+        ]
+    output:
+        'analysis/J_signal-probs.jpeg',
+        'analysis/J_heatmap.jpeg',
+        'analysis/J_signalp-subset.tsv',
+        'analysis/J_signal-enrichment.tsv',
+        'analysis/J_signal-enrichment.jpeg',
+        'analysis/J_gene2pathway.tsv',
+        'analysis/J_enriched-genes.tsv'
+    shell:
+        "{input.script}"
+        
+        
+################################################################################
+################################################################################
+# Plot for the photorespiration pathway
+
+
+rule M_pathway:
+    input:
+        script = 'scripts/M_pathways.R',
+        xs = [
+            'data/C_annotation.tsv',
+            'analysis/E_vst.tsv',
+            'data/C_meta.tsv',
+        ]
+    output:
+        'analysis/M_photorespiration.jpeg',
+        'analysis/M_carotenoid.jpeg',
+        'analysis/M_biotin.jpeg'
+    shell:
+        "{input.script}"
+
+
+################################################################################
