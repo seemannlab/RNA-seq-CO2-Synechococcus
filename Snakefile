@@ -128,6 +128,34 @@ rule D_high_low:
         'analysis/D_venn-per-dataset.jpeg',
     shell:
         "{input.script}"
+        
+################################################################################
+# Differential expression analysis with/without correction for light
+
+rule E_sva:
+    input:
+        script = 'scripts/E_sva-mcclure.R',
+        xs = [
+            'scripts/helper_deg.R',
+            'data/C_meta.tsv',
+            'data/C_annotation.tsv',
+            'data/C_raw-counts.tsv',
+            'data/C_public-meta.tsv',
+            'data/C_public-raw-counts.tsv'
+        ]
+    output:
+        'analysis/E_-heatmap-With_correction.jpeg',
+        'analysis/E_-heatmap-Without_correction.jpeg',
+        'analysis/E_pca-mcclure_With_correction.jpeg',
+        'analysis/E_pca-mcclure_Without_correction.jpeg',
+        'analysis/E_pca-subset_With_correction.jpeg',
+        'analysis/E_pca-subset_Without_correction.jpeg',
+        'analysis/E_scatter-logFC-correction.jpeg',
+        'analysis/E_scatter-logFC-correction-outliers.jpeg',
+        'analysis/E_stagewise-adjusted-DEGs.tsv',
+        'analysis/E_venn-deg.jpeg',
+    shell:
+        "{input.script}"
 
 
 ################################################################################
@@ -138,4 +166,5 @@ rule all:
         'data/A_general-stat.tsv',
         'data/B_characteristics.tsv',
         'data/C_raw-counts.tsv',
-        'analysis/D_dge-per-dataset.tsv'
+        'analysis/D_dge-per-dataset.tsv',
+        'analysis/E_stagewise-adjusted-DEGs.tsv',

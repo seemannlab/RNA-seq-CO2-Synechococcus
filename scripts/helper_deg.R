@@ -12,7 +12,7 @@
 # DESeq2::DESeqDataSetFromMatrix(
 #   countData = raw.noribo.mat,
 #   colData = meta,
-#   design = ~ condition
+#   design = ~ CO2
 # )
 # Output: Table of logFCs and p-Values with column `test` identifying the pair
 helper.pairwise.deg <- function(des, ALPHA = 0.05) {
