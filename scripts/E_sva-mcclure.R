@@ -99,7 +99,7 @@ annot %>%
   pull(Geneid) -> mask
 
 mat2 <- mat[mask, ]
-mat2 <- mat2[rowMax(mat2) >= 10, ]
+mat2 <- mat2[rowMax(mat2) > 1, ]
 
 ################################################################################
 # various versions of Combat correction
@@ -113,7 +113,8 @@ deseq.data <- list(
   'With correction' = {
     x <- ComBat_seq(
       counts = mat2,
-      batch = with(meta, paste(batch, photons)),
+      # batch = with(meta, paste(batch, photons)),
+      batch = meta$photons,
       group = NULL
     )
     DESeqDataSetFromMatrix(
