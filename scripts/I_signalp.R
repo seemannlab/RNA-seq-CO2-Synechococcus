@@ -6,6 +6,8 @@ library(tidyverse)
 library(ggpubr)
 library(patchwork)
 
+library(clusterProfiler)
+
 library(conflicted)
 conflicts_prefer(dplyr::filter)
 conflicts_prefer(dplyr::rename)
@@ -43,6 +45,7 @@ signal <-
 
 ################################################################################
 # nicer names for the signals
+
 signal.names <- c(
   'OTHER' = 'No SP',
   'SP' = 'Sec/SPI',
@@ -52,18 +55,8 @@ signal.names <- c(
   'PILIN' = 'Sec/SPIII'
 )
 
-signal |>
-  mutate(Prediction = signal.names[Prediction]) |>
-  count(Prediction)
-# Prediction     n
-# No SP       2935
-# Sec/SPI      166
-# Sec/SPII      67
-# Sec/SPIII      4
-# Tat/SPI        9
-# Tat/SPII       5
-
 ################################################################################
+# density of prediciton scores
 
 signal |>
   select(- Prediction, - `CS Position`) |>
@@ -95,6 +88,39 @@ ggsave('analysis/I_signal-probs.jpeg',
        width = 10, height = 7, dpi = 400)
 
 ################################################################################
+# make prettier table
+
+signal2 <-
+  signal |>
+  transmute(
+    Geneid,
+    signal = signal.names[Prediction]
+  ) |>
+  left_join(annot, 'Geneid') |>
+  left_join(
+    deg |>
+      filter(is.de) |>
+      transmute(Geneid, is.de) |>
+      unique(),
+    'Geneid'
+  ) |>
+  mutate_at('is.de', replace_na, FALSE)
+
+write_tsv(signal2, 'analysis/I_signals.tsv')
+
+signal2 |>
+  count(signal, is.de) |>
+  spread(is.de, n, fill = 0) |>
+  transmute(
+    signal,
+    genes.total = `TRUE` + `FALSE`,
+    diff.expressed = `TRUE`,
+    ratio = diff.expressed / genes.total
+  ) |>
+  write_tsv('analysis/I_overview.tsv')
+
+
+################################################################################
 # Heatmap of expression for genes with signals
 
 vst.mat <-
@@ -104,10 +130,9 @@ vst.mat <-
   magrittr::set_rownames(vst$Geneid)
 
 row.annot <-
-  signal |>
-  filter(Prediction != 'OTHER') |>
-  mutate(Prediction = signal.names[Prediction]) |>
-  with(data.frame('SignalP' = Prediction,
+  signal2 |>
+  filter(signal != 'No SP', is.de) |>
+  with(data.frame('SignalP' = signal,
                   check.names = FALSE,
                   row.names = Geneid))
 
@@ -165,59 +190,20 @@ pheatmap::pheatmap(
 dev.off()
 
 ################################################################################
-
-signal
-
-
-################################################################################
-
-signal |>
-  filter(Prediction != 'OTHER') |>
-  select(Geneid, Prediction) |>
-  left_join(annot, 'Geneid') -> foo
-
-bar <-
-  deg |>
-  filter(is.de, test %in% c('4->30% CO2', '8->30% CO2')) |>
-  select(Geneid, test, log2FoldChange) |>
-  mutate(test = paste('logFC', test)) |>
-  spread(test, log2FoldChange)
-
-baz <-
-  foo |>
-  filter(! str_detect(product, 'hypothetical')) |>
-  filter(! str_detect(product, 'domain-containing protein')) |>
-  # left_join(bar, 'Geneid') |>
-  inner_join(bar, 'Geneid') |>
-  select(-Geneid) |>
-  mutate_at('Prediction', ~ signal.names[.x]) |>
-  select(
-    contains('locus'),
-    name, product,
-    signalP.prediction = Prediction,
-    contains('logFC')
-  ) |>
-  arrange(`logFC 4->30% CO2`)
-
-write_tsv(baz, 'analysis/J_signalp-subset.tsv')
-
-################################################################################
 # Enrichment of signal in pathways?
 
 # Collect loci per signals
 loci.sets <-
-  signal |>
-  filter(Prediction != 'OTHER') |>
-  select(Geneid, Prediction) |>
-  mutate(Prediction = signal.names[Prediction]) |>
+  signal2 |>
+  filter(signal != 'No SP', is.de) |>
+  select(Geneid, signal) |>
   left_join(annot, 'Geneid') |>
   drop_na(old_locus_tag) |>
-  select(Prediction, old_locus_tag) |>
+  select(signal, old_locus_tag) |>
   unique() |>
-  group_by(Prediction) |>
-  do(i = list(.$old_locus_tag)) |>
-  with(set_names(i, Prediction)) |>
-  map(1)
+  group_by(signal) |>
+  do(i = .$old_locus_tag) |>
+  with(set_names(i, signal))
 
 # Enrichment test
 signal.enrich <-
@@ -326,3 +312,6 @@ signal.enrich |>
   select(signal, KEGG, Pathway, old_locus_tag, Geneid, name, product) |>
   write_tsv('analysis/I_enriched-genes.tsv')
 
+
+################################################################################
+sessionInfo()

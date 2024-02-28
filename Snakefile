@@ -218,12 +218,18 @@ rule I_process:
     input:
         script = 'scripts/I_signalp.R',
         xs = [
-          'analysis/H_signalp'
+            'data/C_annotation.tsv',
+            'analysis/D_stagewise-adjusted-DEGs.tsv',
+            'data/C_meta.tsv',
+            'analysis/D_vst-expression.tsv',
+            'analysis/H_signalp'
+            #'analysis/H_signalp/prediction_results.txt'
         ]
     output:
         'analysis/I_signal-probs.jpeg',
+        'analysis/I_signals.tsv',
+        'analysis/I_overview.tsv',
         'analysis/I_heatmap.jpeg',
-        'analysis/I_signalp-subset.tsv',
         'analysis/I_signal-enrichment.tsv',
         'analysis/I_signal-enrichment.jpeg',
         'analysis/I_gene2pathway.tsv',
@@ -252,6 +258,26 @@ rule J_AA:
     log: 'logs/J_aa.txt'
     shell:
         "Rscript {input.script} > {log}"
+        
+################################################################################
+# Complement with GSEA plots
+
+rule K_gsea:
+    input:
+        script = 'scripts/K_gsea.R',
+        xs = [
+            'data/C_annotation.tsv',
+            'data/C_meta.tsv',
+            'analysis/D_stagewise-adjusted-DEGs.tsv'
+        ]
+    output:
+        'analysis/K_gsea-0.04-.4..CO2.jpeg',
+        'analysis/K_gsea-4-.8..CO2.jpeg',
+        'analysis/K_gsea-8-.30..CO2.jpeg',
+        'analysis/K_gsea.tsv',
+    log: 'logs/K_gsea.txt'
+    shell:
+        "Rscript {input.script} > {log}"
 
 
 ################################################################################
@@ -267,3 +293,4 @@ rule all:
         'analysis/F_mcl-clustering.tsv',
         'analysis/G_peptides.faa',
         'analysis/J_freqs-overall.jpeg',
+        'analysis/K_gsea.tsv',
