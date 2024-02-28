@@ -160,27 +160,18 @@ rule F_clusters:
 ################################################################################
 # Investigate amino acid composition
 
-rule X_aa:
+rule G_peptides:
     input:
-        script = 'scripts/X_aa-composition.R',
+        script = 'scripts/G_peptides.R',
         xs = [
-            'raw-data/co2-adaptation-counts.tsv',
-            'raw-data/PCC7002-genome.gff.gz',
             'data/C_annotation.tsv',
-            'data/C_meta.tsv',
-            'analysis/E_dge-stagewise-analysis.tsv',
-            'analysis/E_normalized-counts.tsv',
-            'analysis/E_vst.tsv'
+            'raw-data/co2-adaptation-counts.tsv',
+            'raw-data/PCC7002-genome.fna.gz'
         ]
     output:
-        'analysis/X_AA-dist-cor.jpeg',
-        'analysis/X_AA-expr-cor.jpeg',
-        'analysis/X_AA-freq-pca.jpeg',
-        'analysis/X_frequencies.tsv',
-        'analysis/X_length-expression-cor.jpeg',
-        'analysis/X_peptides.faa',
-        'analysis/X_freqs-overall.jpeg'
-    log: 'logs/X_aa.txt'
+        'analysis/G_peptides.faa',
+        'analysis/G_frequencies.tsv',
+    log: 'logs/G_peptides.txt'
     shell:
         "Rscript {input.script} > {log}"
 
@@ -204,11 +195,11 @@ rule X_aa:
 # - Run snakemake for this rule
 #   snakemake -j all J_signalp
 
-rule J_signalp:
+rule H_signalp:
     input:  
-        'analysis/I_peptides.faa',
+        'analysis/G_peptides.faa',
     output:
-        directory('analysis/J_signalp')
+        directory('analysis/H_signalp')
     threads: 8
     shell:
         """

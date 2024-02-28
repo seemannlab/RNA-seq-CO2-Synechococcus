@@ -1,7 +1,7 @@
-#!/usr/bin/env Rscript
+# Investigate the impact of differential expression on amino acid compositions
+
 set.seed(123)
 
-# Investigate the impact of differential expression on amino acid compositions
 
 library(tidyverse)
 library(ggpubr)
@@ -41,11 +41,15 @@ coord <-
   select(Geneid, Chr, Start, End, Strand, Length)
 
 deg <-
-  'analysis/E_dge-stagewise-analysis.tsv' |>
+  'analysis/D_stagewise-adjusted-DEGs.tsv' |>
   read_tsv()
 
 norm <-
-  'analysis/E_normalized-counts.tsv' |>
+  'analysis/D_normalized-counts.tsv' |>
+  read_tsv()
+
+vst <-
+  'analysis/D_vst-expression.tsv' |>
   read_tsv()
 
 meta <-
@@ -58,70 +62,7 @@ genome <-
 # only accession number in name
 names(genome) <- genome |> names() |> str_remove(' .*$')
 
-vst <-
-  'analysis/E_vst.tsv' |>
-  read_tsv()
 
-################################################################################
-# Is expression in condition and gene length correlated?
-# Implication: AA composition in absolute vs relative frequency
-
-vst.mat <-
-  vst |>
-  select(- Geneid) |>
-  as.matrix() |>
-  magrittr::set_rownames(vst$Geneid)
-
-de.len <-
-  deg |>
-  filter(is.de, type == 'protein_coding') |>
-  select(Geneid) |>
-  unique() |>
-  left_join(coord, 'Geneid')
-
-de.vst.mat <-
-  vst.mat[de.len$Geneid, ]
-
-p.cor1 <-
-  de.len |>
-  select(Geneid, Length) |>
-  left_join(norm, 'Geneid') |>
-  pivot_longer(- c(Geneid, Length), names_to = 'lib') |>
-  mutate_at('value', log1p) |>
-  ggplot(aes(value, log10(Length))) +
-  geom_hex(bins = 30) +
-  scale_fill_viridis_c() +
-  guides(fill = guide_colorbar(barwidth = unit(5, 'cm'))) +
-  geom_smooth(method = 'lm', color = 'red', se = FALSE) +
-  stat_cor(color = 'red', size = 5) +
-  ylab('Gene length, log') +
-  xlab('log gene expression, size-factor norm.') +
-  theme_pubr(18)
-
-p.cor2 <-
-  de.len |>
-  select(Geneid, Length) |>
-  left_join(vst, 'Geneid') |>
-  pivot_longer(- c(Geneid, Length), names_to = 'lib') |>
-  ggplot(aes(value, log10(Length))) +
-  geom_hex(bins = 30) +
-  scale_fill_viridis_c() +
-  guides(fill = guide_colorbar(barwidth = unit(5, 'cm'))) +
-  geom_smooth(method = 'lm', color = 'red', se = FALSE) +
-  stat_cor(color = 'red', size = 5) +
-  ylab('Gene length, log') +
-  xlab('Gene expression, DESeq2 vst') +
-  theme_pubr(18)
-
-
-p.out <-
-  ( p.cor1 | p.cor2 ) +
-  plot_annotation(tag_levels = 'A')
-
-ggsave('analysis/I_length-expression-cor.jpeg', p.out, width = 12, height = 8,
-       dpi = 400)
-
-################################################################################
 ################################################################################
 # Sequences of coding genes and amino acid composition
 
@@ -148,7 +89,7 @@ aas <- translate(nts, genetic.code = bcode)
 peptide.mask <- 
   # starts with methionine
   (subseq(aas, 1, 1) == 'M') &
-  # only peptides, no odd undefiened AAs
+  # only peptides, no odd undefined AAs
   (subseq(aas, 2, -2) %>% as.character() %>% str_detect('^[A-Z]+$')) &
   # ends with termination
   (subseq(aas, -1, -1) == '*')
@@ -161,7 +102,7 @@ aas2 <- aas[peptide.mask]
 names(aas2) <- cds.range$Geneid[peptide.mask]
 aas2 <- Biostrings::subseq(aas2, 2, -2)
 
-writeXStringSet(aas2, 'analysis/I_peptides.faa')
+writeXStringSet(aas2, 'analysis/G_peptides.faa')
 
 # The frequencies
 freqs <- alphabetFrequency(aas2, as.prob = TRUE)#* 100
@@ -184,7 +125,7 @@ len2 <- with(de.len, set_names(Length, Geneid))[rownames(freqs2)] |> log10()
 # export freqs
 freqs2 |>
   as_tibble(rownames = 'Geneid') |>
-  write_tsv('analysis/I_frequencies.tsv')
+  write_tsv('analysis/G_frequencies.tsv')
 
 ################################################################################
 # Overall AA freq
@@ -204,7 +145,7 @@ freqs2 |>
     axis.text.x = element_text(angle = 60, hjust = 1)
   )
 
-ggsave('analysis/I_freqs-overall.jpeg', width = 10, height = 7, dpi = 400)
+ggsave('analysis/G_freqs-overall.jpeg', width = 10, height = 7, dpi = 400)
 
 ################################################################################
 # Explore distribution of AA frequencies and potential connection to gene lengths
@@ -270,7 +211,7 @@ p3 <-
   plot_layout(heights = c(1, 1, 2)) +
   plot_annotation(tag_levels = 'A')
 
-ggsave('analysis/I_AA-dist-cor.jpeg', p3,
+ggsave('analysis/G_AA-dist-cor.jpeg', p3,
        width = 12, height = 12, dpi = 400)
 
 ################################################################################
@@ -328,8 +269,14 @@ vz <-
 # nicer library names
 look <-
   meta |>
-  mutate(nice = sprintf('%s %s%%', sample, condition)) |>
+  mutate(nice = sprintf('%s%% (%s)', CO2, sample)) |>
   with(set_names(nice, lib))
+
+deg |>
+  filter(is.de, abs(log2FoldChange) >= 1) |>
+  pull(Geneid) |>
+  unique() |>
+  intersect(rownames(f2z)) -> mask
 
 crossing(
   AA = colnames(f2z),
@@ -337,7 +284,9 @@ crossing(
 ) |>
   group_by(AA, lib) |>
   # do(r2 = cor.test(f2z[top.var, .$AA], vz[top.var, .$lib])$estimate) |>
-  do(r2 = cor.test(f2z[, .$AA], vz[, .$lib])$estimate) |>
+  # do(r2 = cor.test(f2z[, .$AA], vz[, .$lib])$estimate) |>
+  do(r2 = cor.test(f2z[mask, .$AA], vst2[mask, .$lib])$estimate) |>
+  # do(r2 = cor.test(sqrt(freqs2)[mask, .$AA], vz[mask, .$lib])$estimate) |>
   ungroup() |>
   unnest(r2) |>
   mutate(lib = look[lib]) |>
@@ -356,7 +305,7 @@ foo |>
     number_color = 'black',
     color = colorRampPalette(rev(
       RColorBrewer::brewer.pal(n = 5, name = "RdBu")))(59),
-    filename = 'analysis/I_AA-expr-cor.jpeg', width = 14, height = 14
+    # filename = 'analysis/I_AA-expr-cor.jpeg', width = 14, height = 14
   )
 dev.off()
   
