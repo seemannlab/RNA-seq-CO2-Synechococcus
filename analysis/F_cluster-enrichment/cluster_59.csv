@@ -1,0 +1,5 @@
+"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
+"16","5","STRING Clusters","","Mixed, incl. Mo-dependent nitrogenase C-terminus, and Regulation of endocytosis","8.77E-9","ACA98199.1|ACA99198.1|ACB00071.1|ACB00471.1|ACB00803.1","253919","4825|382|565|2779|3211","1.35E-11","","CL:97","1.0","0"
+"3","3","Pfam","","Mo-dependent nitrogenase C-terminus","2.56E-5","ACB00071.1|ACB00471.1|ACB00803.1","253919","565|2779|3211","5.3E-8","","PF06967","0.5699093710988764","0"
+"3","3","InterPro Domains","","Mo-dependent nitrogenase, C-terminal","6.29E-5","ACB00071.1|ACB00471.1|ACB00803.1","253919","565|2779|3211","5.3E-8","","IPR009717","0.5214532881362934","0"
+"5","2","STRING Clusters","","Mixed, incl. TerB-like, and Glyoxalase/Bleomycin resistance protein/Dioxygenase superfamily","0.0028","ACA99198.1|ACB00803.1","253919","382|3211","5.23E-5","","CL:100","0.31684769018452896","0"

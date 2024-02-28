@@ -1,0 +1,3 @@
+"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
+"5","3","STRING Clusters","","Mixed, incl. Arc-type ribbon-helix-helix, and 1-deoxy-D-xylulose 5-phosphate metabolic process","1.9E-4","vapC|ACA98073.1|ACA98074.1","253919","6823|6847|6838","2.96E-7","","CL:5107","1.0","0"
+"148","4","STRING Clusters","","Mixed, incl. Restriction endonuclease type II-like, and Nuclease activity","0.0143","vapC|ACA98073.1|ACA98074.1|ACB00832.1","253919","6823|6847|6838|3670","1.1E-4","","CL:4850","0.49571131946738767","0"

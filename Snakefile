@@ -112,6 +112,7 @@ rule D_deg:
         
 ################################################################################
 # export analysis results for visualization in stringApp
+# NOTE: Run Cytoscape + stringApp and MCL cluster for the output of this rule
 
 rule E_string:
     input:
@@ -129,6 +130,117 @@ rule E_string:
     log: 'logs/E_string.txt'
     shell:
         "Rscript {input.script} > {log}"
+        
+        
+################################################################################
+# extract clustering results from cytoscape
+## NOTE: Cytoscape with the network session loaded needs to be running for this script
+
+rule F_clusters:
+    input:
+        script = 'scripts/F_cluster-overview.R',
+        xs = [
+            'data/C_annotation.tsv',
+            # implicit dependency, don't trigger rule rerun for minor changes
+            # eg of coloration or layout adjustments
+            # string.cys
+        ]
+    output:
+        'analysis/F_mcl-clustering.tsv',
+        'analysis/F_cluster-enrichment-export-commands.txt',
+        directory('analysis/F_cluster-enrichment/'),
+        'analysis/F_string-enrichment.tsv',
+        'analysis/F_string-enrichment-genes.tsv',
+    log: 'logs/F_clusters.txt'
+    shell:
+        "Rscript {input.script} > {log}"
+
+        
+################################################################################
+################################################################################
+# Investigate amino acid composition
+
+rule X_aa:
+    input:
+        script = 'scripts/X_aa-composition.R',
+        xs = [
+            'raw-data/co2-adaptation-counts.tsv',
+            'raw-data/PCC7002-genome.gff.gz',
+            'data/C_annotation.tsv',
+            'data/C_meta.tsv',
+            'analysis/E_dge-stagewise-analysis.tsv',
+            'analysis/E_normalized-counts.tsv',
+            'analysis/E_vst.tsv'
+        ]
+    output:
+        'analysis/X_AA-dist-cor.jpeg',
+        'analysis/X_AA-expr-cor.jpeg',
+        'analysis/X_AA-freq-pca.jpeg',
+        'analysis/X_frequencies.tsv',
+        'analysis/X_length-expression-cor.jpeg',
+        'analysis/X_peptides.faa',
+        'analysis/X_freqs-overall.jpeg'
+    log: 'logs/X_aa.txt'
+    shell:
+        "Rscript {input.script} > {log}"
+
+
+################################################################################
+################################################################################
+# SignalP
+# Prediction of signal peptides for all coding genes in the genome
+# https://services.healthtech.dtu.dk/services/SignalP-6.0/
+# Challange: The software is only available for academic use, and may not be
+# freely shared, therefore this rule needs some additional care.
+#
+# Suggestion:
+# - Create a conda/mamba environment with the signalp6 placeholder
+#   mamba create -n signalp6 -c predector signalp6
+# - Activate environment and keep stacked to still use snakemake from a base env
+#   mamba activate --stack signalp6
+# - Manually download the software from the SignalP website
+# - "Incooperate" the software into the environment
+#   signalp6-register signalp-6.0*.fast.tar.gz
+# - Run snakemake for this rule
+#   snakemake -j all J_signalp
+
+rule J_signalp:
+    input:  
+        'analysis/I_peptides.faa',
+    output:
+        directory('analysis/J_signalp')
+    threads: 8
+    shell:
+        """
+        signalp6 --organism other         \
+            --mode fast --format all      \
+            --fastafile {input}           \
+            --output_dir {output}
+        # somehow this parameter seems to not work, but 8 is supposedly default
+        # --torch_num_threads
+        """
+        
+# process the SignalP predictions
+
+rule J_process:
+    input:
+        script = 'scripts/J_signalp.R',
+        xs = [
+          'analysis/J_signalp'
+        ]
+    output:
+        'analysis/J_signal-probs.jpeg',
+        'analysis/J_heatmap.jpeg',
+        'analysis/J_signalp-subset.tsv',
+        'analysis/J_signal-enrichment.tsv',
+        'analysis/J_signal-enrichment.jpeg',
+        'analysis/J_gene2pathway.tsv',
+        'analysis/J_enriched-genes.tsv'
+    shell:
+        "{input.script}"
+        
+        
+################################################################################
 
 
 ################################################################################

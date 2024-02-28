@@ -1,0 +1,5 @@
+"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
+"5","5","STRING Clusters","","Aldo/keto reductase family, and PurE domain","1.09E-10","ACA98131.1|ACA98404.1|ACA98434.1|ACA98909.1|ACA99699.1","253919","4708|673|7075|4330|5977","1.68E-13","","CL:5348","1.0","0"
+"4","2","Pfam","","Aldo/keto reductase family","0.0181","ACA98131.1|ACA98434.1","253919","4708|7075","3.74E-5","","PF00248","0.17488668211789435","0"
+"4","2","InterPro Domains","","NADP-dependent oxidoreductase domain","0.0444","ACA98131.1|ACA98434.1","253919","4708|7075","3.74E-5","","IPR023210","0.13576984195958794","0"
+"4","2","InterPro Domains","","NADP-dependent oxidoreductase domain superfamily","0.0444","ACA98131.1|ACA98434.1","253919","4708|7075","3.74E-5","","IPR036812","0.13576984195958794","0"

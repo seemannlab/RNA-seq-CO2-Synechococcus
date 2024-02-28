@@ -1,0 +1,4 @@
+"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
+"5","5","STRING Clusters","","Sulfotransferase domain, and Glycosyl transferases group 1","1.09E-10","ACA99504.1|ACA99505.1|ACA99506.1|ACA99507.1|ACA99508.1","253919","3127|3091|3106|3079|3088","1.68E-13","","CL:4133","1.0","0"
+"16","3","Pfam","","Glycosyl transferases group 1","0.0012","ACA99505.1|ACA99507.1|ACA99508.1","253919","3091|3079|3088","2.55E-6","","PF13692","0.2931791422516089","0"
+"19","3","InterPro Domains","","Glycosyl transferase, family 1","0.0048","ACA99505.1|ACA99507.1|ACA99508.1","253919","3091|3079|3088","4.05E-6","","IPR001296","0.23274696664923972","0"

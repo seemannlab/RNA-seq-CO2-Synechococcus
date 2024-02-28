@@ -1,0 +1,5 @@
+"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
+"14","5","STRING Clusters","","Mixed, incl. Photoreactive repair, and NusB family","5.01E-9","ACA98088.1|ACA99373.1|ACB00276.1|ACB00277.1|phrA","253919","6742|6919|4147|4150|6583","7.74E-12","","CL:5374","1.0","0"
+"5","4","STRING Clusters","","Photoreactive repair, and NusB family","5.1E-8","ACA98088.1|ACA99373.1|ACB00276.1|phrA","253919","6742|6919|4147|6583","2.37E-10","","CL:5376","0.8785888255014889","0"
+"2","2","GO Biological Process","","Photoreactive repair","0.0167","ACB00276.1|phrA","253919","4147|6583","1.5E-5","","GO:0000719","0.2141263592389363","0"
+"3","2","InterPro Domains","","Cryptochrome/DNA photolyase, FAD-binding domain-like superfamily","0.0296","ACB00276.1|phrA","253919","4147|6583","2.5E-5","","IPR036134","0.1841781206742478","0"

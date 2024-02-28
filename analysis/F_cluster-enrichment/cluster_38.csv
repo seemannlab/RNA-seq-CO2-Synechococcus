@@ -1,0 +1,7 @@
+"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
+"12","7","STRING Clusters","","Protein maturation, and CP12 domain","1.14E-13","hyp3|hoxH|hoxW|hypA|hypB|hypC|hypD","253919","4753|3700|3649|3637|3676|3616|3610","1.76E-16","","CL:4465","1.2943095148663528","0"
+"20","4","GO Biological Process","","Protein maturation","1.5E-4","hypA|hypB|hypC|hypD","253919","3637|3676|3616|3610","1.37E-7","","GO:0051604","0.38239087409443184","0"
+"13","3","GO Molecular Function","","Nickel cation binding","0.0031","hoxH|hypA|hypB","253919","3700|3637|3676","5.12E-6","","GO:0016151","0.25086383061657275","0"
+"6","2","STRING Clusters","","ATPase complex, and Protein maturation","0.0157","hypC|hypD","253919","3616|3610","1.5E-4","","CL:4467","0.18041003475907663","0"
+"112","4","GO Molecular Function","","Transition metal ion binding","0.0256","hoxH|hypA|hypB|hypC","253919","3700|3637|3676|3616","8.53E-5","","GO:0046914","0.15917600346881505","0"
+"7","2","UniProt Keywords","","Nickel","0.0401","hoxH|hypA","253919","3700|3637","1.9E-4","","KW-0533","0.13968556273798177","0"

@@ -1,0 +1,5 @@
+"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
+"6","5","STRING Clusters","","TTHA1013/TTHA0281-like, and Uncharacterised conserved protein UCP006404, peptidase M50/CBS","1.99E-10","ACA99164.1|ACA99657.1|ACA99658.1|ACA99659.1|ACA99660.1","253919","2740|1687|1696|1669|1657","3.08E-13","","CL:4909","1.0","0"
+"10","3","GO Cellular Component","","Toxin-antitoxin complex","1.1E-4","ACA99164.1|ACA99657.1|ACA99658.1","253919","2740|1687|1696","7.55E-7","","GO:0110001","0.40805559858243395","0"
+"5","2","GO Molecular Function","","mRNA binding","0.0314","ACA99164.1|ACA99657.1","253919","2740|1687","5.23E-5","","GO:0003729","0.15493738665804213","0"
+"4","2","InterPro Domains","","TTHA1013/TTHA0281-like","0.0444","ACA99164.1|ACA99658.1","253919","2740|1696","3.74E-5","","IPR035069","0.13942856865678627","0"

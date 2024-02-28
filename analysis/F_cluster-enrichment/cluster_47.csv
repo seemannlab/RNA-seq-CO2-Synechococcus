@@ -1,0 +1,5 @@
+"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
+"7","6","UniProt Keywords","","Queuosine biosynthesis","5.19E-13","queE|queC|queA|queF|queG|tgt","253919","3025|3007|1546|3421|1972|4663","2.42E-15","","KW-0671","1.2284832642151542","0"
+"8","6","GO Biological Process","","Queuosine biosynthetic process","4.72E-12","queE|queC|queA|queF|queG|tgt","253919","3025|3007|1546|3421|1972|4663","4.24E-15","","GO:0008616","1.132605800136591","0"
+"6","5","STRING Clusters","","Queuosine biosynthesis","1.19E-9","queE|queC|queA|queF|tgt","253919","3025|3007|1546|3421|4663","1.84E-12","","CL:3643","0.8924453038607469","0"
+"20","3","KEGG Pathways","","Folate biosynthesis","9.0E-4","queE|queC|queF","253919","3025|3007|3421","9.25E-6","","syp00790","0.30457574905606755","0"

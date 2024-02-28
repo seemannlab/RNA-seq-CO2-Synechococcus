@@ -1,0 +1,3 @@
+"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
+"12","5","STRING Clusters","","Mostly uncharacterized, incl. ADP binding, and TonB, C-terminal","2.67E-9","ACB00658.1|ACB00659.1|ACB00661.1|ACB00662.1|ACB00663.1","253919","6439|6430|6412|6421|6385","4.12E-12","","CL:5013","1.0","0"
+"5","2","STRING Clusters","","Mixed, incl. ADP binding, and Peptide transmembrane transporter activity","0.0048","ACB00658.1|ACB00659.1","253919","6439|6430","5.23E-5","","CL:5015","0.27045685056716734","0"
