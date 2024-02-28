@@ -25,7 +25,7 @@ annot <-
   read_tsv()
 
 deg <-
-  'analysis/E_dge-stagewise-analysis.tsv' |>
+  'analysis/D_stagewise-adjusted-DEGs.tsv' |>
   read_tsv()
 
 meta <-
@@ -33,11 +33,11 @@ meta <-
   read_tsv()
 
 vst <-
-  'analysis/E_vst.tsv' |>
+  'analysis/D_vst-expression.tsv' |>
   read_tsv()
 
 signal <-
-  'analysis/J_signalp/prediction_results.txt' |>
+  'analysis/H_signalp/prediction_results.txt' |>
   read_tsv(skip = 1) |>
   rename('Geneid' = '# ID')
 
@@ -91,7 +91,7 @@ signal |>
   ylab('Cumulative density function') +
   theme_pubr(18) 
 
-ggsave('analysis/J_signal-probs.jpeg',
+ggsave('analysis/I_signal-probs.jpeg',
        width = 10, height = 7, dpi = 400)
 
 ################################################################################
@@ -113,7 +113,7 @@ row.annot <-
 
 col.annot <-
   meta |>
-  with(data.frame('CO2' = as.character(condition), row.names = lib))
+  with(data.frame('CO2' = as.character(CO2), row.names = lib))
 
 annot.cl <- list(
   'SignalP' = row.annot |>
@@ -124,10 +124,10 @@ annot.cl <- list(
     mutate(cl = RColorBrewer::brewer.pal(nrow(.) + 1, 'Paired')[- 1]) |>
     with(set_names(cl, SignalP)),
   'CO2' =  meta |>
-    select(CO2 = condition) |>
+    select(CO2) |>
     unique() |>
     arrange(CO2) |>
-    mutate(cl = cbPalette[-5][1:n()]) |>
+    mutate(cl = cbPalette[c(1, 6, 2, 7)]) |>
     with(set_names(cl, as.character(CO2)))
 )
 
@@ -143,7 +143,7 @@ lib.clust <-
   ape::as.phylo() |>
   ape::rotateConstr(
     meta |>
-      arrange(condition, sample) |>
+      arrange(CO2, sample) |>
       pull(lib)
   ) |>
   as.hclust()
@@ -160,9 +160,14 @@ pheatmap::pheatmap(
   fontsize = 12,
   color = colorRampPalette(rev(
     RColorBrewer::brewer.pal(n = 7, name = "RdBu")))(59),
-  filename = 'analysis/J_heatmap.jpeg'
+  filename = 'analysis/I_heatmap.jpeg'
 )
 dev.off()
+
+################################################################################
+
+signal
+
 
 ################################################################################
 
@@ -255,7 +260,7 @@ signal.enrich <-
     enrichment = genes.with.signal.in.path / expected.genes
   )
 
-write_tsv(signal.enrich, 'analysis/J_signal-enrichment.tsv')
+write_tsv(signal.enrich, 'analysis/I_signal-enrichment.tsv')
 
 ################################################################################
 
@@ -287,7 +292,7 @@ signal.enrich |>
     panel.grid.major.y = element_line(linetype = 'dotted')
   )
 
-ggsave('analysis/J_signal-enrichment.jpeg',
+ggsave('analysis/I_signal-enrichment.jpeg',
        width = 14, height = 8, dpi = 400)
 
 ################################################################################
@@ -308,7 +313,7 @@ tibble(
   left_join(annot, 'old_locus_tag') -> gene.path
 
 
-write_tsv(gene.path, 'analysis/J_gene2pathway.tsv')
+write_tsv(gene.path, 'analysis/I_gene2pathway.tsv')
 
 ################################################################################
 
@@ -319,5 +324,5 @@ signal.enrich |>
   left_join(signal, 'Geneid') |>
   filter(signal == signal.names[Prediction]) |>
   select(signal, KEGG, Pathway, old_locus_tag, Geneid, name, product) |>
-  write_tsv('analysis/J_enriched-genes.tsv')
+  write_tsv('analysis/I_enriched-genes.tsv')
 

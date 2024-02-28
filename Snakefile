@@ -234,6 +234,24 @@ rule I_process:
         
         
 ################################################################################
+# inspect potential expression/AA correlation
+
+rule J_AA:
+    input:
+        script = 'scripts/J_aa-freqs.R',
+        xs = [
+            'data/C_annotation.tsv',
+            'analysis/D_stagewise-adjusted-DEGs.tsv',
+            'analysis/D_vst-expression.tsv',
+            'data/C_meta.tsv',
+            'analysis/G_frequencies.tsv',
+        ]
+    output:
+        'analysis/J_freqs-overall.jpeg',
+        'analysis/J_AA-expr-cor.jpeg',
+    log: 'logs/J_aa.txt'
+    shell:
+        "Rscript {input.script} > {log}"
 
 
 ################################################################################
@@ -246,3 +264,6 @@ rule all:
         'data/C_raw-counts.tsv',
         'analysis/D_stagewise-adjusted-DEGs.tsv',
         'analysis/E_string-loci.txt',
+        'analysis/F_mcl-clustering.tsv',
+        'analysis/G_peptides.faa',
+        'analysis/J_freqs-overall.jpeg',
