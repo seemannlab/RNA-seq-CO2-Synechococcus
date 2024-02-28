@@ -193,7 +193,7 @@ rule G_peptides:
 # - "Incooperate" the software into the environment
 #   signalp6-register signalp-6.0*.fast.tar.gz
 # - Run snakemake for this rule
-#   snakemake -j all J_signalp
+#   snakemake --cores all H_signalp
 
 rule H_signalp:
     input:  
@@ -210,25 +210,27 @@ rule H_signalp:
         # somehow this parameter seems to not work, but 8 is supposedly default
         # --torch_num_threads
         """
-        
+
+################################################################################
 # process the SignalP predictions
 
-rule J_process:
+rule I_process:
     input:
-        script = 'scripts/J_signalp.R',
+        script = 'scripts/I_signalp.R',
         xs = [
-          'analysis/J_signalp'
+          'analysis/H_signalp'
         ]
     output:
-        'analysis/J_signal-probs.jpeg',
-        'analysis/J_heatmap.jpeg',
-        'analysis/J_signalp-subset.tsv',
-        'analysis/J_signal-enrichment.tsv',
-        'analysis/J_signal-enrichment.jpeg',
-        'analysis/J_gene2pathway.tsv',
-        'analysis/J_enriched-genes.tsv'
+        'analysis/I_signal-probs.jpeg',
+        'analysis/I_heatmap.jpeg',
+        'analysis/I_signalp-subset.tsv',
+        'analysis/I_signal-enrichment.tsv',
+        'analysis/I_signal-enrichment.jpeg',
+        'analysis/I_gene2pathway.tsv',
+        'analysis/I_enriched-genes.tsv'
+    log: 'logs/I_signalp.txt'
     shell:
-        "{input.script}"
+        "Rscript {input.script} > {log}"
         
         
 ################################################################################
