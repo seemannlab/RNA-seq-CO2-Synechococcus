@@ -1,0 +1,55 @@
+R version 4.3.2 (2023-10-31)
+Platform: aarch64-apple-darwin23.2.0 (64-bit)
+Running under: macOS Sonoma 14.3.1
+
+Matrix products: default
+BLAS:   /opt/homebrew/Cellar/openblas/0.3.26/lib/libopenblasp-r0.3.26.dylib 
+LAPACK: /opt/homebrew/Cellar/r/4.3.2_1/lib/R/lib/libRlapack.dylib;  LAPACK version 3.11.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Europe/Copenhagen
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] lubridate_1.9.3 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
+ [5] purrr_1.0.2     readr_2.1.4     tidyr_1.3.0     tibble_3.2.1   
+ [9] ggplot2_3.4.4   tidyverse_2.0.0
+
+loaded via a namespace (and not attached):
+ [1] SummarizedExperiment_1.32.0 gtable_0.3.4               
+ [3] rjson_0.2.21                plyranges_1.22.0           
+ [5] lattice_0.21-9              Biobase_2.62.0             
+ [7] tzdb_0.4.0                  vctrs_0.6.5                
+ [9] tools_4.3.2                 bitops_1.0-7               
+[11] generics_0.1.3              stats4_4.3.2               
+[13] parallel_4.3.2              fansi_1.0.5                
+[15] pkgconfig_2.0.3             Matrix_1.6-1.1             
+[17] S4Vectors_0.40.2            lifecycle_1.0.4            
+[19] GenomeInfoDbData_1.2.11     compiler_4.3.2             
+[21] Rsamtools_2.18.0            Biostrings_2.70.1          
+[23] munsell_0.5.0               codetools_0.2-19           
+[25] GenomeInfoDb_1.38.1         RCurl_1.98-1.13            
+[27] yaml_2.3.7                  pillar_1.9.0               
+[29] crayon_1.5.2                BiocParallel_1.36.0        
+[31] DelayedArray_0.28.0         abind_1.4-5                
+[33] tidyselect_1.2.0            stringi_1.8.2              
+[35] restfulr_0.0.15             grid_4.3.2                 
+[37] SparseArray_1.2.2           colorspace_2.1-0           
+[39] cli_3.6.1                   magrittr_2.0.3             
+[41] S4Arrays_1.2.0              XML_3.99-0.16              
+[43] utf8_1.2.4                  withr_2.5.2                
+[45] scales_1.3.0                bit64_4.0.5                
+[47] timechange_0.2.0            XVector_0.42.0             
+[49] matrixStats_1.1.0           bit_4.0.5                  
+[51] hms_1.1.3                   GenomicRanges_1.54.1       
+[53] IRanges_2.36.0              BiocIO_1.12.0              
+[55] rtracklayer_1.62.0          rlang_1.1.2                
+[57] glue_1.6.2                  BiocGenerics_0.48.1        
+[59] vroom_1.6.4                 R6_2.5.1                   
+[61] MatrixGenerics_1.14.0       GenomicAlignments_1.38.0   
+[63] zlibbioc_1.48.0            

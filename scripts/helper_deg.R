@@ -156,7 +156,7 @@ helper.pca <- function(x, plot.x = 'PC1', plot.y = 'PC2',
 ################################################################################
 ################################################################################
 
-helper.skree <- function(x, ntop = 500) {
+helper.skree <- function(x, nudge = 4, ntop = 500) {
   # Adapted from DESeq2::plotPCA
   dba <- SummarizedExperiment::assay(x)
   rv <- MatrixGenerics::rowVars(dba)
@@ -189,13 +189,13 @@ helper.skree <- function(x, ntop = 500) {
     ggsci::scale_color_jama(name = NULL) +
     # change repel y nudge for curves
     ggrepel::geom_text_repel(
-      nudge_x = 5, nudge_y = -4,
+      nudge_x = 5, nudge_y = - nudge,
       show.legend = FALSE,
       size = 5, color = 'black',
       data = filter(dat, name == 'Cumulative')
     ) +
     ggrepel::geom_text_repel(
-      nudge_x = 5, nudge_y = +4,
+      nudge_x = 5, nudge_y = + nudge,
       show.legend = FALSE,
       size = 5, color = 'black',
       data = filter(dat, name != 'Cumulative')

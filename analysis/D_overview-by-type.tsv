@@ -1,0 +1,8 @@
+test	ncRNA	protein_coding	RNase_P_RNA	SRP_RNA	tmRNA	tRNA
+0.04->30% CO2	1	2230	0	0	1	5
+0.04->4% CO2	0	2408	1	1	1	10
+0.04->8% CO2	0	2396	1	0	1	8
+4->30% CO2	2	1843	1	0	1	6
+4->8% CO2	0	314	0	0	0	2
+8->30% CO2	2	1867	1	0	1	6
+DE in any comparison	2	2849	1	1	1	12

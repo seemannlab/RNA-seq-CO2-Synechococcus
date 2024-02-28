@@ -13,7 +13,6 @@ rule setup:
         """
 # Shorter paths
 P=/home/projects/rth/co2capture/subprojects/RNA-seq_air-to-30-pct-CO2
-P2=$P/Public-RNA-Seq/RNA
 
 mkdir raw-data
 cd raw-data
@@ -23,29 +22,14 @@ cp $P/PCC7002-genome.gff.gz                         PCC7002-genome.gff.gz
 cp $P/PCC7002-genome.fna.gz                         PCC7002-genome.fna.gz
 
 # Growth rate etc
-cp $P/experimental-data/{{RNA_JAN23.xlsx,RNA_July22.xlsx}} .
+cp $P/experimental-data/RNA_JAN23.xlsx .
 
 # Expression matrices project data
-cp $P/RNA-browser/analysis/41_counts.tsv            1-15pct-co2-counts.tsv
 cp $P/RNA-browser-dataset2/analysis/41_counts.tsv   co2-adaptation-counts.tsv
 
-# Info on batches
-cp $P/RNA-Schlange/samples.csv                      schlange-data1.csv
-
 # MultiQC stat
-cp $P/RNA-browser/multiqc/multiqc_data/multiqc_data.json                            browser-data1-multiqc.json
-cp $P/RNA-browser-dataset2/multiqc/multiqc_data/multiqc_data.json                   browser-data2-multiqc.json
-cp $P/RNA-Schlange/analysis/53_main_multiqc/multiqc_data/multiqc_data.json          schlange-data1-multiqc.json
-cp $P/RNA-Schlange-Dataset2/analysis/53_main_multiqc/multiqc_data/multiqc_data.json schlange-data2-multiqc.json
-
-# Public datasets info
-mkdir public-datasets
-cd public-datasets
-
-cp $P2-browser/analysis/41_counts.tsv                                            public-raw-counts.tsv
-cp $P2-Schlange-Illumina/analysis/53_main_multiqc/multiqc_data/multiqc_data.json multiqc-schlange-illumina.json
-cp $P2-Schlange-SOLiD/analysis/53_main_multiqc/multiqc_data/multiqc_data.json    multiqc-schlange-solid.json
-cp $P2-browser/multiqc/multiqc_data/multiqc_data.json                            multiqc-public-browser.json
+cp $P/RNA-browser-dataset2/multiqc/multiqc_data/multiqc_data.json                   browser-data-multiqc.json
+cp $P/RNA-Schlange-Dataset2/analysis/53_main_multiqc/multiqc_data/multiqc_data.json schlange-data-multiqc.json
         """
 
 ################################################################################
@@ -55,19 +39,14 @@ rule A_general:
     input:
         script = 'scripts/A_pre-stat.R',
         xs = [
-            'raw-data/schlange-data1-multiqc.json',
-            'raw-data/schlange-data2-multiqc.json',
-            'raw-data/browser-data1-multiqc.json',
-            'raw-data/browser-data2-multiqc.json',
-            'raw-data/public-datasets/multiqc-schlange-illumina.json',
-            'raw-data/public-datasets/multiqc-schlange-solid.json',
-            'raw-data/public-datasets/multiqc-public-browser.json'
+            'raw-data/schlange-data-multiqc.json',
+            'raw-data/browser-data-multiqc.json'
         ]
     output:
-        'data/A_general-stat.tsv',
-        'data/A_public-stat.tsv'
+        'data/A_general-stat.tsv'
+    log: 'logs/A_general.txt'
     shell:
-        "{input.script}"
+        "Rscript {input.script} > {log}"
 
 ################################################################################
 # process wet lab measurements
@@ -76,14 +55,14 @@ rule B_characteristics:
     input:
         script = 'scripts/B_characteristics.R',
         xs = [
-          'raw-data/RNA_July22.xlsx',
           'raw-data/RNA_JAN23.xlsx'
         ]
     output:
         'data/B_characteristics.tsv',
         'data/B_growth.jpeg',
+    log: 'logs/B_characteristics.txt'
     shell:
-        "{input.script}"
+        "Rscript {input.script} > {log}"
 
 ################################################################################
 # Prepare raw-input
@@ -93,28 +72,24 @@ rule C_prep:
     input:
         script = 'scripts/C_prep.R',
         xs = [
-            'raw-data/schlange-data1.csv',
-            'raw-data/1-15pct-co2-counts.tsv',
             'raw-data/co2-adaptation-counts.tsv',
-            'data/B_characteristics.tsv',
-            'raw-data/public-datasets/public-raw-counts.tsv'
+            'raw-data/PCC7002-genome.gff.gz'
         ]
     output:
         'data/C_meta.tsv',
         'data/C_raw-counts.tsv',
         'data/C_annotation.tsv',
-        'data/C_public-meta.tsv',
-        'data/C_public-raw-counts.tsv'
+    log: 'logs/C_prep.txt'
     shell:
-        "{input.script}"
+        "Rscript {input.script} > {log}"
         
         
 ################################################################################
-# Differential expression analysis per dataset for comparison
+# Differential expression analysis
 
-rule D_high_low:
+rule D_deg:
     input:
-        script = 'scripts/D_high-low.R',
+        script = 'scripts/D_deg.R',
         xs = [
             'scripts/helper_deg.R',
             'data/C_meta.tsv',
@@ -122,40 +97,38 @@ rule D_high_low:
             'data/C_raw-counts.tsv'
         ]
     output:
-        'analysis/D_dge-per-dataset.tsv',
-        'analysis/D_PCA-per-dataset.jpeg',
-        'analysis/D_correlation-logFCs.jpeg',
-        'analysis/D_venn-per-dataset.jpeg',
+        'analysis/D_PCA.jpeg',
+        'analysis/D_stagewise-adjusted-DEGs.tsv',
+        'analysis/D_volcano.jpeg',
+        'analysis/D_overview-by-type.tsv',
+        'analysis/D_overview-by-logFC.tsv',
+        'analysis/D_vst-expression.tsv',
+        'analysis/D_normalized-counts.tsv',
+        'analysis/D_heatmap.jpeg',
+        'analysis/D_logFC-cor.jpeg'
+    log: 'logs/D_deg.txt'
     shell:
-        "{input.script}"
+        "Rscript {input.script} > {log}"
         
 ################################################################################
-# Differential expression analysis with/without correction for light
+# export analysis results for visualization in stringApp
 
-rule E_sva:
+rule E_string:
     input:
-        script = 'scripts/E_sva-mcclure.R',
+        script = 'scripts/E_string.R',
         xs = [
-            'scripts/helper_deg.R',
-            'data/C_meta.tsv',
             'data/C_annotation.tsv',
-            'data/C_raw-counts.tsv',
-            'data/C_public-meta.tsv',
-            'data/C_public-raw-counts.tsv'
+            'data/C_meta.tsv',
+            'analysis/D_stagewise-adjusted-DEGs.tsv',
+            'analysis/D_vst-expression.tsv'
         ]
     output:
-        'analysis/E_-heatmap-With_correction.jpeg',
-        'analysis/E_-heatmap-Without_correction.jpeg',
-        'analysis/E_pca-mcclure_With_correction.jpeg',
-        'analysis/E_pca-mcclure_Without_correction.jpeg',
-        'analysis/E_pca-subset_With_correction.jpeg',
-        'analysis/E_pca-subset_Without_correction.jpeg',
-        'analysis/E_scatter-logFC-correction.jpeg',
-        'analysis/E_scatter-logFC-correction-outliers.jpeg',
-        'analysis/E_stagewise-adjusted-DEGs.tsv',
-        'analysis/E_venn-deg.jpeg',
+        'analysis/E_string-cutoff.jpeg',
+        'analysis/E_string-loci.txt',
+        'analysis/E_string-z-expression.tsv'
+    log: 'logs/E_string.txt'
     shell:
-        "{input.script}"
+        "Rscript {input.script} > {log}"
 
 
 ################################################################################
@@ -166,5 +139,5 @@ rule all:
         'data/A_general-stat.tsv',
         'data/B_characteristics.tsv',
         'data/C_raw-counts.tsv',
-        'analysis/D_dge-per-dataset.tsv',
-        'analysis/E_stagewise-adjusted-DEGs.tsv',
+        'analysis/D_stagewise-adjusted-DEGs.tsv',
+        'analysis/E_string-loci.txt',
