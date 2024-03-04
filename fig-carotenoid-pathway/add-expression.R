@@ -26,6 +26,7 @@ pathway <-
   ggdraw() +
   draw_image(magick::image_read(
     'fig-carotenoid-pathway/carotenoid.jpg',
+    # density = 200
     density = 500
   ))
 
@@ -35,11 +36,11 @@ pathway <-
 
 genes <- tribble(
   ~ gene, ~ locus, ~x, ~y,
-  'crtE', 'A1085', 1220, 170,
-  'crtB', 'A1936', 1220, 310,
-  'crtP', 'A1935', 1220, 450,
-  'crtQ', 'A0529', 1220, 590,
-  'crtH', 'A1829', 1220, 730,
+  'crtE', 'A1085', 1320, 170,
+  'crtB', 'A1936', 1320, 310,
+  'crtP', 'A1935', 1320, 450,
+  'crtQ', 'A0529', 1320, 590,
+  'crtH', 'A1829', 1320, 730,
   
   'cruF', 'A2032', 610, 520,
   
@@ -51,8 +52,8 @@ genes <- tribble(
   'cruG', 'A2031', 30, 1440,
   
   'cruE', 'A1248', 1320, 920,
-  'crtW', 'A2809', 1220, 1430,
-  'cruH', 'A2246', 2000, 1400,
+  'crtW', 'A2809', 1320, 1340,
+  'cruH', 'A2246', 1850, 1340,
 ) |>
   # convert to coordinates in ggplot
   # svg is
@@ -158,7 +159,7 @@ p.all <-
   reduce(`+`, .init = pathway) +
   annotation_custom(
     ggplotGrob(p.legend),
-    xmin = 0.7, xmax = 0.95,
+    xmin = 0.1, xmax = 0.35,
     ymin = 0.7, ymax = 0.9
   )
 
