@@ -285,6 +285,32 @@ rule K_gsea:
     log: 'logs/K_gsea.txt'
     shell:
         "Rscript {input.script} > {log}"
+        
+################################################################################
+# Explorative pathway figures with expression
+
+rule L_pathways:
+    input:
+        script = 'scripts/L_pathways.R',
+        xs = [
+            'data/C_annotation.tsv',
+            'data/C_meta.tsv',
+            'analysis/D_vst-expression.tsv'
+        ]
+    output:
+        'analysis/L_photorespiration.jpeg',
+        'analysis/L_carotenoid.jpeg',
+        'analysis/L_biotin.jpeg',
+        'analysis/L_vancomycin.jpeg',
+        'analysis/L_peptidoglycan.jpeg',
+        'analysis/L_recombination.jpeg',
+        'analysis/L_pentose.jpeg',
+        'analysis/L_glycolysis.jpeg',
+        'analysis/L_nicotinate.jpeg',
+        'analysis/L_2component.jpeg',
+    log: 'logs/L_pathways.txt'
+    shell:
+        "Rscript {input.script} > {log}"
 
 
 ################################################################################
@@ -301,3 +327,4 @@ rule all:
         'analysis/G_peptides.faa',
         'analysis/J_freqs-overall.jpeg',
         'analysis/K_gsea.tsv',
+        'analysis/L_2component.jpeg',
