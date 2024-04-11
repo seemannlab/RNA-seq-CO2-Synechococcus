@@ -225,7 +225,7 @@ path.dat |>
               method = 'loess', se = FALSE,
               color = 'red') +
   facet_wrap(~ Pathway, ncol = 4) +
-  ylab('z-scaled log expression') +
+  ylab('z-scaled expression (vst)') +
   xlab(NULL) +
   theme_pubr(18)
 
