@@ -13,6 +13,10 @@ library(ggkegg)
 # https://www.kegg.jp/pathway/syp00780
 # Vancomycin resistance
 # https://www.kegg.jp/pathway/syp01502
+# Peptidoglycan biosynthesis
+# https://www.kegg.jp/pathway/syp00550
+# Homologous recombination
+# https://www.kegg.jp/pathway/syp03440
 
 ################################################################################
 
@@ -27,7 +31,7 @@ vst <-
 meta <-
   'data/C_meta.tsv' |>
   read_tsv() |>
-  mutate_at('condition', ~ fct_reorder(as.character(.x), as.numeric(.x)))
+  mutate_at('CO2', ~ fct_reorder(as.character(.x), as.numeric(.x)))
 
 ################################################################################
 # z-scale expression
@@ -53,7 +57,7 @@ z.expr <-
 ################################################################################
 my.path <- function(x, legend.pos) {
   # Memo: Legend.pos is list with xmin/xmax/ymin/ymax
-  # x <- 'syp00630'
+  # x <- 'syp01502'
   # Load pathway
   path <-
     x |>
@@ -78,7 +82,7 @@ my.path <- function(x, legend.pos) {
     # add z-scaled expression
     left_join(z.expr, 'Geneid', relationship = "many-to-many") |>
     # average per 'enzyme' NOT gene (could be multiple)
-    group_by(name, condition) |>
+    group_by(name, CO2) |>
     summarize(avg = mean(z.expression, na.rm = TRUE)) |>
     ungroup() |>
     # left_join(path.genes, 'name', relationship = "many-to-many") |>
@@ -106,7 +110,7 @@ my.path <- function(x, legend.pos) {
       as_tibble() |>
       select(name) |>
       left_join(path.expr, 'name', relationship = 'one-to-many') |>
-      ggplot(aes(condition, 1, fill = avg)) +
+      ggplot(aes(CO2, 1, fill = avg)) +
       geom_tile(color = 'black') +
       coord_fixed() +
       scale_fill_gradientn(colors = RColorBrewer::brewer.pal(5, 'RdBu') |> rev(),
@@ -135,7 +139,7 @@ my.path <- function(x, legend.pos) {
     path.expr |>
     # arbitrarily choose first one for color bar
     filter(name == first(name)) |>
-    ggplot(aes(condition, 1, fill = avg, label = condition)) +
+    ggplot(aes(CO2, 1, fill = avg, label = CO2)) +
     geom_tile() +
     coord_fixed() +
     scale_fill_gradientn(colors = RColorBrewer::brewer.pal(5, 'RdBu') |> rev(),
@@ -153,6 +157,7 @@ my.path <- function(x, legend.pos) {
     geom_tile(fill = I('white'), color = 'black') +
     geom_text(size = 3) +
     theme(axis.text.x = element_blank())
+  
   
   # combine all plots into one
   gene.plots |>
@@ -217,16 +222,48 @@ ggsave('analysis/M_biotin.jpeg',
 ########################################
 # Vancomycin resistance
 
-# Biotin metabolism
 baz <-  my.path(
   'syp01502',
   legend.pos = list(
-    xmin = 500, xmax = 700,
-    ymin = 0, ymax = -200
+    xmin = 500, xmax = 650,
+    ymin = -2, ymax = -170
   )
 )
   
 # remove ugly thick border
 baz + theme(plot.margin = unit(c(-1, -2, -1, -2), "cm"))
-# ggsave('analysis/M_biotin.jpeg',
-#        width = 8, height = 10, dpi = 400)
+ggsave('analysis/X_vancomycin.jpeg',
+       width = 11.5, height = 11.5, dpi = 400)
+
+
+########################################
+# Peptidoglycan biosynthesis
+
+baz <-  my.path(
+  'syp00550',
+  legend.pos = list(
+    xmin = 670, xmax = 820,
+    ymin = -5, ymax = -230
+  )
+)
+  
+# remove ugly thick border
+baz + theme(plot.margin = unit(c(-1, -2, -1, -2), "cm"))
+ggsave('analysis/X_peptidoglycan.jpeg',
+       width = 6, height = 10.5, dpi = 400)
+
+########################################
+# Homologous recombination
+
+baz <-  my.path(
+  'syp03440',
+  legend.pos = list(
+    xmin = 10, xmax = 160,
+    ymin = -1000, ymax = -1200
+  )
+)
+  
+# remove ugly thick border
+baz + theme(plot.margin = unit(c(-1, -2, -1, -2), "cm"))
+ggsave('analysis/X_recombination.jpeg',
+       width = 10, height = 8, dpi = 400)
