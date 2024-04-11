@@ -268,13 +268,20 @@ rule K_gsea:
         xs = [
             'data/C_annotation.tsv',
             'data/C_meta.tsv',
-            'analysis/D_stagewise-adjusted-DEGs.tsv'
+            'analysis/D_stagewise-adjusted-DEGs.tsv',
+            'analysis/D_normalized-counts.tsv',
+            'analysis/I_gene2pathway.tsv'
         ]
     output:
+        'analysis/K_gsea-0.04-.30..CO2.jpeg',
         'analysis/K_gsea-0.04-.4..CO2.jpeg',
+        'analysis/K_gsea-0.04-.8..CO2.jpeg',
+        'analysis/K_gsea-4-.30..CO2.jpeg',
         'analysis/K_gsea-4-.8..CO2.jpeg',
         'analysis/K_gsea-8-.30..CO2.jpeg',
         'analysis/K_gsea.tsv',
+        'analysis/K_enrichment-overview.jpeg',
+        'analysis/K_expression-overview.jpeg',
     log: 'logs/K_gsea.txt'
     shell:
         "Rscript {input.script} > {log}"
