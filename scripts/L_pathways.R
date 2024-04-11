@@ -25,6 +25,12 @@ library(ggkegg)
 # https://www.kegg.jp/pathway/syp00760
 # Two-component system
 # https://www.kegg.jp/pathway/syp02020
+# Porphyrin
+# https://www.kegg.jp/pathway/syp00860
+# syp00195 Photosynthesis                      
+# syp00196 Photosynthesis - antenna proteins  
+# syp03010 Ribosome                          
+# syp00190 Oxidative phosphorylation     
 
 ################################################################################
 
@@ -345,3 +351,82 @@ ggsave('analysis/L_2component.jpeg',
        width = 8, height = 19, dpi = 400)
 
 ########################################
+# Porphyrin
+# https://www.kegg.jp/pathway/syp00860
+
+baz <-  my.path(
+  'syp00860',
+  legend.pos = list(
+    xmin = 1050, xmax = 1250,
+    ymin = -10, ymax = -320
+  )
+)
+  
+# remove ugly thick border
+baz + theme(plot.margin = unit(c(-1, -2, -1, -2), "cm"))
+ggsave('analysis/L_porphyrin.jpeg',
+       width = 7.5, height = 8, dpi = 400)
+
+########################################
+# syp00195 Photosynthesis                      
+
+# baz <-  my.path(
+#   'syp00195',
+#   legend.pos = list(
+#     xmin = 1050, xmax = 1250,
+#     ymin = -10, ymax = -320
+#   )
+# )
+# 
+# # remove ugly thick border
+# baz + theme(plot.margin = unit(c(-1, -2, -1, -2), "cm"))
+# TOO UGLY / narrow no space
+
+########################################
+# syp00196 Photosynthesis - antenna proteins  
+
+# baz <-  my.path(
+#   'syp00196',
+#   legend.pos = list(
+#     xmin = 1050, xmax = 1250,
+#     ymin = -10, ymax = -320
+#   )
+# )
+# 
+# # remove ugly thick border
+# baz + theme(plot.margin = unit(c(-1, -2, -1, -2), "cm"))
+# UNCLEAR conclusion
+
+########################################
+# syp03010 Ribosome                          
+
+# baz <-  my.path(
+#   'syp03010',
+#   legend.pos = list(
+#     xmin = 1050, xmax = 1250,
+#     ymin = -10, ymax = -320
+#   )
+# )
+#   
+# # remove ugly thick border
+# baz + theme(plot.margin = unit(c(-1, -2, -1, -2), "cm"))
+# UNCLEAR conclusion
+
+########################################
+# syp00190 Oxidative phosphorylation     
+
+# baz <-  my.path(
+#   'syp00190',
+#   legend.pos = list(
+#     xmin = 1050, xmax = 1250,
+#     ymin = -10, ymax = -320
+#   )
+# )
+# 
+# # remove ugly thick border
+# baz + theme(plot.margin = unit(c(-1, -2, -1, -2), "cm"))
+# more interesting for Air not 30%
+
+########################################
+
+
