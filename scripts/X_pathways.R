@@ -11,6 +11,8 @@ library(ggkegg)
 # https://www.kegg.jp/pathway/syp00906+SYNPCC7002_A1248
 # Biotin metabolism
 # https://www.kegg.jp/pathway/syp00780
+# Vancomycin resistance
+# https://www.kegg.jp/pathway/syp01502
 
 ################################################################################
 
@@ -19,7 +21,7 @@ annot <-
   read_tsv()
 
 vst <-
-  'analysis/E_vst.tsv' |>
+  'analysis/D_vst-expression.tsv' |>
   read_tsv()
 
 meta <-
@@ -211,3 +213,20 @@ baz <-  my.path(
 baz + theme(plot.margin = unit(c(-1, -2, -1, -2), "cm"))
 ggsave('analysis/M_biotin.jpeg',
        width = 8, height = 10, dpi = 400)
+
+########################################
+# Vancomycin resistance
+
+# Biotin metabolism
+baz <-  my.path(
+  'syp01502',
+  legend.pos = list(
+    xmin = 500, xmax = 700,
+    ymin = 0, ymax = -200
+  )
+)
+  
+# remove ugly thick border
+baz + theme(plot.margin = unit(c(-1, -2, -1, -2), "cm"))
+# ggsave('analysis/M_biotin.jpeg',
+#        width = 8, height = 10, dpi = 400)

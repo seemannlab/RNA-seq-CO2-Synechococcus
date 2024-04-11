@@ -1,3 +1,0 @@
-"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"5","4","STRING Clusters","","Mixed, incl. Adhesion lipoprotein, and ABC transporter, TroCD-like","1.53E-7","ACA99613.1|ACB00477.1|ACB00478.1|zntC","253919","1420|2734|1807|1813","2.37E-10","","CL:4271","1.0","0"
-"69","3","KEGG Pathways","","ABC transporters","0.0148","ACB00477.1|ACB00478.1|zntC","253919","2734|1807|1813","1.5E-4","","syp02010","0.26847475298166096","0"

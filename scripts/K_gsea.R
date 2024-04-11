@@ -39,8 +39,8 @@ path.gene <-
   'analysis/I_gene2pathway.tsv' |>
    read_tsv()
 
-expr <-
-  'analysis/D_normalized-counts.tsv' |>
+vst <-
+  'analysis/D_vst-expression.tsv' |>
   read_tsv()
 
 ################################################################################
@@ -172,26 +172,30 @@ ggsave('analysis/K_enrichment-overview.jpeg',
        width = 10, height = 10, dpi = 400)
 
 ################################################################################
+# z-scale expression
+
+vst.mat <-
+  vst |>
+  select(- Geneid) |>
+  as.matrix() |>
+  magrittr::set_rownames(vst$Geneid)
+
+z.mat <-
+  vst.mat |>
+  apply(1, scale) |>
+  t() |> 
+  magrittr::set_colnames(colnames(vst.mat))
+
+z.expr <-
+  z.mat |>
+  as_tibble(rownames = 'Geneid') |>
+  pivot_longer(- Geneid, names_to = 'lib', values_to = 'z.expression') |>
+  left_join(meta, 'lib')
+
+################################################################################
 # Overview of expression patterns
 
-# Get per gene z-scaled expression
-expr.mat <-
-  expr |>
-  select(-Geneid) |>
-  as.matrix() |>
-  magrittr::set_rownames(expr$Geneid)
 
-expr.z <-
-  log10(expr.mat + 1) |>
-  apply(1, scale) |>
-  t() |>
-  magrittr::set_colnames(colnames(expr.mat))
-
-# Combine with enriched pathways
-expr.long <-
-  expr.z |>
-  as_tibble(rownames = 'Geneid') |>
-  pivot_longer(- Geneid, names_to = 'lib')
 
 path.dat <-
   res |>
@@ -206,14 +210,13 @@ path.dat <-
       unique(),
     'Geneid'
   ) |>
-  left_join(expr.long, 'Geneid', relationship = "many-to-many") |>
-  left_join(meta, 'lib', relationship = "many-to-one")
+  left_join(z.expr, 'Geneid', relationship = "many-to-many")
 
 # Pretty plot please
 path.dat |>
   mutate_at('Pathway', str_replace, '(?<=.{15}) ', '\n') |>
   mutate_at('CO2', ~ fct_reorder(as.character(.x), .x)) |>
-  ggplot(aes(CO2, value)) +
+  ggplot(aes(CO2, z.expression)) +
   geom_violin(aes(fill = Pathway), show.legend = FALSE) +
   # scale_fill_brewer(palette = 'Spectral') +
   ggsci::scale_fill_ucscgb() +

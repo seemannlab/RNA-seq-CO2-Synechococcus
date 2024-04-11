@@ -1,2 +1,4 @@
 "# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"9","2","KEGG Pathways","","Carotenoid biosynthesis","0.0198","cruP|crtQ","253919","6913|5272","2.0E-4","","syp00906","1.0","0"
+"71","5","STRING Clusters","","Mixed, incl. Protein-containing complex organization, and Transmembrane helix","7.96E-6","ACA98779.1|ACA99196.1|ACA99769.1|ACB00388.1|ACB00534.1","163300","1357|538|6202|2929|841","1.23E-8","","CL:882","1.0","0"
+"34","4","STRING Clusters","","Mostly uncharacterized, incl. Photosystem II assembly, and Hydrocarbon metabolic process","4.45E-5","ACA98779.1|ACA99196.1|ACA99769.1|ACB00534.1","163300","1357|538|6202|841","1.37E-7","","CL:887","0.853415532393828","0"
+"5","3","STRING Clusters","","Mixed, incl. Protein of unknown function DUF4079, and Terpene metabolic process","4.45E-5","ACA98779.1|ACA99196.1|ACA99769.1","163300","1357|538|6202","1.48E-7","","CL:906","0.853415532393828","0"

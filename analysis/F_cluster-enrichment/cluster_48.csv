@@ -1,6 +1,2 @@
 "# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"35","5","STRING Clusters","","Mixed, incl. Nicotinate and nicotinamide metabolism, and Pantothenate and CoA biosynthesis","1.68E-6","ACA98986.1|pntB|pntC|pntA|ACA98990.1","253919","3955|3976|3970|3931|3922","2.6E-9","","CL:3101","1.0","0"
-"6","3","STRING Clusters","","Nicotinate and nicotinamide metabolism","9.57E-5","pntB|pntC|pntA","253919","3976|3970|3931","4.44E-7","","CL:3156","0.6959832583768795","0"
-"16","3","KEGG Pathways","","Nicotinate and nicotinamide metabolism","4.9E-4","pntB|pntC|pntA","253919","3976|3970|3931","5.08E-6","","syp00760","0.5731569154859737","0"
-"25","3","COMPARTMENTS","","Integral component of plasma membrane","0.0045","pntB|pntC|pntA","253919","3976|3970|3931","1.7E-5","","GOCC:0005887","0.4063918919152147","0"
-"21","3","GO Biological Process","","Proton transmembrane transport","0.0117","pntB|pntC|pntA","253919","3976|3970|3931","1.06E-5","","GO:1902600","0.3345311866037379","0"
+"6","2","STRING Clusters","","Mixed, incl. DNA-binding protein Dps, and Adaptor protein ClpS, core","0.0451","ACB00257.1|ACB00258.1","163300","3565|3571","6.97E-5","","CL:1156","1.0","0"

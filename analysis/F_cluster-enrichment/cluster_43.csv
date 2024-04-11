@@ -1,5 +1,4 @@
 "# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"12","6","STRING Clusters","","Nitrogen metabolism, and NMT1/THI5 like","1.7E-11","ACA98864.1|cynB|cynD|ACA98868.1|ACA99170.1|ACA99738.1","253919","5992|5980|5974|5986|520|7099","2.62E-14","","CL:1571","1.0769551078621726","0"
-"6","5","STRING Clusters","","Mixed, incl. NMT1/THI5 like, and Nitrate import","5.95E-10","ACA98864.1|cynB|cynD|ACA99170.1|ACA99738.1","253919","5992|5980|5974|520|7099","1.84E-12","","CL:1573","0.922548303427145","0"
-"16","4","KEGG Pathways","","Nitrogen metabolism","2.62E-6","ACA98864.1|cynB|cynD|ACA99170.1","253919","5992|5980|5974|520","2.7E-8","","syp00910","0.5581698708680254","0"
-"69","4","KEGG Pathways","","ABC transporters","2.9E-4","ACA98864.1|cynB|cynD|ACA99170.1","253919","5992|5980|5974|520","5.89E-6","","syp02010","0.3537602002101044","0"
+"35","5","STRING Clusters","","Mostly uncharacterized, incl. SGNH hydrolase superfamily, and S-layer homology domain","2.83E-7","ACA98195.1|hetR|ACA98650.1|ACA98658.1|ACA99798.1","163300","4099|5821|2815|2770|3469","4.38E-10","","CL:773","1.0","0"
+"21","4","STRING Clusters","","Mostly uncharacterized, incl. SGNH hydrolase superfamily, and S-layer homology domain","3.82E-6","ACA98195.1|hetR|ACA98650.1|ACA98658.1","163300","4099|5821|2815|2770","2.36E-8","","CL:777","0.827391560116608","0"
+"15","3","STRING Clusters","","Mostly uncharacterized, incl. Heterocyst differentiation, and Subtilase family","2.3E-4","ACA98195.1|hetR|ACA98650.1","163300","4099|5821|2815","2.15E-6","","CL:780","0.5556129359799995","0"

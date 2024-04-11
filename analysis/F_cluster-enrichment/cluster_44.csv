@@ -1,3 +1,5 @@
 "# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"5","3","STRING Clusters","","Mixed, incl. Arc-type ribbon-helix-helix, and 1-deoxy-D-xylulose 5-phosphate metabolic process","1.9E-4","vapC|ACA98073.1|ACA98074.1","253919","6823|6847|6838","2.96E-7","","CL:5107","1.0","0"
-"148","4","STRING Clusters","","Mixed, incl. Restriction endonuclease type II-like, and Nuclease activity","0.0143","vapC|ACA98073.1|ACA98074.1|ACB00832.1","253919","6823|6847|6838|3670","1.1E-4","","CL:4850","0.49571131946738767","0"
+"5","5","STRING Clusters","","Aldo/keto reductase family, and PurE domain","1.09E-10","ACA98131.1|ACA98404.1|ACA98434.1|ACA98909.1|ACA99699.1","163300","3949|754|5815|3667|4936","1.68E-13","","CL:5348","1.0","0"
+"4","2","Pfam","","Aldo/keto reductase family","0.0157","ACA98131.1|ACA98434.1","163300","3949|5815","3.74E-5","","PF00248","0.18108778291250133","0"
+"4","2","InterPro Domains","","NADP-dependent oxidoreductase domain","0.0444","ACA98131.1|ACA98434.1","163300","3949|5815","3.74E-5","","IPR023210","0.13576984195958794","0"
+"4","2","InterPro Domains","","NADP-dependent oxidoreductase domain superfamily","0.0444","ACA98131.1|ACA98434.1","163300","3949|5815","3.74E-5","","IPR036812","0.13576984195958794","0"

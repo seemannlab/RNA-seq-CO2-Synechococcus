@@ -25,10 +25,12 @@ meta <-
 
 ################################################################################
 # Loci of DE genes
+# FOCUS: Genes that are different between air and 30% CO2
 
 de.loci <-
   dge |>
   filter(is.de) |>
+  filter(test == '0.04->30% CO2') |>
   select(Geneid, locus = old_locus_tag) |>
   drop_na() |>
   unique()
