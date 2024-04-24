@@ -9,6 +9,9 @@ library(patchwork)
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442",
                "#0072B2", "#D55E00", "#CC79A7")
 
+# nicer amino acid names
+data(aaMap, package = 'Biobase')
+
 ################################################################################
 ################################################################################
 # Load data
@@ -204,6 +207,43 @@ vz[my.mask, ] |>
   facet_grid(CO2 ~ AA)
 
 ################################################################################
+# Data from Akashi 2002 on metabolic cost of AA
+# https://www.ncbi.nlm.nih.gov/pmc/articles/PMC122586/
+
+aa.cost <-
+  tribble(
+    ~ AA, ~ cost,
+    'Ala', 11.7,
+    'Cys', 24.7,
+    'Asp', 12.7,
+    'Glu', 15.3,
+    'Phe', 52.0,
+    'Gly', 11.7,
+    'His', 38.3,
+    'Ile', 32.3,
+    'Lys', 30.3,
+    'Leu', 27.3,
+    'Met', 34.3,
+    'Asn', 14.7,
+    'Pro', 20.3,
+    'Gln', 16.3,
+    'Arg', 27.3,
+    'Ser', 11.7,
+    'Thr', 18.7,
+    'Val', 23.3,
+    'Trp', 74.3,
+    'Tyr', 50.0,
+  ) |>
+  # rank by metabolic cost
+  arrange(cost) |>
+  mutate(
+    cost.rank = rank(cost),
+    # convert to long names
+    AA = str_to_lower(AA),
+    AA = with(aaMap, set_names(name, let.3))[AA]
+  )
+
+################################################################################
 ################################################################################
 # Heatmap of AA and expression correlation
 
@@ -217,14 +257,15 @@ crossing(
   unnest(r2) |>
   spread(lib, r2) -> dat
 
-dat.mat <- dat |>
+dat.cor <- dat |>
   select(- AA) |>
   as.matrix() |>
   magrittr::set_rownames(dat$AA)
 
 ################################################################################
-# Produce heatmap
+# Produce heatmap of correlations AA freq and Expression
 
+dat.mat <- dat.cor
 # rename to short sample name
 look <-
   meta |>
@@ -251,12 +292,18 @@ cl <- list(
     unique() |>
     sort() |>
     as.character() %>%
-    set_names(cbPalette[c(1, 6, 2, 7)], .)
+    set_names(cbPalette[c(1, 6, 2, 7)], .),
+  'Energy' = c('white', 'black')
 )
 with(
   meta,
   data.frame('CO2' = as.character(CO2), row.names = sample)
 ) -> col.df
+
+with(
+  aa.cost,
+  data.frame('Energy' = cost, row.names = AA)
+) -> row.df
 
 dat.mat |>
   pheatmap::pheatmap(
@@ -266,15 +313,125 @@ dat.mat |>
     display_numbers = TRUE,
     cluster_cols = lib.clust,
     annotation_col = col.df,
+    annotation_row = row.df,
     annotation_colors = cl,
     # fontsize = 1,
     number_color = 'black',
     color = colorRampPalette(rev(
       RColorBrewer::brewer.pal(n = 5, name = "RdBu")))(59),
-    filename = 'analysis/J_AA-expr-cor.jpeg', width = 8, height = 8
-  )
+    # filename = 'analysis/J_AA-expr-cor.jpeg', width = 8, height = 8
+  ) -> heat.cor
 dev.off()
   
+
+################################################################################
+# Produce 2 heatmaps, freqs and expression separatly but with the exact same
+# row/gene order
+################################################################################
+# heatmap expression
+
+# sneaky, add space to library name to give similar bottom height
+sneak.len <-
+  fz |>
+  colnames() |>
+  str_length() |>
+  max()
+sneak <- function(x) {
+  sprintf(paste0('%-', sneak.len, 's'), x)
+}
+
+dat.mat <- vz[my.mask,]
+# rename to short sample name
+look <-
+  meta |>
+  with(set_names(sneak(sample), lib))
+colnames(dat.mat) <- look[colnames(dat.mat)]
+
+cl <- list(
+  'CO2' = meta |>
+    pull(CO2) |>
+    unique() |>
+    sort() |>
+    as.character() %>%
+    set_names(cbPalette[c(1, 6, 2, 7)], .)
+)
+with(
+  meta,
+  data.frame('CO2' = as.character(CO2), row.names = sneak(sample))
+) -> col.df
+
+
+dat.mat |>
+  pheatmap::pheatmap(
+    scale = 'none',
+    show_colnames = TRUE,
+    show_rownames = FALSE,
+    cluster_cols = heat.cor$tree_col,
+    annotation_col = col.df,
+    annotation_colors = cl,
+    color = colorRampPalette(rev(
+      RColorBrewer::brewer.pal(n = 5, name = "RdBu")))(59),
+  ) -> heat.expr
+dev.off()
+
+################################################################################
+# Heatmap AA freq
+
+# apply(abs(dat.cor) >= .1, 1, any) |>
+#   which() |>
+#   names() -> aas
+
+# dat.mat <- fz[my.mask, aas]
+dat.mat <- fz[my.mask, ]
+# dat.mat[dat.mat > 4] <- 4
+# dat.mat[dat.mat < -4] <- -4
+
+
+cl <- list(
+  'Energy' = c('white', 'black')
+)
+with(
+  aa.cost,
+  data.frame('Energy' = cost, row.names = AA)
+) -> col.df
+
+# rg <- max(abs(dat.mat)) is 8.6
+
+dat.mat |>
+  pheatmap::pheatmap(
+    cluster_rows = heat.expr$tree_row,
+    cluster_cols = heat.cor$tree_row,
+    scale = 'none',
+    show_colnames = TRUE,
+    show_rownames = FALSE,
+    annotation_col = col.df,
+    annotation_colors = cl,
+    color = colorRampPalette(rev(
+      RColorBrewer::brewer.pal(n = 5 , name = "RdBu")))(39),
+    # breaks = seq(-rg, rg, length.out = 60),
+    # fix to keep extremes darker
+    breaks = c(
+      -8.7,
+      seq(-4, 4, length.out = 38),
+      8.7
+    )
+  ) -> heat.aa
+dev.off()
+  
+
+################################################################################
+  
+cowplot::plot_grid(
+  heat.cor$gtable,
+  heat.expr$gtable,
+  heat.aa$gtable,
+  labels = 'AUTO',
+  nrow = 1
+)
+ggsave(
+  'analysis/J_AA-expr-cor.jpeg',
+  width = 8 * 3, height = 8, dpi = 400
+)
 
 
 ################################################################################
