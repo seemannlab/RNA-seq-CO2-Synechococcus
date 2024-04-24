@@ -4,6 +4,7 @@ library(tidyverse)
 library(ggpubr)
 library(patchwork)
 
+# library(forecast)
 
 # https://riptutorial.com/r/example/28354/colorblind-friendly-palettes
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442",
@@ -60,8 +61,9 @@ freqs |>
   mutate(AA = fct_reorder(name, value)) -> foo
 foo |>
   ggplot(aes(AA, value, fill = AA)) +
+  # geom_violin() +
+  # # geom_boxplot(fill = 'white', width = .2) +
   geom_boxplot() +
-  # geom_boxplot(fill = 'white', width = .2) +
   xlab(NULL) +
   ylab('Gene length normalized\nAmino acid frequency') +
   theme_pubr(18) +
@@ -70,11 +72,12 @@ foo |>
     axis.text.x = element_text(angle = 60, hjust = 1)
   ) -> p1.total
 
+
 ################################################################################
-# Z-scale frequency per amino acid
+# robust Z-scale frequency per amino acid
 fz <-
   freqs.mat |>
-  apply(2, scale) |>
+  apply(2, function(x) {(x - median(x)) / mad(x)}) |>
   magrittr::set_rownames(rownames(freqs.mat))
 
 fz |>
@@ -82,21 +85,58 @@ fz |>
   pivot_longer(- Geneid) |>
   mutate(AA = fct_relevel(name, levels(foo$AA))) |>
   ggplot(aes(AA, value, fill = AA)) +
+  # geom_violin() +
+  # geom_boxplot(fill = 'white', width = .2) +
   geom_boxplot() +
   xlab(NULL) +
-  ylab('z-scaled gene length normalized\nAmino acid frequency') +
+  ylab('Per Amino acid robust z-scaled frequencies') +
   theme_pubr(18) +
-  # indicate standard deviations
-  geom_hline(yintercept = c(-2, 2), linetype = 'dashed') +
   theme(
     legend.position = 'hide',
     axis.text.x = element_text(angle = 60, hjust = 1)
   ) -> p1.z
 
-(p1.total | p1.z) +
+################################################################################
+# explore transformation in combination with z-scale
+
+# as vector
+x <- c(fz) - min(fz) + 1
+# transform
+lmb <- BoxCox.lambda(x)
+x2 <- BoxCox(x, lmb)
+# convert back to matrix
+ftrans <-
+  x2 |>
+  matrix(nrow = nrow(freqs.mat), ncol = ncol(freqs.mat)) |>
+  magrittr::set_rownames(rownames(freqs.mat)) |>
+  magrittr::set_colnames(colnames(freqs.mat))
+
+ftrans <- (ftrans - median(ftrans)) / mad(ftrans)
+
+
+ftrans |>
+  as_tibble(rownames = 'Geneid') |>
+  pivot_longer(- Geneid) |>
+  mutate(AA = fct_relevel(name, levels(foo$AA))) |>
+  ggplot(aes(AA, value, fill = AA)) +
+  # geom_violin() +
+  # geom_boxplot(fill = 'white', width = .2) +
+  geom_boxplot() +
+  # indicate 'standard deviations'
+  geom_hline(yintercept = c(-2, 2), linetype = 'dashed') +
+  xlab(NULL) +
+  ylab('BoxCox transformed') +
+  theme_pubr(18) +
+  theme(
+    legend.position = 'hide',
+    axis.text.x = element_text(angle = 60, hjust = 1)
+  ) -> p1.trans
+
+# (p1.total | p1.trans | p1.z) +
+(p1.total | p1.z | p1.trans) +
   plot_annotation(tag_levels = 'A')
 
-ggsave('analysis/J_freqs-overall.jpeg', width = 14, height = 7, dpi = 400)
+ggsave('analysis/J_freqs-overall.jpeg', width = 17, height = 7, dpi = 400)
 
 ################################################################################
 # Filter genese if AA does not deviate from average by 2 std, in any AA
@@ -106,9 +146,6 @@ mask.aa <-
   abs() |>
   apply( 1, max) %>%
   `>=`(2) |>
-#   table()
-# FALSE  TRUE 
-# 1731  1455 
   which() |>
   names()
 
@@ -121,17 +158,17 @@ deg |>
   summarize(max.alf = max(abs(log2FoldChange))) |>
   ungroup() -> dat
 
-# top 30% with some rounding on cutoff
+# top x% with some rounding on cutoff
 dat |>
   select_if(is.numeric) |>
   # map(quantile, probs = seq(0, 1, .1))
-  map2(c(.6, .6), ~ quantile(.x, probs = .y)) |>
+  map2(c(.1, .8), ~ quantile(.x, probs = .y)) |>
   map(~ set_names(.x, NULL)) |>
   unlist() |>
-  round(1) |>
+  round() |>
   as.list() -> xs
 xs$baseMean <- round(xs$baseMean, -2) 
-# xs
+xs
 
 dat |>
   ggplot(aes(baseMean, max.alf)) +
@@ -140,7 +177,8 @@ dat |>
   geom_vline(xintercept = xs$baseMean, color = 'blue') +
   scale_y_continuous(breaks = 0:8) +
   scale_x_log10(labels = scales::label_comma()) +
-  annotate('text', x = 1e4, y = 0, size = 8,
+  annotate('text', x = xs$baseMean + 100, y = 0, size = 8,
+           hjust = 0,
            label = xs$baseMean, color = 'blue') +
   annotate('text', x = 10, y = 0, size = 8,
            label = xs$max.alf, color = 'red') +
@@ -168,43 +206,25 @@ mask.deg <-
 
 my.mask <- intersect(mask.aa, mask.deg)
 
-# length(mask.aa)
-# 1455
-# length(mask.deg)
-# 440
-# length(my.mask)
-# 211
+length(mask.aa)
+length(mask.deg)
+length(my.mask)
+
+# > length(mask.aa)
+# [1] 1961
+# > length(mask.deg)
+# [1] 985
+# > length(my.mask)
+# [1] 626
 
 ################################################################################
-# Scatter plot expression to AA freq
-
 # Per gene z-Scaled expression
+
 vz <-
   vst.mat |>
   apply(1, scale) |>
   t() |>
   magrittr::set_colnames(colnames(vst.mat))
-
-
-vz[my.mask, ] |>
-  as_tibble(rownames = 'Geneid') |>
-  pivot_longer(- Geneid, names_to = 'lib') |>
-  left_join(meta, 'lib') |>
-  group_by(Geneid, CO2) |>
-  summarize(av = mean(value)) |>
-  left_join(
-    fz[my.mask, ] |>
-      as_tibble(rownames = 'Geneid') |>
-      pivot_longer(- Geneid, names_to = 'AA', values_to = 'AA.zfreq'),
-    'Geneid',
-    relationship = "many-to-many"
-  ) |>
-  ggplot(aes(av, AA.zfreq)) +
-  geom_hex(bins = 20) +
-  scale_fill_viridis_c() +
-  geom_smooth(method = 'lm', se = FALSE, color = 'red') +
-  stat_cor(size = 5, color = 'red') +
-  facet_grid(CO2 ~ AA)
 
 ################################################################################
 # Data from Akashi 2002 on metabolic cost of AA
@@ -261,6 +281,12 @@ dat.cor <- dat |>
   select(- AA) |>
   as.matrix() |>
   magrittr::set_rownames(dat$AA)
+
+# filter out low correlations
+dat.cor |>
+  abs() %>%
+  apply(1, max) -> foo
+dat.cor <- dat.cor[foo >= 0.2, ]
 
 ################################################################################
 # Produce heatmap of correlations AA freq and Expression
@@ -337,10 +363,11 @@ sneak.len <-
   str_length() |>
   max()
 sneak <- function(x) {
-  sprintf(paste0('%-', sneak.len, 's'), x)
+  # sprintf(paste0('%-', sneak.len + 6, 's'), x)
+  x
 }
 
-dat.mat <- vz[my.mask,]
+dat.mat <- vz[my.mask, colnames(dat.cor)]
 # rename to short sample name
 look <-
   meta |>
@@ -366,6 +393,7 @@ dat.mat |>
     scale = 'none',
     show_colnames = TRUE,
     show_rownames = FALSE,
+    cutree_rows = 5,
     cluster_cols = heat.cor$tree_col,
     annotation_col = col.df,
     annotation_colors = cl,
@@ -377,16 +405,79 @@ dev.off()
 ################################################################################
 # Heatmap AA freq
 
-# apply(abs(dat.cor) >= .1, 1, any) |>
+# apply(abs(dat.cor) >= .2, 1, any) |>
 #   which() |>
 #   names() -> aas
-
 # dat.mat <- fz[my.mask, aas]
-dat.mat <- fz[my.mask, ]
-# dat.mat[dat.mat > 4] <- 4
-# dat.mat[dat.mat < -4] <- -4
 
+# dat.mat <- fz[my.mask, rownames(dat.cor)]
+# 
+# cl <- list(
+#   'Energy' = c('white', 'black')
+# )
+# with(
+#   aa.cost,
+#   data.frame('Energy' = cost, row.names = AA)
+# ) -> col.df
+# 
+# # rg <- max(abs(dat.mat)) is 8.6
+# 
+# dat.mat |>
+#   pheatmap::pheatmap(
+#     cluster_rows = heat.expr$tree_row,
+#     cluster_cols = heat.cor$tree_row,
+#     scale = 'none',
+#     show_colnames = TRUE,
+#     show_rownames = FALSE,
+#     annotation_col = col.df,
+#     annotation_colors = cl,
+#     color = colorRampPalette(rev(
+#       RColorBrewer::brewer.pal(n = 9 , name = "PuOr")))(39),
+#       # RColorBrewer::brewer.pal(n = 11, name = "RdBu")))(39),
+#     # breaks = seq(-rg, rg, length.out = 40),
+#     # fix to keep extremes darker
+#     breaks = c(
+#       -8.7,
+#       seq(-3, 3, length.out = 38),
+#       8.7
+#     )
+#   ) -> heat.aa
+# dev.off()
 
+################################################################################
+
+# !! Make a test run on expression the order really add up!
+# dat.mat <- vz[my.mask, ]
+dat.mat <- fz[my.mask, rownames(dat.cor)]
+
+clusters <- cutree(heat.expr$tree_row, k = 5) |>
+  as_tibble(rownames = 'Geneid') |>
+  mutate(cluster = paste0('cluster', value))
+    
+clusters |>
+  group_by(cluster) |>
+  do(i = {
+    dat.mat[.$Geneid, ] |>
+      apply(2, mean) |>
+      as_tibble(rownames = 'AA')
+  }) |>
+  ungroup() |>
+  unnest(i) |>
+  spread(AA, value) -> foo
+dat.aa.clustered <-
+  foo |>
+  select(- cluster) |>
+  as.matrix() |>
+  magrittr::set_rownames(foo$cluster)
+
+#!! enusre rows are in order as expected by tree
+tibble(Geneid = with(heat.expr$tree_row, labels[order])) |>
+  left_join(clusters, 'Geneid')  |>
+  pull(cluster) |>
+  unique() -> xs
+dat.aa.clustered <- dat.aa.clustered[xs, ]
+
+  
 cl <- list(
   'Energy' = c('white', 'black')
 )
@@ -395,11 +486,11 @@ with(
   data.frame('Energy' = cost, row.names = AA)
 ) -> col.df
 
-# rg <- max(abs(dat.mat)) is 8.6
+rg <- max(abs(dat.aa.clustered))
 
-dat.mat |>
+dat.aa.clustered |>
   pheatmap::pheatmap(
-    cluster_rows = heat.expr$tree_row,
+    cluster_rows = FALSE,
     cluster_cols = heat.cor$tree_row,
     scale = 'none',
     show_colnames = TRUE,
@@ -407,17 +498,17 @@ dat.mat |>
     annotation_col = col.df,
     annotation_colors = cl,
     color = colorRampPalette(rev(
-      RColorBrewer::brewer.pal(n = 5 , name = "RdBu")))(39),
-    # breaks = seq(-rg, rg, length.out = 60),
+      # RColorBrewer::brewer.pal(n = 9 , name = "PuOr")))(39),
+      RColorBrewer::brewer.pal(n = 11, name = "RdBu")))(39),
+    breaks = seq(-rg, rg, length.out = 40),
     # fix to keep extremes darker
-    breaks = c(
-      -8.7,
-      seq(-4, 4, length.out = 38),
-      8.7
-    )
+    # breaks = c(
+    #   -8.7,
+    #   seq(-3, 3, length.out = 38),
+    #   8.7
+    # )
   ) -> heat.aa
 dev.off()
-  
 
 ################################################################################
   
