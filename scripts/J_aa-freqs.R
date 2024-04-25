@@ -651,7 +651,7 @@ cowplot::plot_grid(
     labels = c("A", "B")
   ),
   p.boxes,
-  labels = c(NA, "B"),
+  labels = c(NA, "C"),
   label_size = 18,
   nrow = 1
 )
