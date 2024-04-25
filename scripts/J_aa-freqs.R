@@ -7,8 +7,6 @@ library(tidyverse)
 library(ggpubr)
 library(patchwork)
 
-# library(forecast)
-
 # https://riptutorial.com/r/example/28354/colorblind-friendly-palettes
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442",
                "#0072B2", "#D55E00", "#CC79A7")
@@ -144,7 +142,7 @@ dat |>
   map2(c(.8, .8), ~ quantile(.x, probs = .y)) |>
   map(~ set_names(.x, NULL)) |>
   unlist() |>
-  round(1) |>
+  round() |>
   as.list() -> xs
 # xs$baseMean <- round(xs$baseMean, -2) 
 # xs$avg <- round(xs$avg, -2) 
@@ -160,7 +158,7 @@ dat |>
   annotate('text', x = xs$avg - 1, y = 8, size = 8,
            hjust = 1,
            label = xs$avg, color = 'blue') +
-  annotate('text', x = 1e3, y = 0, size = 8,
+  annotate('text', x = 500, y = 0.5, size = 8,
            label = xs$max.alf, color = 'red') +
   annotation_logticks(sides = 'b') +
   xlab('Average expression, relative to gene length') +
@@ -187,7 +185,7 @@ mask.deg <-
   unique()
 
 length(mask.deg)
-# 173
+# 300
 
 ################################################################################
 ################################################################################
@@ -221,43 +219,100 @@ aa.ordered |>
 ################################################################################
 # substantiate transformation
 
-# robust z-scaler
+# robust z-scaler on a vector
 myz <- function(x) {(x - median(x)) / mad(x) }
 
-qs <- seq(0, 1, length.out = 1e4)
+# scale per column/AA in a matrix
+per.AA <- function(x.mat) {
+  x.mat |>
+    apply(2, myz) |>
+    magrittr::set_rownames(rownames(x.mat))
+}
+
+# BoxCox on vector (matrix are converted to vectors)
+vec.box <- function(x) {
+  x <- c(x) - min(x) + 1
+  # transform
+  lmb <-forecast::BoxCox.lambda(x)
+  forecast::BoxCox(x, lmb)
+}
+
+# BoxCox on matrix
+my.box <- function(x.mat) {
+  x2 <- vec.box(x.mat)
+  # convert back to matrix
+  x2 |>
+    matrix(nrow = nrow(x.mat), ncol = ncol(x.mat)) |>
+    magrittr::set_rownames(rownames(x.mat)) |>
+    magrittr::set_colnames(colnames(x.mat))
+}
+
+# BoxCox per column/AA
+box.AA <- function(x.mat) {
+  x.mat |>
+    apply(2, vec.box) |>
+    magrittr::set_rownames(rownames(x.mat))
+}
+  
+qs <- seq(0, 1, length.out = 1e5)
 list(
   'Frequencies' = freqs.mat,
-  'Z-scaled' = freqs.mat |> myz(),
-  'Sqrt' = sqrt(freqs.mat),
-  'Sqrt & Z' = sqrt(freqs.mat) |> myz()
+  'Z'           = freqs.mat             |> myz(),
+  'aaZ'         = freqs.mat             |> per.AA(),
+  'BC + Z'      = freqs.mat |> my.box() |> myz(),
+  'BC + aaZ'    = freqs.mat |> my.box() |> per.AA(),
+  # 'aaBC + Z'    = freqs.mat |> box.AA() |> myz(),
+  # 'aaBC + aaZ'  = freqs.mat |> box.AA() |> per.AA(),
+  'aaZ + BC + Z' = freqs.mat |> per.AA() |> my.box() |> myz()
 ) |>
   map(c) %>%
   map2(names(.), ~ tibble(x = qs, y = quantile(.x, probs = qs),
                           f = .y)) |>
   bind_rows() |>
   mutate_at('f', fct_inorder) |>
-  mutate(x2 = qnorm(x)) |>
+  mutate(x2 = qnorm(x)) -> dist.dat 
+
+dist.dat |>
+  filter(is.finite(x2)) |>
+  mutate(error = y - x2) |>
+  group_by(f) |>
+  summarize(sse = sum(error ** 2)) |>
+  arrange() |>
+  arrange(sse) |>
+  mutate(
+    lab = sprintf("SSE: %.1f", sse),
+    off = 1:n()
+  ) -> sse.dat
+
+dist.dat |>
   ggplot(aes(x2, y, color = f, group = f)) +
   geom_point() +
   geom_abline(slope = 1, linetype = 'dashed', color = 'black') +
   scale_color_manual(
-    values = RColorBrewer::brewer.pal(4, 'Paired'),
+    values = RColorBrewer::brewer.pal(9, 'Paired'),
     name = NULL
   ) +
-  xlab('Theoreric quantile\nNormal distribution') +
-  ylab('Observed quantile')  +
+  geom_text(
+    aes(x = -2, y = 13 - off * 2, label= lab),
+    size = 8,
+    data = sse.dat, 
+    show.legend = FALSE
+  ) +
+  xlab('Theoretic quantiles\nNormal distribution') +
+  ylab('Observed quantiles')  +
+  guides(color = guide_legend(ncol = 2)) +
   theme_pubr(18) -> p1.trans
 
+
 ################################################################################
-# transform to a more "normal" distribution
+# show after transform boxplots
 
-
-# fz <-
-#   freqs.mat |>
-#   apply(2, function(x) {(x - median(x)) / mad(x)}) |>
-#   magrittr::set_rownames(rownames(freqs.mat))
-
-fz <- freqs.mat |> sqrt() |> myz()
+# transform to a more "normal" distribution, best version from above
+fz <-
+  freqs.mat |>
+  per.AA() |>
+  my.box() |>
+  myz()
 
 fz |>
   as_tibble(rownames = 'Geneid') |>
@@ -268,7 +323,7 @@ fz |>
   # geom_boxplot(fill = 'white', width = .2) +
   geom_boxplot() +
   xlab(NULL) +
-  ylab('Sqrt. Frequencies, Z-scaled') +
+  ylab('per AA z-scaled + BoxCox transformed\n& globally z-scaled') +
   theme_pubr(18) +
   theme(
     legend.position = 'hide',
@@ -276,13 +331,13 @@ fz |>
   ) -> p1.z
 
 
-(p1.total | p1.z | p1.trans) +
+  
+(p1.total | (wrap_elements(full = p1.trans) + theme_pubr(18)) | p1.z) &
   plot_annotation(tag_levels = 'A')
 
-ggsave('analysis/J_freqs-overall.jpeg', width = 17, height = 7, dpi = 400)
+ggsave('analysis/J_freqs-overall.jpeg', width = 18, height = 7, dpi = 400)
 
-# pheatmap::pheatmap(fz, show_rownames = FALSE)
-
+pheatmap::pheatmap(fz, show_rownames = FALSE)
 
 ################################################################################
 ################################################################################
@@ -420,7 +475,7 @@ dat.mat |>
     annotation_colors = cl,
     number_color = 'black',
     color = colorRampPalette(rev(
-      RColorBrewer::brewer.pal(n = 5, name = "RdYlBu")))(59),
+      RColorBrewer::brewer.pal(n = 9, name = "RdYlBu")))(59),
     breaks = seq(-rg, rg, length.out = 60),
   ) -> heat.cor
 dev.off()
@@ -460,6 +515,8 @@ with(
   data.frame('CO2' = as.character(CO2), row.names = sneak(sample))
 ) -> col.df
 
+# no row clusters
+CUT <- 3
 
 rg <- dat.mat |> abs() |> max()
 dat.mat |>
@@ -467,132 +524,138 @@ dat.mat |>
     scale = 'none',
     show_colnames = TRUE,
     show_rownames = FALSE,
-    cutree_rows = 3,
+    cutree_rows = CUT,
     cluster_cols = heat.cor$tree_col,
     annotation_col = col.df,
     annotation_colors = cl,
     color = colorRampPalette(rev(
-      RColorBrewer::brewer.pal(n = 5, name = "RdYlBu")))(59),
+      RColorBrewer::brewer.pal(n = 9, name = "RdYlBu")))(59),
     breaks = seq(-rg, rg, length.out = 60),
   ) -> heat.expr
 dev.off()
 
-# TODO re-run pheatmap with cluster coloration
+#----------------------------------------------------------------------
+# re-run pheatmap with cluster coloration
 
-################################################################################
-# Heatmap AA freq
+clusters <- cutree(heat.expr$tree_row, k = CUT) |>
+  as_tibble(rownames = 'Geneid') |>
+  mutate(cluster = paste('cluster', value)) %>%
+  with(data.frame(cluster = cluster, row.names = Geneid))
 
-
-dat.mat <- fz[mask.deg, rownames(dat.cor)]
-
-cl <- list(
-  'Energy' = c('lightgrey', 'black')
-)
-with(
-  aa.cost,
-  data.frame('Energy' = cost, row.names = AA)
-) -> col.df
+cl$cluster <-
+  ggsci::pal_igv()(CUT) |>
+  set_names(clusters$cluster |> unique())
 
 
-rg <- dat.mat |> abs() |> max()
+
 dat.mat |>
   pheatmap::pheatmap(
-    cluster_rows = heat.expr$tree_row,
-    cluster_cols = heat.cor$tree_row,
-    scale = 'column',
-    cutree_rows = 3,
-    cutree_cols = 3,
-    show_colnames = TRUE,
-    show_rownames = FALSE,
-    annotation_col = col.df,
-    annotation_colors = cl,
-    color = colorRampPalette(rev(
-      RColorBrewer::brewer.pal(n = 5, name = "RdYlBu")))(59),
-    breaks = seq(-rg, rg, length.out = 60),
-  ) -> heat.aa
-dev.off()
-
-################################################################################
-
-# !! Make a test run on expression the order really add up!
-# dat.mat <- rz[my.mask, ]
-dat.mat <- fz[mask.deg, rownames(dat.cor)]
-
-clusters <- cutree(heat.expr$tree_row, k = 5) |>
-  as_tibble(rownames = 'Geneid') |>
-  mutate(cluster = paste0('cluster', value))
-    
-clusters |>
-  group_by(cluster) |>
-  do(i = {
-    dat.mat[.$Geneid, ] |>
-      apply(2, mean) |>
-      as_tibble(rownames = 'AA')
-  }) |>
-  ungroup() |>
-  unnest(i) |>
-  spread(AA, value) -> foo
-dat.aa.clustered <-
-  foo |>
-  select(- cluster) |>
-  as.matrix() |>
-  magrittr::set_rownames(foo$cluster)
-
-#!! enusre rows are in order as expected by tree
-tibble(Geneid = with(heat.expr$tree_row, labels[order])) |>
-  left_join(clusters, 'Geneid')  |>
-  pull(cluster) |>
-  unique() -> xs
-dat.aa.clustered <- dat.aa.clustered[xs, ]
-
-  
-cl <- list(
-  'Energy' = c('lightgrey', 'black')
-)
-with(
-  aa.cost,
-  data.frame('Energy' = cost, row.names = AA)
-) -> col.df
-
-rg <- max(abs(dat.aa.clustered))
-
-dat.aa.clustered |>
-  pheatmap::pheatmap(
-    cluster_rows = FALSE,
-    cluster_cols = heat.cor$tree_row,
     scale = 'none',
     show_colnames = TRUE,
     show_rownames = FALSE,
+    cutree_rows = CUT,
+    cluster_cols = heat.cor$tree_col,
     annotation_col = col.df,
+    annotation_row = clusters, # this is the new line compared to above
     annotation_colors = cl,
     color = colorRampPalette(rev(
-      RColorBrewer::brewer.pal(n = 9 , name = "PuOr")))(39),
-      # RColorBrewer::brewer.pal(n = 9, name = "RdBu")))(39),
-    # breaks = seq(-rg, rg, length.out = 40),
-    # fix to keep extremes darker
-    breaks = c(
-      -rg,
-      seq(-rg / 2, rg /2, length.out = 38),
-     rg 
-    )
-  ) -> heat.aa2
+      RColorBrewer::brewer.pal(n = 9, name = "RdYlBu")))(59),
+    breaks = seq(-rg, rg, length.out = 60),
+  ) -> heat.expr
 dev.off()
+    
+################################################################################
+
+# average z-scaled len rel expression
+azr <-
+  rz |>
+  as_tibble(rownames = 'Geneid') |>
+  pivot_longer(- Geneid, names_to = 'lib') |>
+  left_join(meta, 'lib') |>
+  group_by(Geneid, CO2) |>
+  summarize(avg.rel = mean(value))
+
+
+# combine with AA freqs and clusters
+fz[, rownames(dat.cor)] |>
+  as_tibble(rownames = 'Geneid') |>
+  pivot_longer(- Geneid, names_to = 'AA') |>
+  # left_join(
+  #   azr, 'Geneid',
+  #   relationship = "many-to-many"
+  # ) |>
+  inner_join(
+    clusters  |>
+      as_tibble(rownames = 'Geneid'),
+    'Geneid'
+  ) -> dat
+
+dat %>%
+  pull(cluster) %>%
+  unique %>%
+  sort() %>%
+  as.character() %>%
+  crossing(a = ., b = .) |>
+  filter(a < b) |>
+  # tibble(a = ., b = lead(.)) %>%
+  # drop_na() %>%
+  rowwise() %>%
+  do(i = unlist(.)) %>%
+  pull(i) -> cmps
+
+dat |>
+  ggplot(aes(cluster, value, fill = cluster)) +
+  geom_violin() +
+  geom_boxplot(width = .2, fill = 'white') +
+  xlab(NULL) +
+  ylab('Tranformed AA freuency') +
+  ggsci::scale_fill_igv() +
+  stat_compare_means(
+    comparisons = cmps,
+    label = 'p.signif',
+    method = 't.test',
+    size = 5
+    
+  ) + 
+  facet_wrap(~ AA, scales = 'free_y') +
+  theme_pubr(18) +
+  theme(axis.text.x = element_blank()) -> p
+
+annotate_figure(
+  p,
+  bottom = text_grob(
+    paste(
+      'T-test P-value:',
+      'ns  not significant;',
+      '*  < 0.05;',
+      '**  < 0.01;',
+      '***  < 0.001;',
+      '****  < 0.0001',
+      sep = ' '
+    ),
+    hjust = 1, x = .9,
+    face = "italic", size = 14,
+  )
+) -> p.boxes
+
+
+################################################################################
 
 ################################################################################
   
 cowplot::plot_grid(
   heat.cor$gtable,
   heat.expr$gtable,
-  heat.aa$gtable,
-  heat.aa2$gtable,
+  p.boxes,
   labels = 'AUTO',
   nrow = 1
 )
 ggsave(
   'analysis/J_AA-expr-cor.jpeg',
-  width = 8 * 3, height = 8, dpi = 400
+  width = 22, height = 6, dpi = 400
 )
 
 
 ################################################################################
 sessionInfo()
+
