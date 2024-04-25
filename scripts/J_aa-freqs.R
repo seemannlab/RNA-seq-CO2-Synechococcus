@@ -422,11 +422,6 @@ dat.cor <- dat.cor[foo >= 0.2, ]
 # heatmap of correlations AA freq and Expression
 
 dat.mat <- dat.cor
-# rename to short sample name
-look <-
-  meta |>
-  with(set_names(sample, lib))
-colnames(dat.mat) <- look[colnames(dat.mat)]
 
 # arrange by CO2 expression
 lib.clust <-
@@ -438,7 +433,7 @@ lib.clust <-
   ape::rotateConstr(
     meta |>
       arrange(CO2, sample) |>
-      pull(sample)
+      pull(lib)
   ) |>
   as.hclust()
 
@@ -453,7 +448,7 @@ cl <- list(
 )
 with(
   meta,
-  data.frame('CO2' = as.character(CO2), row.names = sample)
+  data.frame('CO2' = as.character(CO2), row.names = lib)
 ) -> col.df
 
 with(
@@ -465,11 +460,10 @@ rg <- dat.mat |> abs() |> max()
 dat.mat |>
   pheatmap::pheatmap(
     scale = 'none',
-    show_colnames = TRUE,
+    show_colnames = FALSE,
     show_rownames = TRUE,
     display_numbers = TRUE,
     cluster_cols = lib.clust,
-    cutree_rows = 3,
     annotation_col = col.df,
     annotation_row = row.df,
     annotation_colors = cl,
@@ -484,23 +478,8 @@ dev.off()
 ################################################################################
 # heatmap expression
 
-# sneaky, add space to library name to give similar bottom height
-sneak.len <-
-  fz |>
-  colnames() |>
-  str_length() |>
-  max()
-sneak <- function(x) {
-  sprintf(paste0('%-', sneak.len + 6, 's'), x)
-  # x
-}
 
 dat.mat <- rz[mask.deg, colnames(dat.cor)]
-# rename to short sample name
-look <-
-  meta |>
-  with(set_names(sneak(sample), lib))
-colnames(dat.mat) <- look[colnames(dat.mat)]
 
 cl <- list(
   'CO2' = meta |>
@@ -512,8 +491,22 @@ cl <- list(
 )
 with(
   meta,
-  data.frame('CO2' = as.character(CO2), row.names = sneak(sample))
+  data.frame('CO2' = as.character(CO2), row.names = lib)
 ) -> col.df
+
+# Cluster columns ahead of pheatmap to rotate tree nicely
+lib.clust <-
+  dat.mat |>
+  t() |>
+  dist() |>
+  hclust() |>
+  ape::as.phylo() |>
+  ape::rotateConstr(
+    meta |>
+      arrange(CO2, sample) |>
+      pull(lib)
+  ) |>
+  as.hclust()
 
 # no row clusters
 CUT <- 3
@@ -522,10 +515,10 @@ rg <- dat.mat |> abs() |> max()
 dat.mat |>
   pheatmap::pheatmap(
     scale = 'none',
-    show_colnames = TRUE,
+    show_colnames = FALSE,
     show_rownames = FALSE,
     cutree_rows = CUT,
-    cluster_cols = heat.cor$tree_col,
+    cluster_cols = lib.clust,
     annotation_col = col.df,
     annotation_colors = cl,
     color = colorRampPalette(rev(
@@ -551,10 +544,10 @@ cl$cluster <-
 dat.mat |>
   pheatmap::pheatmap(
     scale = 'none',
-    show_colnames = TRUE,
+    show_colnames = FALSE,
     show_rownames = FALSE,
     cutree_rows = CUT,
-    cluster_cols = heat.cor$tree_col,
+    cluster_cols = lib.clust,
     annotation_col = col.df,
     annotation_row = clusters, # this is the new line compared to above
     annotation_colors = cl,
@@ -603,10 +596,14 @@ dat %>%
   do(i = unlist(.)) %>%
   pull(i) -> cmps
 
+# dat$value |> summary()
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# -7.8724 -0.9708 -0.1180 -0.1368  0.7173  4.3109 
+
 dat |>
   ggplot(aes(cluster, value, fill = cluster)) +
   geom_violin() +
-  geom_boxplot(width = .2, fill = 'white') +
+  geom_boxplot(width = .5, fill = 'white') +
   xlab(NULL) +
   ylab('Tranformed AA freuency') +
   ggsci::scale_fill_igv() +
@@ -617,7 +614,9 @@ dat |>
     size = 5
     
   ) + 
-  facet_wrap(~ AA, scales = 'free_y') +
+  # facet_wrap(~ AA, scales = 'free_y') +
+  ylim(c(-8, 8)) +
+  facet_wrap(~ AA) +
   theme_pubr(18) +
   theme(axis.text.x = element_blank()) -> p
 
@@ -642,17 +641,23 @@ annotate_figure(
 ################################################################################
 
 ################################################################################
-  
+
 cowplot::plot_grid(
-  heat.cor$gtable,
-  heat.expr$gtable,
+  cowplot::plot_grid(
+    heat.cor$gtable,
+    heat.expr$gtable,
+    nrow = 2,
+    label_size = 18,
+    labels = c("A", "B")
+  ),
   p.boxes,
-  labels = 'AUTO',
+  labels = c(NA, "B"),
+  label_size = 18,
   nrow = 1
 )
 ggsave(
   'analysis/J_AA-expr-cor.jpeg',
-  width = 22, height = 6, dpi = 400
+  width = 16, height = 12, dpi = 400
 )
 
 

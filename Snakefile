@@ -248,11 +248,13 @@ rule J_AA:
         xs = [
             'data/C_annotation.tsv',
             'analysis/D_stagewise-adjusted-DEGs.tsv',
-            'analysis/D_vst-expression.tsv',
+            'analysis/D_normalized-counts.tsv',
             'data/C_meta.tsv',
             'analysis/G_frequencies.tsv',
+            'raw-data/PCC7002-genome.gff.gz'
         ]
     output:
+        'analysis/J_expression-length-logFC.jpeg',
         'analysis/J_freqs-overall.jpeg',
         'analysis/J_AA-expr-cor.jpeg',
     log: 'logs/J_aa.txt'
