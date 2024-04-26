@@ -75,6 +75,36 @@ z.expr <-
   left_join(meta, 'lib')
 
 ################################################################################
+# Test for CyanoCyc
+
+z.expr |>
+  filter(str_detect(Geneid, 'gene')) |>
+  group_by(Geneid, CO2) |>
+  summarize(avg = mean(z.expression)) |>
+  ungroup() |>
+  mutate(CO2 = paste0(CO2, 'pct')) |>
+  spread(CO2, avg) |>
+  mutate(Geneid = str_remove(Geneid, 'gene-')) |>
+  select(Geneid, `0.04pct`, `4pct`, `8pct`, `30pct`) |>
+  write_tsv('~/Downloads/foo.tsv')
+
+'analysis/D_vst-expression.tsv' |>
+  read_tsv() |>
+  filter(str_detect(Geneid, 'gene')) |>
+  pivot_longer(- Geneid, names_to = 'lib') |>
+  left_join(meta, 'lib') |>
+  group_by(Geneid, CO2) |>
+  summarize(avg = mean(value)) |>
+  ungroup() |>
+  mutate(CO2 = paste0(CO2, 'pct')) |>
+  spread(CO2, avg) |>
+  mutate(Geneid = str_remove(Geneid, 'gene-')) |>
+  select(Geneid, `0.04pct`, `4pct`, `8pct`, `30pct`) |>
+  write_tsv('~/Downloads/foo.tsv')
+           
+  
+
+################################################################################
 # Adaptation of function from `L_pathways` to also show metabolic pathways
 # without explicit gene positions in figure
 # Thus: Extract the average x/y position of the arrow ploygon's coords
