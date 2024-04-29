@@ -82,9 +82,9 @@ loaded via a namespace (and not attached):
  [91] restfulr_0.0.15             cli_3.6.1                  
  [93] textshaping_0.3.7           fansi_1.0.5                
  [95] S4Arrays_1.2.0              gtable_0.3.4               
- [97] ggsci_3.0.0                 rstatix_0.7.2              
- [99] digest_0.6.33               BiocGenerics_0.48.1        
-[101] SparseArray_1.2.2           rjson_0.2.21               
-[103] farver_2.1.1                htmltools_0.5.7            
-[105] lifecycle_1.0.4             mime_0.12                  
-[107] ggExtra_0.10.1              bit64_4.0.5                
+ [97] rstatix_0.7.2               digest_0.6.33              
+ [99] BiocGenerics_0.48.1         SparseArray_1.2.2          
+[101] rjson_0.2.21                farver_2.1.1               
+[103] htmltools_0.5.7             lifecycle_1.0.4            
+[105] mime_0.12                   ggExtra_0.10.1             
+[107] bit64_4.0.5                

@@ -30,6 +30,10 @@ expression <-
   'analysis/D_normalized-counts.tsv' |>
   read_tsv()
 
+vst <-
+  'analysis/D_vst-expression.tsv' |>
+  read_tsv()
+
 meta <-
   'data/C_meta.tsv' |>
   read_tsv() |>
@@ -58,6 +62,7 @@ expression |>
   group_by(Geneid) |>
   summarize(avg = mean(value)) |>
   left_join(gene.lengths, 'Geneid') |>
+  mutate_at('avg', ~ .x + 1) |>
   ggscatter(
     'avg', 'len',
     alpha = .6,
@@ -79,6 +84,7 @@ expression |>
   group_by(Geneid) |>
   summarize(avg = mean(value)) |>
   left_join(gene.lengths, 'Geneid') |>
+  mutate_at('avg', ~ .x + 1) |>
   mutate(ratio = avg/len) |>
   ggscatter(
     'ratio', 'len',
@@ -115,6 +121,7 @@ rel.mat <-
   as.matrix() |>
   magrittr::set_rownames(rel.expression$Geneid)
 
+# rel.mat <- vst.mat
 
 ################################################################################
 # Justify cutoff for lowly expressed, not expression changing genes
@@ -337,8 +344,6 @@ fz |>
 
 ggsave('analysis/J_freqs-overall.jpeg', width = 18, height = 7, dpi = 400)
 
-pheatmap::pheatmap(fz, show_rownames = FALSE)
-
 ################################################################################
 ################################################################################
 ################################################################################
@@ -410,10 +415,10 @@ dat.cor <- dat |>
   magrittr::set_rownames(dat$AA)
 
 # filter out low correlations
-dat.cor |>
-  abs() %>%
-  apply(1, max) -> foo
-dat.cor <- dat.cor[foo >= 0.2, ]
+# dat.cor |>
+#   abs() %>%
+#   apply(1, max) -> foo
+# dat.cor <- dat.cor[foo >= 0.2, ]
 
 ################################################################################
 # Produce multiple heatmaps, freqs and expression separatly but with the shared
@@ -462,24 +467,37 @@ dat.mat |>
     scale = 'none',
     show_colnames = FALSE,
     show_rownames = TRUE,
-    display_numbers = TRUE,
+    # display_numbers = TRUE,
     cluster_cols = lib.clust,
     annotation_col = col.df,
     annotation_row = row.df,
     annotation_colors = cl,
     number_color = 'black',
     color = colorRampPalette(rev(
-      RColorBrewer::brewer.pal(n = 9, name = "RdYlBu")))(59),
+      RColorBrewer::brewer.pal(n = 9, name = "PuOr")))(59),
     breaks = seq(-rg, rg, length.out = 60),
   ) -> heat.cor
 dev.off()
   
 
 ################################################################################
-# heatmap expression
+################################################################################
+# Additional heatmaps of expression (vst) clusters to amino acid concentrations
 
+# build matrix
+vst.mat <-
+  vst |>
+  select(- Geneid) |>
+  as.matrix() |>
+  magrittr::set_rownames(vst$Geneid)
 
-dat.mat <- rz[mask.deg, colnames(dat.cor)]
+deg |>
+  filter(is.de) |>
+  pull(Geneid) |>
+  unique() -> de.mask
+
+# dat.mat <- vst.mat[mask.deg, colnames(dat.cor)]
+dat.mat <- vst.mat[de.mask, colnames(dat.cor)]
 
 cl <- list(
   'CO2' = meta |>
@@ -509,12 +527,14 @@ lib.clust <-
   as.hclust()
 
 # no row clusters
-CUT <- 3
+CUT <- 6
 
-rg <- dat.mat |> abs() |> max()
+# rg <- dat.mat |> abs() |> max()
 dat.mat |>
   pheatmap::pheatmap(
-    scale = 'none',
+    scale = 'row',
+    clustering_method = 'ward.D2',
+    # clustering_method = '',
     show_colnames = FALSE,
     show_rownames = FALSE,
     cutree_rows = CUT,
@@ -522,28 +542,36 @@ dat.mat |>
     annotation_col = col.df,
     annotation_colors = cl,
     color = colorRampPalette(rev(
-      RColorBrewer::brewer.pal(n = 9, name = "RdYlBu")))(59),
-    breaks = seq(-rg, rg, length.out = 60),
+      RColorBrewer::brewer.pal(n = 9, name = "RdBu")))(59),
+    # breaks = seq(-rg, rg, length.out = 60),
   ) -> heat.expr
 dev.off()
 
 #----------------------------------------------------------------------
 # re-run pheatmap with cluster coloration
 
-clusters <- cutree(heat.expr$tree_row, k = CUT) |>
-  as_tibble(rownames = 'Geneid') |>
-  mutate(cluster = paste('cluster', value)) %>%
+clusters <-
+  cutree(heat.expr$tree_row, k = CUT) |>
+  as_tibble(rownames = 'Geneid') %>%
+  # combine with row order to have "nicer" order of cluster numbers in the heatmap
+  `[`(heat.expr$tree_row$order, ) |>
+  mutate(
+    new.value = cumsum(lag(value, default = 0) != value)
+  ) |>
+  mutate(cluster = paste('cluster', new.value)) %>%
   with(data.frame(cluster = cluster, row.names = Geneid))
 
 cl$cluster <-
-  ggsci::pal_igv()(CUT) |>
+  RColorBrewer::brewer.pal(CUT, 'Paired') |>
+  # ggsci::pal_igv()(CUT) |>
   set_names(clusters$cluster |> unique())
 
 
 
 dat.mat |>
   pheatmap::pheatmap(
-    scale = 'none',
+    scale = 'row',
+    clustering_method = 'ward.D2',
     show_colnames = FALSE,
     show_rownames = FALSE,
     cutree_rows = CUT,
@@ -552,71 +580,58 @@ dat.mat |>
     annotation_row = clusters, # this is the new line compared to above
     annotation_colors = cl,
     color = colorRampPalette(rev(
-      RColorBrewer::brewer.pal(n = 9, name = "RdYlBu")))(59),
-    breaks = seq(-rg, rg, length.out = 60),
+      RColorBrewer::brewer.pal(n = 9, name = "RdBu")))(59),
+    # breaks = seq(-rg, rg, length.out = 60),
   ) -> heat.expr
 dev.off()
     
 ################################################################################
-
-# average z-scaled len rel expression
-azr <-
-  rz |>
-  as_tibble(rownames = 'Geneid') |>
-  pivot_longer(- Geneid, names_to = 'lib') |>
-  left_join(meta, 'lib') |>
-  group_by(Geneid, CO2) |>
-  summarize(avg.rel = mean(value))
+################################################################################
+# distribution of AA freqs per cluster
 
 
 # combine with AA freqs and clusters
 fz[, rownames(dat.cor)] |>
   as_tibble(rownames = 'Geneid') |>
-  pivot_longer(- Geneid, names_to = 'AA') |>
+  pivot_longer(- Geneid, names_to = 'AA') -> foo
   # left_join(
-  #   azr, 'Geneid',
-  #   relationship = "many-to-many"
-  # ) |>
+foo |>
   inner_join(
     clusters  |>
       as_tibble(rownames = 'Geneid'),
     'Geneid'
-  ) -> dat
-
-dat %>%
-  pull(cluster) %>%
-  unique %>%
-  sort() %>%
-  as.character() %>%
-  crossing(a = ., b = .) |>
-  filter(a < b) |>
-  # tibble(a = ., b = lead(.)) %>%
-  # drop_na() %>%
-  rowwise() %>%
-  do(i = unlist(.)) %>%
-  pull(i) -> cmps
-
-# dat$value |> summary()
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-# -7.8724 -0.9708 -0.1180 -0.1368  0.7173  4.3109 
+  ) |>
+  arrange(cluster)  -> dat
+dat |>
+  bind_rows(foo) |>
+  mutate_at('cluster', replace_na, 'All genes') -> dat
 
 dat |>
-  ggplot(aes(cluster, value, fill = cluster)) +
+  ggplot(aes(cluster, value, fill = fct_inorder(cluster))) +
   geom_violin() +
   geom_boxplot(width = .5, fill = 'white') +
   xlab(NULL) +
   ylab('Tranformed AA freuency') +
-  ggsci::scale_fill_igv() +
+  scale_fill_brewer(palette = 'Paired', name = NULL) +
+  # ggsci::scale_fill_igv(name = NULL) +
+  geom_hline(
+    yintercept = 0,
+    # color = 'black',
+    # visually tether line to color of ref group
+    color = RColorBrewer::brewer.pal(CUT + 1, 'Paired') |> last()
+  ) +
   stat_compare_means(
-    comparisons = cmps,
+    ref.group = 'All genes',
+    # comparisons = cmps,
+    hide.ns = TRUE,
     label = 'p.signif',
     method = 't.test',
-    size = 5
-    
-  ) + 
-  # facet_wrap(~ AA, scales = 'free_y') +
-  ylim(c(-8, 8)) +
-  facet_wrap(~ AA) +
+    color = 'darkred'
+
+  ) +
+  facet_wrap(~ AA, scales = 'free_y') +
+  # ylim(c(-8, 8)) +
+  # facet_wrap(~ AA) +
   theme_pubr(18) +
   theme(axis.text.x = element_blank()) -> p
 
@@ -624,14 +639,15 @@ annotate_figure(
   p,
   bottom = text_grob(
     paste(
-      'T-test P-value:',
-      'ns  not significant;',
+      'T-test vs all genes; P-value:',
+      # 'ns  not significant;',
       '*  < 0.05;',
       '**  < 0.01;',
       '***  < 0.001;',
       '****  < 0.0001',
       sep = ' '
     ),
+    color = 'darkred',
     hjust = 1, x = .9,
     face = "italic", size = 14,
   )
@@ -652,12 +668,13 @@ cowplot::plot_grid(
   ),
   p.boxes,
   labels = c(NA, "C"),
+  rel_widths = c(1, 3),
   label_size = 18,
   nrow = 1
 )
 ggsave(
   'analysis/J_AA-expr-cor.jpeg',
-  width = 16, height = 12, dpi = 400
+  width = 20, height = 14, dpi = 400
 )
 
 

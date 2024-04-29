@@ -77,6 +77,15 @@ z.expr <-
 ################################################################################
 # Test for CyanoCyc
 
+deg <-
+  'analysis/D_stagewise-adjusted-DEGs.tsv' |>
+  read_tsv()
+
+deg |>
+  filter(is.de, abs(log2FoldChange) >= 1) |>
+  select(Geneid) |>
+  unique() -> de.mask
+
 z.expr |>
   filter(str_detect(Geneid, 'gene')) |>
   group_by(Geneid, CO2) |>
@@ -84,12 +93,16 @@ z.expr |>
   ungroup() |>
   mutate(CO2 = paste0(CO2, 'pct')) |>
   spread(CO2, avg) |>
+  semi_join(de.mask, 'Geneid') |>
   mutate(Geneid = str_remove(Geneid, 'gene-')) |>
   select(Geneid, `0.04pct`, `4pct`, `8pct`, `30pct`) |>
-  write_tsv('~/Downloads/foo.tsv')
+  write_tsv('~/Downloads/cyanocyc-vst-scaled.tsv')
 
-'analysis/D_vst-expression.tsv' |>
-  read_tsv() |>
+expression <-
+  'analysis/D_normalized-counts.tsv' |>
+  read_tsv()
+
+expression |>
   filter(str_detect(Geneid, 'gene')) |>
   pivot_longer(- Geneid, names_to = 'lib') |>
   left_join(meta, 'lib') |>
@@ -98,9 +111,10 @@ z.expr |>
   ungroup() |>
   mutate(CO2 = paste0(CO2, 'pct')) |>
   spread(CO2, avg) |>
+  semi_join(de.mask, 'Geneid') |>
   mutate(Geneid = str_remove(Geneid, 'gene-')) |>
   select(Geneid, `0.04pct`, `4pct`, `8pct`, `30pct`) |>
-  write_tsv('~/Downloads/foo.tsv')
+  write_tsv('~/Downloads/cyanocyc-sf.tsv')
            
   
 
