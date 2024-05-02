@@ -1,0 +1,44 @@
+NULL
+R version 4.3.2 (2023-10-31)
+Platform: aarch64-apple-darwin23.2.0 (64-bit)
+Running under: macOS Sonoma 14.4.1
+
+Matrix products: default
+BLAS:   /opt/homebrew/Cellar/openblas/0.3.26/lib/libopenblasp-r0.3.26.dylib 
+LAPACK: /opt/homebrew/Cellar/r/4.3.2_1/lib/R/lib/libRlapack.dylib;  LAPACK version 3.11.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Europe/Copenhagen
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] conflicted_1.2.0 RCy3_2.22.1      lubridate_1.9.3  forcats_1.0.0   
+ [5] stringr_1.5.1    dplyr_1.1.4      purrr_1.0.2      readr_2.1.4     
+ [9] tidyr_1.3.0      tibble_3.2.1     ggplot2_3.4.4    tidyverse_2.0.0 
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.4        caTools_1.18.2      tzdb_0.4.0         
+ [4] vctrs_0.6.5         tools_4.3.2         bitops_1.0-7       
+ [7] generics_0.1.3      curl_5.1.0          parallel_4.3.2     
+[10] stats4_4.3.2        base64url_1.4       fansi_1.0.5        
+[13] pkgconfig_2.0.3     KernSmooth_2.23-22  RColorBrewer_1.1-3 
+[16] uuid_1.1-1          graph_1.80.0        lifecycle_1.0.4    
+[19] compiler_4.3.2      gplots_3.1.3        munsell_0.5.0      
+[22] repr_1.1.6          htmltools_0.5.7     RCurl_1.98-1.13    
+[25] pillar_1.9.0        crayon_1.5.2        cachem_1.0.8       
+[28] gtools_3.9.5        tidyselect_1.2.0    digest_0.6.33      
+[31] stringi_1.8.2       RJSONIO_1.3-1.9     fastmap_1.1.1      
+[34] grid_4.3.2          colorspace_2.1-0    cli_3.6.1          
+[37] magrittr_2.0.3      base64enc_0.1-3     XML_3.99-0.16      
+[40] utf8_1.2.4          IRdisplay_1.1       withr_2.5.2        
+[43] scales_1.3.0        backports_1.4.1     bit64_4.0.5        
+[46] IRkernel_1.3.2      timechange_0.2.0    httr_1.4.7         
+[49] bit_4.0.5           pbdZMQ_0.3-10       hms_1.1.3          
+[52] memoise_2.0.1       evaluate_0.23       rlang_1.1.2        
+[55] glue_1.6.2          BiocGenerics_0.48.1 vroom_1.6.4        
+[58] jsonlite_1.8.7      R6_2.5.1            fs_1.6.3           

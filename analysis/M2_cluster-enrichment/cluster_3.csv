@@ -1,0 +1,4 @@
+"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
+"107","7","STRING Clusters","","Mixed, incl. Oxidative phosphorylation, and Carbon fixation","3.11E-6","rbcR|ndhF-III|ndhD-III|cupA|ACA98189.1|ACA98575.1|rbcL","655","195|197|189|191|207|185|239","4.81E-9","","CL:1448","1.0","0"
+"5","4","STRING Clusters","","Mixed, incl. FAS1 domain, and CO2 hydration","3.11E-6","ndhF-III|ndhD-III|cupA|ACA98189.1","655","197|189|191|207","5.89E-9","","CL:1494","1.0","0"
+"47","5","STRING Clusters","","Oxidative phosphorylation, and Peptidase M16, C-terminal","4.42E-5","ndhF-III|ndhD-III|cupA|ACA98189.1|ACA98575.1","655","197|189|191|207|185","2.05E-7","","CL:1454","0.7907006119680033","0"

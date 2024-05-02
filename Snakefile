@@ -338,6 +338,29 @@ rule M_30focused:
     log: 'logs/M_30-focused.txt'
     shell:
         "Rscript {input.script} > {log}"
+        
+################################################################################
+# similar to F_clusters, but for the output for the M_30 network
+## NOTE: Cytoscape with the network session loaded needs to be running for this script
+
+rule M2_clusters:
+    input:
+        script = 'scripts/M2_cluster-overview.R',
+        xs = [
+            'data/C_annotation.tsv',
+            # implicit dependency, don't trigger rule rerun for minor changes
+            # eg of coloration or layout adjustments
+            # string.cys
+        ]
+    output:
+        'analysis/M2_mcl-clustering.tsv',
+        'analysis/M2_cluster-enrichment-export-commands.txt',
+        directory('analysis/M2_cluster-enrichment/'),
+        'analysis/M2_string-enrichment.tsv',
+        'analysis/M2_string-enrichment-genes.tsv',
+    log: 'logs/M2_clusters.txt'
+    shell:
+        "Rscript {input.script} > {log}"
 
 
 ################################################################################
@@ -356,3 +379,4 @@ rule all:
         'analysis/K_gsea.tsv',
         'analysis/L_2component.jpeg',
         'analysis/M_logFC-vs-30.tsv',
+        'analysis/M2_mcl-clustering.tsv',

@@ -49,12 +49,13 @@ data %>%
   as.character() %>%
   tibble(a = ., b = lead(.)) %>%
   drop_na() %>%
+  add_row(a = '0.04', b = '30') |>
   rowwise() %>%
   do(i = unlist(.)) %>%
   pull(i) -> cmps
 
 # order for nicer overview
-cmps <- cmps[c(1, 3, 2)]
+cmps <- cmps[c(1, 3, 2, 4)]
 
 data  %>%
   rename(CO2 = `CO2%`) %>%
