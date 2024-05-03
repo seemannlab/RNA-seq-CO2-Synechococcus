@@ -899,8 +899,8 @@ freqs.qs <-
   group_by(name) |>
   do(pf = {
     grp <- .
-    partial(qbeta, shape1 = grp$shape1, shape2 = grp$shape2)
-    # partial(qgamma, shape = grp$shape, rate = grp$rate)
+    # partial(qbeta, shape1 = grp$shape1, shape2 = grp$shape2)
+    partial(qgamma, shape = grp$shape, rate = grp$rate)
   }) |>
   with(set_names(pf, name))
 
@@ -929,9 +929,11 @@ qq.dat |>
 freqs.ps <-
   freqs.paras |>
   select(name, shape1, shape2) |>
+  # select(name, shape, rate) |>
   nest_by(name) |>
   with(set_names(data, name)) |>
   map(~  partial(pbeta, shape1 = .x$shape1, shape2 = .x$shape2))
+  # map(~  partial(pgamma, shape = .x$shape, rate = .x$rate))
 
 freqs.ecdf <-
   mat |>
@@ -987,7 +989,7 @@ freqs.x2
 
 crossing(
   name = colnames(mat),
-  qs = seq(0, .5, length.out = 500)
+  qs = seq(0, 1, length.out = 500)
 ) |>
   group_by_all() |>
   do(
@@ -1007,6 +1009,7 @@ crossing(
         label = sprintf(
           'shape1: %.1f\nshape2: %.1f\nX2-Test P: %.1e',
           shape1, shape2,
+          # shape, rate,
           x2
         )),
     data = freqs.x2 |> left_join(freqs.paras, 'name'),
