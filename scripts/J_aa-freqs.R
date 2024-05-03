@@ -7,6 +7,8 @@ library(tidyverse)
 library(ggpubr)
 library(patchwork)
 
+set.seed(123)
+
 # https://riptutorial.com/r/example/28354/colorblind-friendly-palettes
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442",
                "#0072B2", "#D55E00", "#CC79A7")
@@ -809,41 +811,56 @@ p1b <-
 mask <- intersect(rownames(freqs.mat), mask.deg)
 mat <- freqs.mat[mask, ] + .Machine$double.eps
 
+qs <- seq(0, 3, length.out = 50)
+# plot(qs, dweibull(qs, 1.5, .2))
+plot(qs, dlnorm(qs, -2, .5))
+
 freqs.paras <-
   mat |>
-  apply(2, \(x) MASS::fitdistr(unlist(x), 'beta', list(shape1 = 2, shape2 = 5))) |>
+  # apply(2, \(x) MASS::fitdistr(unlist(x), 'lognormal')) |>
+                               # start = list(meanlog = -2, sdlog = .5) ))|>
+                               # lower = rep(.Machine$double.eps, 2))) |>
+                               # method = 'L-BFGS-B')) |>
+  # apply(2, \(x) MASS::fitdistr(unlist(x), 'weibull',
+  #                              start = list(shape = 1.5, scale = .2) ))|>
+                               # lower = rep(.Machine$double.eps, 2))) |>
+                               # method = 'L-BFGS-B')) |>
+  apply(2, \(x) MASS::fitdistr(unlist(x), 'beta',
+                               start = list(shape1 = 3, shape2 = 50),
+                               lower = rep(.Machine$double.eps, 2))) |>
+                               # method = 'L-BFGS-B')) |>
+  # apply(2, \(x) MASS::fitdistr(unlist(x), 'gamma',
+  #                              start = list(shape = 1, rate = 1),
+  #                              lower = rep(.Machine$double.eps, 2),
+  #                              method = 'L-BFGS-B')) |>
   map('estimate') %>%
   map2(names(.), function(x, y) { x$name <- y ; x } ) |>
   bind_rows() |>
   mutate(
+    # for lognormal
+    # expected = exp(meanlog + sdlog ** 2 / 2),
+    # var = (
+    #   exp(meanlog ** 2) - 1
+    # ) * exp(
+    #   2 * meanlog * sdlog ** 2
+    # )
+    # for weibull
+    # expected = scale *
+    #   gamma(1 + 1 / shape),
+    # var = scale ** 2 * (
+    #   gamma(1 + 2 / shape) -
+    #   gamma(1 + 1 / shape) ** 2
+    # )
     # for beta
     expected = shape1 / (shape1 + shape2),
     var = shape1 * shape2 / (
       (shape1 + shape2) ** 2 +
       (shape1 + shape2 + 1)
     )
-  ) |>
-  left_join(
-    tibble(
-      name = colnames(mat),
-      obs.mean = apply(mat, 2, mean),
-      obs.var = apply(mat, 2, var)
-    ),
-    'name'
-  )
-
-
-freqs.paras <-
-  mat |>
-  apply(2, \(x) MASS::fitdistr(unlist(x), 'gamma', list(shape = 1, rate = 1))) |>
-  map('estimate') %>%
-  map2(names(.), function(x, y) { x$name <- y ; x } ) |>
-  bind_rows() |>
-  mutate(
     # for gamma
-    expected = shape / rate,
-    var = shape / (rate ** 2)
-  ) |> 
+    # expected = shape / rate,
+    # var = shape / (rate ** 2)
+  ) |>
   left_join(
     tibble(
       name = colnames(mat),
@@ -890,7 +907,7 @@ freqs.qs <-
 
 crossing(
   name = colnames(mat),
-  qs = seq(0, 1, length.out = 100)
+  qs = seq(0, 1, length.out = 1000)
 ) |>
   group_by_all() |>
   summarize(
@@ -903,45 +920,18 @@ qq.dat |>
   ggscatter(
     'theo', 'empir',
     color = 'name'
-  ) +
-  geom_abline(slope = 1)
+  )
 
-# View(qq.dat)
-#   ggplot()
-#   mutate_at('dist', fct_recode,
-#             'Fitted density' = 'theo',
-#             'ECDF' = 'empir') |>
-#   ggplot(aes(qs, value, group = dist, color = dist)) +
-#   geom_line(size = 1.5) +
-#   geom_label(
-#     aes(x = 0.7, y = 0.2,
-#         group = NULL, color = NULL,
-#         label = sprintf(
-#           'KS-Test P: %.2e',
-#           p
-#         )),
-#     data = freqs.ks,
-#     show.legend = FALSE
-#   ) +
-#   ggsci::scale_color_jama(name = NULL) +
-#   xlab('AA freq.') +
-#   ylab('Cumulative probability') +
-#   facet_wrap(~ name) +
-#   theme_pubr(18)
-  
 ################################################################################
 
 ################################################################################
 
 freqs.ps <-
   freqs.paras |>
-  group_by(name) |>
-  do(pf = {
-    grp <- .
-    partial(pbeta, shape1 = grp$shape1, shape2 = grp$shape2)
-    # partial(pgamma, shape = grp$shape, rate = grp$rate)
-  }) |>
-  with(set_names(pf, name))
+  select(name, shape1, shape2) |>
+  nest_by(name) |>
+  with(set_names(data, name)) |>
+  map(~  partial(pbeta, shape1 = .x$shape1, shape2 = .x$shape2))
 
 freqs.ecdf <-
   mat |>
@@ -950,29 +940,61 @@ freqs.ecdf <-
   map(~ mat[, .x]) |>
   map(ecdf)
 
-freqs.ks <-
-  mat |>
-  colnames() %>%
-  set_names(.) |>
-  map(~ ks.test(x = mat[, .x], y = freqs.ps[[.x]])) |>
-  map('p.value') %>%
-  map2(names(.), ~ list(p = .x, name = .y)) |>
-  bind_rows() |>
-  arrange(p)
+# chi2 test for distribution equality
+# 1. bin [0, 1] interval
+qs <- seq(0, 1, length.out = 10)
+qq.dat <-
+  # 2. count observed frequency
+  mat  |>
+  as_tibble(rownames = 'gene') |>
+  pivot_longer(- gene) |>
+  mutate(v2 = cut(value, qs)) |>
+  count(name, v2, name = 'obs') |>
+  complete(name, v2) |>
+  mutate_at('obs', replace_na, 0) |>
+  # 3. estimate number of expected
+  separate(v2, c('low', 'up'), sep = ',', remove = FALSE) |>
+  mutate_at(c('up', 'low'), str_remove_all, '[^.0-9]') |>
+  mutate_at(c('up', 'low'), as.numeric) |>
+  # head()
+  # group_by(name, v2, obs) |>
+  rowwise() |>
+  do(
+    name = .$name,
+    obs = .$obs,
+    up = {
+      grp <- .
+      freqs.ps[[grp$name]](grp$up)
+    },
+    low = {
+      grp <- .
+      freqs.ps[[grp$name]](grp$low)
+    }
+  ) |>
+  unnest(c(name, obs, up, low)) |>
+  # mutate(exp = round((up - low) * nrow(mat)))  |>
+  mutate(exp = (up - low) * nrow(mat))
 
+freqs.x2 <-
+  qq.dat |>
+  filter((obs != 0) | (exp != 0)) |>
+  mutate_at('obs', as.double) |>
+  select(name, obs, exp) |>
+  group_by(name) |>
+  summarize(x2 = chisq.test(cbind(obs, exp))$p.value)
+
+freqs.x2
 
 crossing(
   name = colnames(mat),
-  qs = seq(0, 1, length.out = 1000)
+  qs = seq(0, .5, length.out = 500)
 ) |>
   group_by_all() |>
-  summarize(
-    theo = freqs.ps[[name]](qs),
-    empir = freqs.ecdf[[name]](qs)
+  do(
+    theo = freqs.ps[[first(.$name)]](.$qs),
+    empir = freqs.ecdf[[first(.$name)]](.$qs)
   ) |>
-  ungroup() -> qq.dat
-
-qq.dat |>
+  unnest(c(theo, empir)) |>
   pivot_longer(- c(name, qs), names_to = 'dist') |>
   mutate_at('dist', fct_recode,
             'Fitted density' = 'theo',
@@ -980,20 +1002,21 @@ qq.dat |>
   ggplot(aes(qs, value, group = dist, color = dist)) +
   geom_line(size = 1.5) +
   geom_label(
-    aes(x = 0.7, y = 0.2,
+    aes(x = 0.3, y = .2,
         group = NULL, color = NULL,
         label = sprintf(
-          'KS-Test P: %.2e',
-          p
+          'shape1: %.1f\nshape2: %.1f\nX2-Test P: %.1e',
+          shape1, shape2,
+          x2
         )),
-    data = freqs.ks,
+    data = freqs.x2 |> left_join(freqs.paras, 'name'),
     show.legend = FALSE
   ) +
   ggsci::scale_color_jama(name = NULL) +
   xlab('AA freq.') +
   ylab('Cumulative probability') +
   facet_wrap(~ name) +
-  theme_pubr(18)
+  theme_bw(18)
   
 ################################################################################
 
