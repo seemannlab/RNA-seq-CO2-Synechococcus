@@ -51,6 +51,10 @@ gene.lengths <-
   filter(gene_biotype == 'protein_coding') |>
   select(Geneid = ID, len = width)
 
+deg30 <-
+  'analysis/M_logFC-vs-30.tsv' |>
+  read_tsv()
+
 ################################################################################
 ################################################################################
 ################################################################################
@@ -194,6 +198,17 @@ mask.deg <-
 length(mask.deg)
 # 300
 
+deg |>
+  filter(is.de, abs(log2FoldChange) >= 1) |>
+  pull(Geneid) %>%
+  unique -> mask.deg
+
+deg30 %>%
+  filter(padj <= 0.001) |>
+  filter(abs(log2FoldChange) >= 1) |>
+  pull(Geneid) %>%
+  unique -> mask.deg
+
 ################################################################################
 ################################################################################
 ################################################################################
@@ -321,6 +336,8 @@ fz <-
   my.box() |>
   myz()
 
+# fz <- freqs.mat
+
 fz |>
   as_tibble(rownames = 'Geneid') |>
   pivot_longer(- Geneid) |>
@@ -353,11 +370,17 @@ ggsave('analysis/J_freqs-overall.jpeg', width = 18, height = 7, dpi = 400)
 
 # Z-Scaled rel expression per-gene
 
+# rz <-
+#   rel.mat |>
+#   apply(1, scale) |>
+#   t() |>
+#   magrittr::set_colnames(colnames(rel.mat))
+
 rz <-
-  rel.mat |>
+  vst.mat |>
   apply(1, scale) |>
   t() |>
-  magrittr::set_colnames(colnames(rel.mat))
+  magrittr::set_colnames(colnames(vst.mat))
 
 ################################################################################
 # Data from Akashi 2002 on metabolic cost of AA
@@ -398,6 +421,12 @@ aa.cost <-
 
 ################################################################################
 # Heatmap of AA and expression correlation
+
+# fz <-
+#   freqs.mat |>
+#   apply(2, rank)
+
+mask.deg <- intersect(mask.deg, rownames(fz))
 
 crossing(
   AA = colnames(fz),
@@ -611,11 +640,15 @@ dat |>
   geom_violin() +
   geom_boxplot(width = .5, fill = 'white') +
   xlab(NULL) +
-  ylab('Tranformed AA freuency') +
+  ylab('AA freuency') +
   scale_fill_brewer(palette = 'Paired', name = NULL) +
   # ggsci::scale_fill_igv(name = NULL) +
   geom_hline(
-    yintercept = 0,
+    aes(yintercept = avg),
+    data = dat |>
+      filter(cluster == 'All genes') |>
+      group_by(AA) |>
+      summarize(avg = median(value)),
     # color = 'black',
     # visually tether line to color of ref group
     color = RColorBrewer::brewer.pal(CUT + 1, 'Paired') |> last()
@@ -681,3 +714,387 @@ ggsave(
 ################################################################################
 sessionInfo()
 
+################################################################################
+# # explore connection with deg30 logFC and distribution of the AAs
+# 
+# xs <- seq(0, 1, .025)
+# fz |>
+#   c() |>
+#   quantile(xs)
+#   plot(x = xs)
+#   # abs() |>
+#   ecdf() -> fooo
+# plot(fooo)
+# 
+# ?fooo()
+# ?ecdf
+# 
+# 
+# fz |>
+#   abs() |>
+#   apply(2, max) -> barr
+# hist(barr)
+# hist(fz)
+# summary(c(fz))
+# 
+# 
+# fz |>
+#   abs() |>
+#   apply(1, max) -> baz
+# hist(baz)
+# bar <- order(baz, decreasing = TRUE)[seq_len(500)]
+# 
+# # foo <- prcomp(fz[mask.deg, ])
+# # foo <- prcomp(fz[baz >= 2, ])
+# foo <- prcomp(fz[bar, ])
+# percentVar <- foo$sdev^2/sum(foo$sdev^2)
+# percentVar * 100
+# 
+# foo %>%
+#   `[[`('x') |>
+#   as_tibble(rownames = 'Geneid') |>
+#   left_join(deg30, 'Geneid') |>
+#   # ggplot(aes(PC1, PC2, size = abs(log2FoldChange), color = -log(padj))) +
+#   ggplot(aes(PC1, PC2, color = abs(log2FoldChange), size = -log(padj))) +
+#   # ggplot(aes(log2FoldChange, PC2, color = -log(padj))) +
+#   geom_point(alpha = .7) +
+#   # scale_color_gradient2(mid = 'grey', low = 'blue', high = 'red') +
+#   scale_color_viridis_c() +
+#   theme_dark()
+# 
+# fz[, rownames(dat.cor)] |>
+#   as_tibble(rownames = 'Geneid') |>
+#   pivot_longer(- Geneid, names_to = 'AA')  |>
+#   left_join(deg30, 'Geneid') |>
+#   filter(padj <= 0.05) |>
+#   ggplot(aes(log2FoldChange, value, color = - log(padj))) +
+#   geom_point(alpha = .5) +
+#   scale_color_viridis_c() +
+#   facet_wrap(~ AA)
+# 
+# pheatmap::pheatmap(fz[baz >= 2, ], show_rownames = FALSE,
+#                    # scale = 'column',
+#                    breaks = seq(-2, 2, length.out = 99),
+#                    clustering_method = 'ward.D2')
+
+################################################################################
+# Overview
+
+p1a <-
+  freqs |>
+  pivot_longer(- Geneid) |>
+  ggdensity('value') +
+  xlab('AA freq.') +
+  theme_pubr(18)
+
+p1b <-
+  freqs |>
+  pivot_longer(- Geneid) |>
+  ggdensity('value', color = 'name') +
+  xlab('AA freq.') +
+  scale_color_manual(
+    values = colorRampPalette(
+      RColorBrewer::brewer.pal(12, 'Paired')
+    )(20),
+    name = NULL
+  ) +
+  theme_pubr(18)
+
+
+(p1a | p1b)
+
+################################################################################
+# Estimate Beta parameters 
+
+mask <- intersect(rownames(freqs.mat), mask.deg)
+mat <- freqs.mat[mask, ] + .Machine$double.eps
+
+freqs.paras <-
+  mat |>
+  apply(2, \(x) MASS::fitdistr(unlist(x), 'beta', list(shape1 = 2, shape2 = 5))) |>
+  map('estimate') %>%
+  map2(names(.), function(x, y) { x$name <- y ; x } ) |>
+  bind_rows() |>
+  mutate(
+    # for beta
+    expected = shape1 / (shape1 + shape2),
+    var = shape1 * shape2 / (
+      (shape1 + shape2) ** 2 +
+      (shape1 + shape2 + 1)
+    )
+  ) |>
+  left_join(
+    tibble(
+      name = colnames(mat),
+      obs.mean = apply(mat, 2, mean),
+      obs.var = apply(mat, 2, var)
+    ),
+    'name'
+  )
+
+
+freqs.paras <-
+  mat |>
+  apply(2, \(x) MASS::fitdistr(unlist(x), 'gamma', list(shape = 1, rate = 1))) |>
+  map('estimate') %>%
+  map2(names(.), function(x, y) { x$name <- y ; x } ) |>
+  bind_rows() |>
+  mutate(
+    # for gamma
+    expected = shape / rate,
+    var = shape / (rate ** 2)
+  ) |> 
+  left_join(
+    tibble(
+      name = colnames(mat),
+      obs.mean = apply(mat, 2, mean),
+      obs.var = apply(mat, 2, var)
+    ),
+    'name'
+  )
+
+
+p2a <-
+  freqs.paras |>
+  ggscatter('expected', 'obs.mean',
+            add = 'reg.line', add.params = list(color = 'blue'),
+            cor.coef = TRUE, cor.coeff.args = list(color = 'red', size = 5)) +
+  xlab('Theoretic') +
+  ylab('Observed') +
+  ggtitle('Expected Value') +
+  theme_pubr(18)
+p2b <-
+  freqs.paras |>
+  ggscatter('var', 'obs.var',
+            add = 'reg.line', add.params = list(color = 'blue'),
+            cor.coef = TRUE, cor.coeff.args = list(color = 'red', size = 5)) +
+  xlab('Theoretic') +
+  ylab('Observed') +
+  ggtitle('Variance') +
+  theme_pubr(18)
+
+(p2a | p2b)
+
+################################################################################
+
+freqs.qs <-
+  freqs.paras |>
+  group_by(name) |>
+  do(pf = {
+    grp <- .
+    partial(qbeta, shape1 = grp$shape1, shape2 = grp$shape2)
+    # partial(qgamma, shape = grp$shape, rate = grp$rate)
+  }) |>
+  with(set_names(pf, name))
+
+
+crossing(
+  name = colnames(mat),
+  qs = seq(0, 1, length.out = 100)
+) |>
+  group_by_all() |>
+  summarize(
+    theo = freqs.qs[[name]](qs),
+    empir = quantile(mat[, name], probs = qs)
+  ) |>
+  ungroup() -> qq.dat
+
+qq.dat |>
+  ggscatter(
+    'theo', 'empir',
+    color = 'name'
+  ) +
+  geom_abline(slope = 1)
+
+# View(qq.dat)
+#   ggplot()
+#   mutate_at('dist', fct_recode,
+#             'Fitted density' = 'theo',
+#             'ECDF' = 'empir') |>
+#   ggplot(aes(qs, value, group = dist, color = dist)) +
+#   geom_line(size = 1.5) +
+#   geom_label(
+#     aes(x = 0.7, y = 0.2,
+#         group = NULL, color = NULL,
+#         label = sprintf(
+#           'KS-Test P: %.2e',
+#           p
+#         )),
+#     data = freqs.ks,
+#     show.legend = FALSE
+#   ) +
+#   ggsci::scale_color_jama(name = NULL) +
+#   xlab('AA freq.') +
+#   ylab('Cumulative probability') +
+#   facet_wrap(~ name) +
+#   theme_pubr(18)
+  
+################################################################################
+
+################################################################################
+
+freqs.ps <-
+  freqs.paras |>
+  group_by(name) |>
+  do(pf = {
+    grp <- .
+    partial(pbeta, shape1 = grp$shape1, shape2 = grp$shape2)
+    # partial(pgamma, shape = grp$shape, rate = grp$rate)
+  }) |>
+  with(set_names(pf, name))
+
+freqs.ecdf <-
+  mat |>
+  colnames() %>%
+  set_names(.) |>
+  map(~ mat[, .x]) |>
+  map(ecdf)
+
+freqs.ks <-
+  mat |>
+  colnames() %>%
+  set_names(.) |>
+  map(~ ks.test(x = mat[, .x], y = freqs.ps[[.x]])) |>
+  map('p.value') %>%
+  map2(names(.), ~ list(p = .x, name = .y)) |>
+  bind_rows() |>
+  arrange(p)
+
+
+crossing(
+  name = colnames(mat),
+  qs = seq(0, 1, length.out = 1000)
+) |>
+  group_by_all() |>
+  summarize(
+    theo = freqs.ps[[name]](qs),
+    empir = freqs.ecdf[[name]](qs)
+  ) |>
+  ungroup() -> qq.dat
+
+qq.dat |>
+  pivot_longer(- c(name, qs), names_to = 'dist') |>
+  mutate_at('dist', fct_recode,
+            'Fitted density' = 'theo',
+            'ECDF' = 'empir') |>
+  ggplot(aes(qs, value, group = dist, color = dist)) +
+  geom_line(size = 1.5) +
+  geom_label(
+    aes(x = 0.7, y = 0.2,
+        group = NULL, color = NULL,
+        label = sprintf(
+          'KS-Test P: %.2e',
+          p
+        )),
+    data = freqs.ks,
+    show.legend = FALSE
+  ) +
+  ggsci::scale_color_jama(name = NULL) +
+  xlab('AA freq.') +
+  ylab('Cumulative probability') +
+  facet_wrap(~ name) +
+  theme_pubr(18)
+  
+################################################################################
+
+
+
+################################################################################
+# vst |>
+expression |>
+  pivot_longer(- Geneid) |>
+  left_join(meta, c('name' = 'lib')) |>
+  group_by(Geneid, CO2) |>
+  # summarize(value = mean(value)) |>
+  summarize(value = mean(value) |> round()) |>
+  ungroup() |>
+  mutate(CO2 = paste0('co2_', CO2)) |>
+  pivot_wider(names_from = 'CO2') -> foo
+
+foo |>
+  select(-Geneid) |>
+  as.data.frame() |>
+  magrittr::set_rownames(foo$Geneid) -> vco2
+
+vco2 <- vco2 + 1
+
+# vco2 |>
+#   apply(1, scale) |>
+#   t() |>
+#   magrittr::set_colnames(colnames(vco2)) |>
+#   as.data.frame() -> vz2
+
+
+deg |>
+  filter(is.de) |>
+  pull(Geneid) |>
+  unique() |>
+  intersect(rownames(freqs.mat)) -> mask
+
+crossing(
+  i = colnames(freqs.mat),
+  # link = c("logit", "probit", "cloglog", "cauchit", "log", "loglog")
+  # link = c("logit", "probit")
+  # link = c("logit", "probit", "cloglog", "log", 'identity')
+  link = 'log'
+) |>
+  # filter(i == 'alanine') |>
+  group_by_all() |>
+  do(r2 = {
+    grp <- .
+    print(grp)
+    vco2[mask, ] |>
+    # vz2[mask, ] |>
+      mutate(AA = freqs.mat[mask, grp$i] + .Machine$double.eps) -> dat
+    
+    foo <-
+      betareg::betareg(AA ~ .,
+                       data = dat, link = grp$link)
+                       # data = dat, link = make.link(grp$link))
+    summary(foo)$pseudo.r.squared
+  }) |>
+  ungroup() |>
+  unnest(r2) -> link.test
+  
+link.test |>
+  spread(link, r2) |>
+  select(- i) |>
+  as.matrix() |>
+  boxplot()
+
+
+################################################################################
+
+crossing(
+  i = colnames(freqs.mat),
+  link =  "probit"
+) |>
+  # filter(i == 'alanine') |>
+  group_by_all() |>
+  do(mod = {
+    grp <- .
+    vco2[mask, ] |>
+      mutate(AA = freqs.mat[mask, grp$i] + .Machine$double.eps) -> dat
+    
+    betareg::betareg(AA ~ .,
+                     data = dat, link = make.link(grp$link))
+  })  -> mods
+
+library(broom)
+mods  |>
+  group_by(i) |>
+  do(mod = .$mod |> first() |> tidy() |> select(-component)) |>
+  unnest(mod) -> quick.test
+
+################################################################################
+
+quick.test |>
+  filter(term != '(phi)') |>
+  filter(term != '(Intercept)') |>
+  ggplot(aes(term, estimate, ymin = estimate - std.error, ymax = estimate + std.error,
+             color = p.value)) +
+  geom_errorbar() +
+  geom_point() +
+  scale_color_viridis_c(direction = -1) +
+  facet_wrap(~ i) +
+  theme_dark(12)
