@@ -85,15 +85,16 @@ expression |>
   theme_pubr(18) -> p
 p.raw <- ggExtra::ggMarginal(p, fill = 'grey')
 
-expression |>
+vst |>
+# expression |>
   pivot_longer(- Geneid) |>
   group_by(Geneid) |>
   summarize(avg = mean(value)) |>
   left_join(gene.lengths, 'Geneid') |>
-  mutate_at('avg', ~ .x + 1) |>
-  mutate(ratio = avg/len) |>
+  # mutate_at('avg', ~ .x + 1) |>
+  # mutate(ratio = avg/len) |>
   ggscatter(
-    'ratio', 'len',
+    'avg', 'len',
     alpha = .6,
     add = 'reg.line',
     add.params = list(color = 'blue'),
@@ -102,7 +103,7 @@ expression |>
   ) +
   scale_y_log10() +
   scale_x_log10() +
-  xlab('Average expression, relative to gene length') +
+  xlab('Average expression, vst') +
   ylab('Gene length, nt') +
   annotation_logticks() +
   theme_pubr(18) -> p
@@ -899,8 +900,8 @@ freqs.qs <-
   group_by(name) |>
   do(pf = {
     grp <- .
-    # partial(qbeta, shape1 = grp$shape1, shape2 = grp$shape2)
-    partial(qgamma, shape = grp$shape, rate = grp$rate)
+    partial(qbeta, shape1 = grp$shape1, shape2 = grp$shape2)
+    # partial(qgamma, shape = grp$shape, rate = grp$rate)
   }) |>
   with(set_names(pf, name))
 
