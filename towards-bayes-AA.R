@@ -139,10 +139,34 @@ bar |>
 ggsave('~/Downloads/foo.jpeg', width = 16, height = 8)
 
 ################################################################################
+binom.mod |>
+  mutate(AA = fct_reorder(AA, ratio)) |>
+  ggplot(aes(AA, ratio)) +
+  geom_violin() +
+  geom_boxplot(fill = 'white', width = .2) +
+  geom_point(aes(y = phat, color = 'MLE'), size = 3, 
+             position = 'jitter') +
+  geom_point(aes(y = avg, color = 'average'), size = 3) +
+  xlab(NULL) +
+  ylab('Abundance / length\n(AA frequency)') +
+  theme_pubr(18) +
+  theme(
+    axis.text.x = element_text(angle = 60, hjust = 1)
+  )
+
+ggsave('~/Downloads/foo2.jpeg', width = 14, height = 12)
+
+################################################################################
 
 binom.mod |>
+  mutate(
+    expected = length * phat
+  ) |>
+  group_by_all() |>
+  engrame(p = pbinom(value, length, phat))
   
   
+# TODO repeat half normal plot of residuals, but for binomial model
 
 
 ################################################################################
