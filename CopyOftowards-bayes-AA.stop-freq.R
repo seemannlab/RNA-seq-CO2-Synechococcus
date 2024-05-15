@@ -17,27 +17,11 @@ cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442",
 data(aaMap, package = 'Biobase')
 
 ################################################################################
-# Load amino acid composition, but as absolute counts
-
-aas <- Biostrings::readAAStringSet('analysis/G_peptides.faa')
-# The frequencies
-freqs <- Biostrings::alphabetFrequency(aas)
-rownames(freqs) <- names(aas)
-
-# exclude all 0s columns
-mask <- apply(freqs, 2, max) > 0
-freqs2 <- freqs[, mask]
-# nicer AA names
-colnames(freqs2) <- with(aaMap, set_names(name, let.1))[colnames(freqs2)]
-
 
 freqs <-
-  freqs2 |>
-  as_tibble(rownames = 'Geneid')
+  'analysis/G_frequencies.tsv' |>
+  read_tsv()
 
-rm(freqs2)
-
-################################################################################
 
 freqs.mat <-
   freqs |>
@@ -45,208 +29,70 @@ freqs.mat <-
   as.matrix() |>
   magrittr::set_rownames(freqs$Geneid)
 
+
+# scale to [0, 1] range, but # prevent exact one (issue for fitting function)
+# eps: "the smallest positive floating-point number x such that 1 + x != 1"
+my.scaler <-  1 / apply(freqs.mat, 2, max)  * (1 - .Machine$double.eps)
+
+my.scaler <-
+  my.scaler |>
+  rep(each = nrow(freqs.mat)) |>
+  matrix(nrow = nrow(freqs.mat), ncol = ncol(freqs.mat)) |>
+  magrittr::set_rownames(rownames(freqs.mat)) |>
+  magrittr::set_colnames(colnames(freqs.mat))
+
+freqs.mat <- freqs.mat * my.scaler
+
 ################################################################################
-
-freqs.len <-
-  freqs.mat |>
-  apply(1, sum) |>
-  as.data.frame() |>
-  set_names('length') |>
-  as_tibble(rownames = 'Geneid')
-
-
-################################################################################
+# General distribution overview
 
 freqs |>
-  pivot_longer(- Geneid, names_to = 'AA') |>
-  left_join(freqs.len, 'Geneid') |>
-  mutate_at('value', ~ .x + 1) |>
-  ggscatter(
-    'length', 'value',
-    alpha = .5,
-    add = 'reg.line', add.params = list(color = 'red'),
-    cor.coef = TRUE, cor.coeff.args = list(color = 'red', size = 5)
-  ) +
-  scale_x_log10() +
-  scale_y_log10() +
-  xlab('Peptide length') +
-  ylab('No. amino acid occurence\n(with pseudo count)') +
-  facet_wrap(~ AA, scales = 'free_y')
-            
+  pivot_longer(- Geneid) |>
+  mutate(AA = fct_reorder(name, value)) -> aa.ordered
 
-ggsave('~/Downloads/foo.jpeg', width = 12, height = 7)
-
-################################################################################
-
-freqs |>
-  pivot_longer(- Geneid, names_to = 'AA') |>
-  left_join(freqs.len, 'Geneid') |>
-  mutate(prop = value / length) |>
-  ggdensity(
-    'prop',
-    color = 'AA'
+aa.colors <-
+  aa.ordered |>
+  pull(AA) |>
+  levels() %>%
+  set_names(
+    colorRampPalette(RColorBrewer::brewer.pal(11, 'Spectral'))(length(.)),
+    .
   )
 
-################################################################################
-  
-freqs |>
-  pivot_longer(- Geneid, names_to = 'AA') |>
-  left_join(freqs.len, 'Geneid') |>
-  # filter(AA == 'alanine') |>
-  mutate(ratio = value / length) -> foo
-
-foo |>
-  group_by(AA) |>
-  summarize(
-    phat = sum(value) / sum(length),
-    avg = mean(ratio)
-  ) -> foo.est
-
-foo |>
-  left_join(foo.est, 'AA') -> binom.mod
-
-
-# highlight 90% confidence interval
-# -> find upper/lower 5%
-a <- (1 - .9)/2
-a2 <- (1 - .98)/2
-
-binom.mod |>
-  mutate(
-    expected = length * phat,
-    low = qbinom(a, length, phat),
-    up = qbinom(1 - a, length, phat),
-    low2 = qbinom(a2, length, phat),
-    up2 = qbinom(1 - a2, length, phat)
-  ) -> bar
-
-bar |>
-  mutate('Geneid' = fct_reorder(Geneid, length)) |>
-  ggplot(aes(x = Geneid,y = expected, group = 1)) +
-  geom_point(aes(y = value, color = 'observed'), alpha = .5) +
-  geom_line(aes(y = up, color = '90% confidence'), size = 1.2) +
-  geom_line(aes(y = low, color = '90% confidence'), size = 1.2) +
-  geom_line(aes(y = up2, color = '98% confidence'), size = 1.2) +
-  geom_line(aes(y = low2, color = '98% confidence'), size = 1.2) +
-  geom_line(aes(color = 'expected'), size = 1.2) +
-  scale_color_manual(values = cbPalette[c(7, 2, 6, 1)], name = NULL) +
-  xlab('Genes, sorted by gene length') +
-  ylab('Absolute AA abundence') +
-  facet_wrap(~ AA,scales = 'free') +
+aa.ordered |>
+  ggplot(aes(AA, value, fill = AA)) +
+  geom_violin() +
+  geom_boxplot(fill = 'white', width = .2) +
+  scale_fill_manual(values = aa.colors, name = NULL) +
+  xlab(NULL) +
+  ylab('Gene length normalized\nAmino acid frequency') +
   theme_pubr(18) +
-  theme(axis.text.x = element_blank())
+  theme(
+    legend.position = 'hide',
+    axis.text.x = element_text(angle = 60, hjust = 1)
+  ) -> p1.total
 
-ggsave('~/Downloads/foo.jpeg', width = 16, height = 8)
+freqs.mat |>
+  as_tibble(rownames = 'Geneid') |>
+  pivot_longer(- Geneid, names_to = 'AA') |>
+  mutate_at('AA', fct_relevel, levels(aa.ordered$AA)) |>
+  ggplot(aes(AA, value, fill = AA)) +
+  geom_violin() +
+  geom_boxplot(fill = 'white', width = .2) +
+  scale_fill_manual(values = aa.colors, name = NULL) +
+  xlab(NULL) +
+  ylab('Gene length normalized\nAmino acid frequency') +
+  theme_pubr(18) +
+  theme(
+    legend.position = 'hide',
+    axis.text.x = element_text(angle = 60, hjust = 1)
+  ) -> p1.total2
 
-################################################################################
+(p1.total /  p1.total2)  +
+  plot_annotation(tag_levels = 'A')
 
-binom.mod |>
-  
-  
+ggsave('~/Downloads/foo.jpeg', width = 16, height = 12)
 
-
-################################################################################
-################################################################################
-################################################################################
-# Load RNAseq data
-
-annot <-
-  'data/C_annotation.tsv' |>
-  read_tsv()
-
-meta <-
-  'data/C_meta.tsv' |>
-  read_tsv() |>
-  mutate_at('CO2', ~ fct_reorder(as.character(.x), as.numeric(.x)))
-
-deg <-
-  'analysis/D_stagewise-adjusted-DEGs.tsv' |>
-  read_tsv()
-
-vst <-
-  'analysis/D_vst-expression.tsv' |>
-  read_tsv()
-
-################################################################################
-
-vst.mat <-
-  vst |>
-  select(- Geneid) |>
-  as.matrix() |>
-  magrittr::set_rownames(vst$Geneid)
-
-vz.mat <-
-  vst.mat |>
-  apply(1, scale) |>
-  t() |>
-  magrittr::set_colnames(colnames(vst.mat))
-
-################################################################################
-
-
-
-
-
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-
-# For an observation vector and model parameters calc qqplot data
-qq.normal.helper <- function(xs) {
-  tibble(
-    xs = xs[order(xs)],
-    ps = ppoints(xs),
-    expected = fdrtool::qhalfnorm(ps)
-  )
-}
-
-
-log2(freqs.mat + 1) |>
-  as.data.frame() |> 
-  map(qq.normal.helper) %>%
-  map2(names(.), ~ mutate(.x, AA = .y)) |>
-  bind_rows() |>
-  ggscatter('expected', 'xs', color = 'AA') +
-  geom_abline(slope = 1)
-
-
-################################################################################
-################################################################################
-################################################################################
-
-freqs |>
-  mutate_if(is.numeric, log1p) |>
-  left_join(mod.des.expected, 'Geneid') |>
-  select(- Geneid) -> foo
-
-GGally::ggpairs(foo)
-
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
 ################################################################################
 ################################################################################
 ################################################################################
@@ -515,6 +361,38 @@ ggsave('~/Downloads/foo2.jpeg', width = 12, height = 7)
 ################################################################################
 ################################################################################
 ################################################################################
+################################################################################
+# Load data
+
+annot <-
+  'data/C_annotation.tsv' |>
+  read_tsv()
+
+meta <-
+  'data/C_meta.tsv' |>
+  read_tsv() |>
+  mutate_at('CO2', ~ fct_reorder(as.character(.x), as.numeric(.x)))
+
+raw.counts <-
+  'data/C_raw-counts.tsv' |>
+  read_tsv()
+
+deg <-
+  'analysis/D_stagewise-adjusted-DEGs.tsv' |>
+  read_tsv()
+
+
+################################################################################
+# Build matrices
+
+
+raw.counts.mat <-
+  raw.counts %>%
+  select(- Geneid) %>%
+  as.matrix() %>%
+  magrittr::set_rownames(raw.counts$Geneid)
+
+
 ################################################################################
 # Overview
 

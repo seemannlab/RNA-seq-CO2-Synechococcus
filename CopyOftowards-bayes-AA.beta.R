@@ -17,27 +17,11 @@ cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442",
 data(aaMap, package = 'Biobase')
 
 ################################################################################
-# Load amino acid composition, but as absolute counts
-
-aas <- Biostrings::readAAStringSet('analysis/G_peptides.faa')
-# The frequencies
-freqs <- Biostrings::alphabetFrequency(aas)
-rownames(freqs) <- names(aas)
-
-# exclude all 0s columns
-mask <- apply(freqs, 2, max) > 0
-freqs2 <- freqs[, mask]
-# nicer AA names
-colnames(freqs2) <- with(aaMap, set_names(name, let.1))[colnames(freqs2)]
-
 
 freqs <-
-  freqs2 |>
-  as_tibble(rownames = 'Geneid')
+  'analysis/G_frequencies.tsv' |>
+  read_tsv()
 
-rm(freqs2)
-
-################################################################################
 
 freqs.mat <-
   freqs |>
@@ -46,207 +30,36 @@ freqs.mat <-
   magrittr::set_rownames(freqs$Geneid)
 
 ################################################################################
-
-freqs.len <-
-  freqs.mat |>
-  apply(1, sum) |>
-  as.data.frame() |>
-  set_names('length') |>
-  as_tibble(rownames = 'Geneid')
-
-
-################################################################################
+# General distribution overview
 
 freqs |>
-  pivot_longer(- Geneid, names_to = 'AA') |>
-  left_join(freqs.len, 'Geneid') |>
-  mutate_at('value', ~ .x + 1) |>
-  ggscatter(
-    'length', 'value',
-    alpha = .5,
-    add = 'reg.line', add.params = list(color = 'red'),
-    cor.coef = TRUE, cor.coeff.args = list(color = 'red', size = 5)
-  ) +
-  scale_x_log10() +
-  scale_y_log10() +
-  xlab('Peptide length') +
-  ylab('No. amino acid occurence\n(with pseudo count)') +
-  facet_wrap(~ AA, scales = 'free_y')
-            
+  pivot_longer(- Geneid) |>
+  mutate(AA = fct_reorder(name, value)) -> aa.ordered
 
-ggsave('~/Downloads/foo.jpeg', width = 12, height = 7)
-
-################################################################################
-
-freqs |>
-  pivot_longer(- Geneid, names_to = 'AA') |>
-  left_join(freqs.len, 'Geneid') |>
-  mutate(prop = value / length) |>
-  ggdensity(
-    'prop',
-    color = 'AA'
+aa.colors <-
+  aa.ordered |>
+  pull(AA) |>
+  levels() %>%
+  set_names(
+    colorRampPalette(RColorBrewer::brewer.pal(11, 'Spectral'))(length(.)),
+    .
   )
 
-################################################################################
-  
-freqs |>
-  pivot_longer(- Geneid, names_to = 'AA') |>
-  left_join(freqs.len, 'Geneid') |>
-  # filter(AA == 'alanine') |>
-  mutate(ratio = value / length) -> foo
-
-foo |>
-  group_by(AA) |>
-  summarize(
-    phat = sum(value) / sum(length),
-    avg = mean(ratio)
-  ) -> foo.est
-
-foo |>
-  left_join(foo.est, 'AA') -> binom.mod
-
-
-# highlight 90% confidence interval
-# -> find upper/lower 5%
-a <- (1 - .9)/2
-a2 <- (1 - .98)/2
-
-binom.mod |>
-  mutate(
-    expected = length * phat,
-    low = qbinom(a, length, phat),
-    up = qbinom(1 - a, length, phat),
-    low2 = qbinom(a2, length, phat),
-    up2 = qbinom(1 - a2, length, phat)
-  ) -> bar
-
-bar |>
-  mutate('Geneid' = fct_reorder(Geneid, length)) |>
-  ggplot(aes(x = Geneid,y = expected, group = 1)) +
-  geom_point(aes(y = value, color = 'observed'), alpha = .5) +
-  geom_line(aes(y = up, color = '90% confidence'), size = 1.2) +
-  geom_line(aes(y = low, color = '90% confidence'), size = 1.2) +
-  geom_line(aes(y = up2, color = '98% confidence'), size = 1.2) +
-  geom_line(aes(y = low2, color = '98% confidence'), size = 1.2) +
-  geom_line(aes(color = 'expected'), size = 1.2) +
-  scale_color_manual(values = cbPalette[c(7, 2, 6, 1)], name = NULL) +
-  xlab('Genes, sorted by gene length') +
-  ylab('Absolute AA abundence') +
-  facet_wrap(~ AA,scales = 'free') +
+aa.ordered |>
+  ggplot(aes(AA, value, fill = AA)) +
+  geom_violin() +
+  geom_boxplot(fill = 'white', width = .2) +
+  scale_fill_manual(values = aa.colors, name = NULL) +
+  xlab(NULL) +
+  ylab('Gene length normalized\nAmino acid frequency') +
   theme_pubr(18) +
-  theme(axis.text.x = element_blank())
+  theme(
+    legend.position = 'hide',
+    axis.text.x = element_text(angle = 60, hjust = 1)
+  ) -> p1.total
 
-ggsave('~/Downloads/foo.jpeg', width = 16, height = 8)
+p1.total
 
-################################################################################
-
-binom.mod |>
-  
-  
-
-
-################################################################################
-################################################################################
-################################################################################
-# Load RNAseq data
-
-annot <-
-  'data/C_annotation.tsv' |>
-  read_tsv()
-
-meta <-
-  'data/C_meta.tsv' |>
-  read_tsv() |>
-  mutate_at('CO2', ~ fct_reorder(as.character(.x), as.numeric(.x)))
-
-deg <-
-  'analysis/D_stagewise-adjusted-DEGs.tsv' |>
-  read_tsv()
-
-vst <-
-  'analysis/D_vst-expression.tsv' |>
-  read_tsv()
-
-################################################################################
-
-vst.mat <-
-  vst |>
-  select(- Geneid) |>
-  as.matrix() |>
-  magrittr::set_rownames(vst$Geneid)
-
-vz.mat <-
-  vst.mat |>
-  apply(1, scale) |>
-  t() |>
-  magrittr::set_colnames(colnames(vst.mat))
-
-################################################################################
-
-
-
-
-
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-
-# For an observation vector and model parameters calc qqplot data
-qq.normal.helper <- function(xs) {
-  tibble(
-    xs = xs[order(xs)],
-    ps = ppoints(xs),
-    expected = fdrtool::qhalfnorm(ps)
-  )
-}
-
-
-log2(freqs.mat + 1) |>
-  as.data.frame() |> 
-  map(qq.normal.helper) %>%
-  map2(names(.), ~ mutate(.x, AA = .y)) |>
-  bind_rows() |>
-  ggscatter('expected', 'xs', color = 'AA') +
-  geom_abline(slope = 1)
-
-
-################################################################################
-################################################################################
-################################################################################
-
-freqs |>
-  mutate_if(is.numeric, log1p) |>
-  left_join(mod.des.expected, 'Geneid') |>
-  select(- Geneid) -> foo
-
-GGally::ggpairs(foo)
-
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
 ################################################################################
 ################################################################################
 ################################################################################
@@ -254,22 +67,14 @@ GGally::ggpairs(foo)
 # Question: Are frequencies beta distributed?
 ################################################################################
 
-# xs <- seq(0, 1, length.out = 100)
-# plot(xs, dgamma(xs, 2, 5))
-
 # given a vector of observations maximum likelihood estimate parameters
 my.fitter <- function(xs) {
   # avoid absolute zero
   # double.xmin is "the smallest non-zero normalized floating-point number"
   xs2 <- xs + .Machine$double.xmin
-  
   mle <- MASS::fitdistr(
-    xs2,
-    'beta',
-    # 'gamma',
-    # start = list(shape1 = .3, shape2 = 4),
-    start = list(shape1 = 2, shape2 = 5),
-    # start = list(shape = .5, rate = .5),
+    xs2, 'beta',
+    start = list(shape1 = .3, shape2 = 4),
     lower = rep(.Machine$double.xmin, 2)
   )
   res <- mle$estimate |> as.list()
@@ -279,8 +84,6 @@ my.fitter <- function(xs) {
     (shape1 + shape2) ** 2 +
     (shape1 + shape2 + 1)
   ))
-  # res$mean = with(res, shape / rate,)
-  # res$var = with(res, shape / (rate ** 2))
   # compare with empirically observed variance/mean
   res$obs.mean = mean(xs)
   res$obs.var = var(xs)
@@ -289,7 +92,6 @@ my.fitter <- function(xs) {
 
 # MLE estimate shapes per AA and globally
 beta.fits <-
-# gamma.fits <-
   freqs.mat |>
   apply(2, my.fitter) |>
   bind_rows() |>
@@ -299,7 +101,6 @@ beta.fits <-
 
 # Plot overview of fitted/observed parameters
 p1A <-
-  # gamma.fits |>
   beta.fits |>
   mutate_at('AA', fct_relevel, levels(aa.ordered$AA)) |>
   ggscatter('mean', 'obs.mean', color = 'AA',
@@ -308,12 +109,10 @@ p1A <-
   xlab('Fitted Beta distribution') +
   ylab('Observed') +
   scale_color_manual(values = aa.colors, name = NULL) +
-  guides(color = guide_legend(nrow = 2)) +
   ggtitle('Expected Value') +
   theme_pubr(18)
 p1B <-
   beta.fits |>
-  # gamma.fits |>
   mutate_at('AA', fct_relevel, levels(aa.ordered$AA)) |>
   ggscatter('var', 'obs.var', color = 'AA',
             add = 'reg.line', add.params = list(color = 'blue'),
@@ -321,15 +120,14 @@ p1B <-
   scale_color_manual(values = aa.colors, name = NULL) +
   xlab('Fitted Beta distribution') +
   ylab('Observed') +
-  guides(color = guide_legend(nrow = 2)) +
   ggtitle('Variance') +
   theme_pubr(18)
 
-((p1A | p1B)) / guide_area() +
+(p1.total /  (p1A | p1B)) / guide_area() +
   plot_annotation(tag_levels = 'A') +
-  plot_layout(heights = c(3, 1), guides = 'collect')
+  plot_layout(heights = c(3, 3, 1), guides = 'collect')
 
-ggsave('~/Downloads/foo1.jpeg', width = 16, height = 7)
+ggsave('~/Downloads/foo1.jpeg', width = 14, height = 12)
 
 ################################################################################
 
@@ -355,41 +153,51 @@ qq.beta.helper <- function(xs, shape1, shape2) {
     ungroup()
 }
 
-# For an observation vector and model parameters calc qqplot data
-# qq.gamma.helper <- function(xs, shape, rate) {
-#   tibble(
-#     xs = xs[order(xs)],
-#     ps = ppoints(xs),
-#     # ps = seq(0, 1, length.out = 1000),
-#     # xs = quantile(xs, ps),
-#     expected = qgamma(ps, shape, rate)
-#   ) |>
-#     group_by(xs) |>
-#     slice_min(ps) |>
-#     ungroup()
-# }
-
 qq.data <-
   freqs.mat |>
   colnames() |>
   map(function(i) {
     # i <- 'alanine'
-    # gamma.fits |>
     beta.fits |>
       filter(AA == i) |>
       with(qq.beta.helper(
-      # with(qq.gamma.helper(
         freqs.mat[, i],
         shape1,
         shape2
-        # shape,
-        # rate
       )) |>
       mutate(AA = i)
   }) |>
   bind_rows()
 
-qq.data |>
+p.qq1 <-
+  qq.data |>
+  mutate_at('AA', fct_relevel, levels(aa.ordered$AA)) |>
+  ggplot(aes(expected, xs, color = AA)) +
+  geom_point() +
+  geom_line() +
+  scale_color_manual(values = aa.colors, name = NULL) +
+  geom_abline(slope = 1, linetype = 'dashed') +
+  guides(color = guide_legend(nrow = 2)) +
+  theme_pubr(18) +
+  xlab('Fitted beta quantile') +
+  ylab('Empirical quantile') +
+  ggtitle('Quantile-quantile plot')
+
+freqs.mat |>
+  colnames() |>
+  tibble(
+    AA = _
+  ) |>
+  group_by(AA) |>
+  reframe(
+     aa.min = freqs.mat[, AA] |> min(),
+     aa.max = freqs.mat[, AA] |> max()
+  ) -> freqs.ranges
+
+p.qq2 <-
+  qq.data |>
+  left_join(freqs.ranges, 'AA') |>
+  filter(expected < aa.max) |>
   mutate_at('AA', fct_relevel, levels(aa.ordered$AA)) |>
   ggplot(aes(expected, xs, color = AA)) +
   geom_point() +
@@ -397,11 +205,15 @@ qq.data |>
   scale_color_manual(values = aa.colors, name = NULL) +
   geom_abline(slope = 1, linetype = 'dashed') +
   theme_pubr(18) +
-  theme(legend.position = 'right') +
   xlab('Fitted beta quantile') +
   ylab('Empirical quantile') +
-  ggtitle('Quantile-quantile plot')
+  guides(color = guide_legend(nrow = 2)) +
+  ggtitle('Quantile-quantile plot',
+          'Excluding fitted values above max. observed frequency')
 
+((p.qq1 | p.qq2)) / guide_area() +
+  plot_annotation(tag_levels = 'A') +
+  plot_layout(heights = c(3, 1), guides = 'collect')
 
 ggsave('~/Downloads/foo2.jpeg', width = 16, height = 9)
 
@@ -421,8 +233,6 @@ qq.normal.helper <- function(xs) {
 # Compute residuals from beta model
 residuals.helper <- function(xs, shape1, shape2) {
   mu <-  shape1 / (shape1 + shape2)
-# residuals.helper <- function(xs, shape, rate) {
-#   mu <-  shape / rate
   abs(xs - mu)
 }
 
@@ -431,15 +241,12 @@ qq.res.data <-
   freqs.mat |>
   colnames() |>
   map(function(i) {
-    # gamma.fits |>
     beta.fits |>
       filter(AA == i) |>
       with(residuals.helper(
         freqs.mat[, i],
         shape1,
         shape2
-        # shape,
-        # rate
       )) |>
       qq.normal.helper() |>
       mutate(AA = i)
@@ -462,10 +269,8 @@ envelope.dat <-
       map(safely(function(j) {
         sampled <-
           beta.fits |>
-          # gamma.fits |>
           filter(AA == i) |>
           with(rbeta(n, shape1, shape2))
-          # with(rgamma(n, shape, rate))
         sampled |>
           my.fitter() |>
           with(residuals.helper(sampled, shape1, shape2)) |>
@@ -487,12 +292,16 @@ conf.band <-
     sim.runs = n()
   ) |>
   ungroup() |>
-  pivot_longer(contains('conf'))
+  pivot_longer(contains('conf')) |>
+  left_join(freqs.ranges, 'AA') |>
+  filter(expected < aa.max)
 
 
 
 qq.res.data |>
   mutate_at('AA', fct_relevel, levels(aa.ordered$AA)) |>
+  left_join(freqs.ranges, 'AA') |>
+  filter(expected < aa.max) |>
   ggplot(aes(expected, xs, color = AA)) +
   geom_point() +
   geom_line(
@@ -515,6 +324,38 @@ ggsave('~/Downloads/foo2.jpeg', width = 12, height = 7)
 ################################################################################
 ################################################################################
 ################################################################################
+################################################################################
+# Load data
+
+annot <-
+  'data/C_annotation.tsv' |>
+  read_tsv()
+
+meta <-
+  'data/C_meta.tsv' |>
+  read_tsv() |>
+  mutate_at('CO2', ~ fct_reorder(as.character(.x), as.numeric(.x)))
+
+raw.counts <-
+  'data/C_raw-counts.tsv' |>
+  read_tsv()
+
+deg <-
+  'analysis/D_stagewise-adjusted-DEGs.tsv' |>
+  read_tsv()
+
+
+################################################################################
+# Build matrices
+
+
+raw.counts.mat <-
+  raw.counts %>%
+  select(- Geneid) %>%
+  as.matrix() %>%
+  magrittr::set_rownames(raw.counts$Geneid)
+
+
 ################################################################################
 # Overview
 
