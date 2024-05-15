@@ -73,17 +73,22 @@ my.fitter <- function(xs) {
   # double.xmin is "the smallest non-zero normalized floating-point number"
   xs2 <- xs + .Machine$double.xmin
   mle <- MASS::fitdistr(
-    xs2, 'beta',
-    start = list(shape1 = .3, shape2 = 4),
+    xs2,
+    # 'beta',
+    'gamma',
+    # start = list(shape1 = .3, shape2 = 4),
+    start = list(shape = 1, rate = 1),
     lower = rep(.Machine$double.xmin, 2)
   )
   res <- mle$estimate |> as.list()
   # compute model expected variance/mean
-  res$mean <- with(res, shape1 / (shape1 + shape2))
-  res$var = with(res, shape1 * shape2 / (
-    (shape1 + shape2) ** 2 +
-    (shape1 + shape2 + 1)
-  ))
+  # res$mean <- with(res, shape1 / (shape1 + shape2))
+  # res$var = with(res, shape1 * shape2 / (
+  #   (shape1 + shape2) ** 2 +
+  #   (shape1 + shape2 + 1)
+  # ))
+  res$mean = with(res, shape / rate,)
+  res$var = with(res, shape / (rate ** 2))
   # compare with empirically observed variance/mean
   res$obs.mean = mean(xs)
   res$obs.var = var(xs)
@@ -91,7 +96,8 @@ my.fitter <- function(xs) {
 }
 
 # MLE estimate shapes per AA and globally
-beta.fits <-
+# beta.fits <-
+gamma.fits <-
   freqs.mat |>
   apply(2, my.fitter) |>
   bind_rows() |>
@@ -101,7 +107,8 @@ beta.fits <-
 
 # Plot overview of fitted/observed parameters
 p1A <-
-  beta.fits |>
+  gamma.fits |>
+  # beta.fits |>
   mutate_at('AA', fct_relevel, levels(aa.ordered$AA)) |>
   ggscatter('mean', 'obs.mean', color = 'AA',
             add = 'reg.line', add.params = list(color = 'blue'),
@@ -112,7 +119,8 @@ p1A <-
   ggtitle('Expected Value') +
   theme_pubr(18)
 p1B <-
-  beta.fits |>
+  # beta.fits |>
+  gamma.fits |>
   mutate_at('AA', fct_relevel, levels(aa.ordered$AA)) |>
   ggscatter('var', 'obs.var', color = 'AA',
             add = 'reg.line', add.params = list(color = 'blue'),
@@ -140,11 +148,27 @@ ggsave('~/Downloads/foo1.jpeg', width = 14, height = 12)
 # for a fitted beta distribution
 
 # For an observation vector and model parameters calc qqplot data
-qq.beta.helper <- function(xs, shape1, shape2) {
+# qq.beta.helper <- function(xs, shape1, shape2) {
+#   tibble(
+#     xs = xs[order(xs)],
+#     ps = ppoints(xs),
+#     # ps = seq(0, 1, length.out = 1000),
+#     # xs = quantile(xs, ps),
+#     expected = qbeta(ps, shape1, shape2)
+#   ) |>
+#     group_by(xs) |>
+#     slice_min(ps) |>
+#     ungroup()
+# }
+
+# For an observation vector and model parameters calc qqplot data
+qq.gamma.helper <- function(xs, shape, rate) {
   tibble(
     xs = xs[order(xs)],
     ps = ppoints(xs),
-    expected = qbeta(ps, shape1, shape2)
+    # ps = seq(0, 1, length.out = 1000),
+    # xs = quantile(xs, ps),
+    expected = qgamma(ps, shape, rate)
   ) |>
     group_by(xs) |>
     slice_min(ps) |>
@@ -155,12 +179,17 @@ qq.data <-
   freqs.mat |>
   colnames() |>
   map(function(i) {
-    beta.fits |>
+    # i <- 'alanine'
+    gamma.fits |>
+    # beta.fits |>
       filter(AA == i) |>
-      with(qq.beta.helper(
+      # with(qq.beta.helper(
+      with(qq.gamma.helper(
         freqs.mat[, i],
-        shape1,
-        shape2
+        # shape1,
+        # shape2
+        shape,
+        rate
       )) |>
       mutate(AA = i)
   }) |>
@@ -171,8 +200,10 @@ p.qq1 <-
   mutate_at('AA', fct_relevel, levels(aa.ordered$AA)) |>
   ggplot(aes(expected, xs, color = AA)) +
   geom_point() +
+  geom_line() +
   scale_color_manual(values = aa.colors, name = NULL) +
   geom_abline(slope = 1, linetype = 'dashed') +
+  guides(color = guide_legend(nrow = 2)) +
   theme_pubr(18) +
   xlab('Fitted beta quantile') +
   ylab('Empirical quantile') +
@@ -196,11 +227,13 @@ p.qq2 <-
   mutate_at('AA', fct_relevel, levels(aa.ordered$AA)) |>
   ggplot(aes(expected, xs, color = AA)) +
   geom_point() +
+  geom_line() +
   scale_color_manual(values = aa.colors, name = NULL) +
   geom_abline(slope = 1, linetype = 'dashed') +
   theme_pubr(18) +
   xlab('Fitted beta quantile') +
   ylab('Empirical quantile') +
+  guides(color = guide_legend(nrow = 2)) +
   ggtitle('Quantile-quantile plot',
           'Excluding fitted values above max. observed frequency')
 
@@ -208,7 +241,7 @@ p.qq2 <-
   plot_annotation(tag_levels = 'A') +
   plot_layout(heights = c(3, 1), guides = 'collect')
 
-ggsave('~/Downloads/foo2.jpeg', width = 20, height = 7)
+ggsave('~/Downloads/foo2.jpeg', width = 16, height = 9)
 
 ################################################################################
 # Inspect half-normal plot of residuals
@@ -224,8 +257,10 @@ qq.normal.helper <- function(xs) {
 }
 
 # Compute residuals from beta model
-residuals.helper <- function(xs, shape1, shape2) {
-  mu <-  shape1 / (shape1 + shape2)
+# residuals.helper <- function(xs, shape1, shape2) {
+#   mu <-  shape1 / (shape1 + shape2)
+residuals.helper <- function(xs, shape, rate) {
+  mu <-  shape / rate
   abs(xs - mu)
 }
 
@@ -234,12 +269,15 @@ qq.res.data <-
   freqs.mat |>
   colnames() |>
   map(function(i) {
-    beta.fits |>
+    gamma.fits |>
+    # beta.fits |>
       filter(AA == i) |>
       with(residuals.helper(
         freqs.mat[, i],
-        shape1,
-        shape2
+        # shape1,
+        # shape2
+        shape,
+        rate
       )) |>
       qq.normal.helper() |>
       mutate(AA = i)
@@ -261,9 +299,11 @@ envelope.dat <-
       # (it is ok if individual simulation runs fail)
       map(safely(function(j) {
         sampled <-
-          beta.fits |>
+          # beta.fits |>
+          gamma.fits |>
           filter(AA == i) |>
-          with(rbeta(n, shape1, shape2))
+          # with(rbeta(n, shape1, shape2))
+          with(rgamma(n, shape, rate))
         sampled |>
           my.fitter() |>
           with(residuals.helper(sampled, shape1, shape2)) |>
