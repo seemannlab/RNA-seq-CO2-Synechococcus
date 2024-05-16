@@ -200,51 +200,30 @@ freqs.len |>
 ggsave('~/Downloads/foo3.jpeg', width = 8, height = 6)
 
 ################################################################################
-
-assertthat::are_equal(
-  rownames(freqs.mat),
-  freqs.len$Geneid
-)
-
-glm.mod <- glmGamPoi::glm_gp(
-  t(freqs.mat),
-  # ~ log10(length) - 1,
-  ~ length - 1,
-  col_data = freqs.len,
-  size_factors = 1
-)
+################################################################################
 
 
-my.glm <-
-  glm.mod$Mu  |>
-  t() |>
-  as_tibble(rownames = 'Geneid') |>
-  left_join(freqs.len, 'Geneid') |>
-  select(-Geneid) |>
-  unique() |>
-  # count(length) |> count(n) # good, works to extract expected values
-  pivot_longer(- length, names_to = 'AA', values_to = 'expected') |>
-  mutate(dispersion = glm.mod$overdispersions[AA])
-
-
-
-binom.mod |>
-  select(AA, phat) |>
-  unique() |>
-  left_join(
-    glm.mod$Beta |>
-      as_tibble(rownames = 'AA'),
-    'AA'
+my.disp <-
+  freqs |>
+  pivot_longer(- Geneid, names_to = 'AA') |>
+  group_by(AA) |>
+  summarize(
+    avg = mean(value),
+    var = var(value)
   ) |>
-  # rename(length = `log10(length)`) |>
-  ggscatter('phat', 'length') +
-  geom_smooth(aes(color = 'Loess'), method = 'loess', se = FALSE) +
-  geom_smooth(aes(color = 'linear regression'), method = 'lm', se = FALSE) +
-  ggsci::scale_color_jama(name = NULL) +
-  xlab('Binomial p MLE') +
-  ylab('Negative binomial regression length coefficient') +
+  ungroup() |>
+  mutate(adhoc.disp = (var - avg) / (avg**2) )
+
+
+my.disp |>
+  ggplot(aes(avg, adhoc.disp, label = AA)) +
+  geom_point() +
+  ggrepel::geom_label_repel() +
+  xlab('Average AA abundance') +
+  ylab('Dispersion estimation') +
   theme_pubr(18)
-  
+
+
 ggsave('~/Downloads/foo4.jpeg', width = 8, height = 6)
 
 ################################################################################
@@ -256,12 +235,12 @@ a <- (1 - .9)/2
 freqs |>
   pivot_longer(- Geneid, names_to = 'AA') |>
   left_join(freqs.len, 'Geneid') |>
-  left_join(my.glm, c('AA', 'length')) |>
-  mutate(expected = ifelse(expected > 500, NA, expected)) |>
+  # left_join(my.glm, c('AA', 'length')) |>
+  left_join(my.mod, c('AA', 'length')) |>
   group_by_all() |>
   reframe(
-    low = qnbinom(a,      size = 1 / dispersion, mu = expected),
-    up = qnbinom(1 - a,   size = 1 / dispersion, mu = expected)
+    low = qnbinom(a,      size = 1 / adhoc.disp, mu = mu),
+    up = qnbinom(1 - a,   size = 1 / adhoc.disp, mu = mu)
   ) -> nb.data
 
 
@@ -272,14 +251,16 @@ nb.data |>
   geom_line(aes(y = up, color = '90% confidence'), size = 1.2) +
   geom_line(aes(y = low, color = '90% confidence'), size = 1.2) +
   #
-  geom_line(aes(y = expected, color = 'expected'), size = 1.2) +
+  geom_line(aes(y = mu, color = 'expected'), size = 1.2) +
   scale_color_manual(values = cbPalette[c(7, 6, 1)], name = NULL) +
   xlab('Genes length') +
   ylab('Absolute AA abundence') +
   facet_wrap(~ AA,scales = 'free') +
+  # ylim(c(0, 400)) +
   theme_pubr(18)
 
 
+ggsave('~/Downloads/foo5.jpeg', width = 18, height = 8)
 
 ################################################################################
 ################################################################################
