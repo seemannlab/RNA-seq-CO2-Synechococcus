@@ -77,16 +77,6 @@ freqs |>
 ggsave('~/Downloads/foo.jpeg', width = 12, height = 7)
 
 ################################################################################
-
-freqs |>
-  pivot_longer(- Geneid, names_to = 'AA') |>
-  left_join(freqs.len, 'Geneid') |>
-  mutate(prop = value / length) |>
-  ggdensity(
-    'prop',
-    color = 'AA'
-  )
-
 ################################################################################
   
 freqs |>
@@ -109,34 +99,251 @@ foo |>
 # highlight 90% confidence interval
 # -> find upper/lower 5%
 a <- (1 - .9)/2
-a2 <- (1 - .98)/2
+# a2 <- (1 - .98)/2
 
 binom.mod |>
   mutate(
     expected = length * phat,
     low = qbinom(a, length, phat),
     up = qbinom(1 - a, length, phat),
-    low2 = qbinom(a2, length, phat),
-    up2 = qbinom(1 - a2, length, phat)
+    # low2 = qbinom(a2, length, phat),
+    # up2 = qbinom(1 - a2, length, phat)
   ) -> bar
 
 bar |>
-  mutate('Geneid' = fct_reorder(Geneid, length)) |>
-  ggplot(aes(x = Geneid,y = expected, group = 1)) +
+  # mutate('Geneid' = fct_reorder(Geneid, length)) |>
+  ggplot(aes(x = length, group = 1)) +
   geom_point(aes(y = value, color = 'observed'), alpha = .5) +
   geom_line(aes(y = up, color = '90% confidence'), size = 1.2) +
   geom_line(aes(y = low, color = '90% confidence'), size = 1.2) +
-  geom_line(aes(y = up2, color = '98% confidence'), size = 1.2) +
-  geom_line(aes(y = low2, color = '98% confidence'), size = 1.2) +
-  geom_line(aes(color = 'expected'), size = 1.2) +
-  scale_color_manual(values = cbPalette[c(7, 2, 6, 1)], name = NULL) +
-  xlab('Genes, sorted by gene length') +
+  # geom_line(aes(y = up2, color = '98% confidence'), size = 1.2) +
+  # geom_line(aes(y = low2, color = '98% confidence'), size = 1.2) +
+  geom_line(aes(y = expected, color = 'expected'), size = 1.2) +
+  scale_color_manual(values = cbPalette[c(7, 6, 1)], name = NULL) +
+  xlab('Genes length') +
   ylab('Absolute AA abundence') +
   facet_wrap(~ AA,scales = 'free') +
-  theme_pubr(18) +
-  theme(axis.text.x = element_blank())
+  theme_pubr(18)
 
-ggsave('~/Downloads/foo.jpeg', width = 16, height = 8)
+ggsave('~/Downloads/foo.jpeg', width = 18, height = 8)
+
+################################################################################
+# Given the binomial model, check residuals with simulated confidence envelope
+
+# no. simulations for envelope
+nsim <- 100
+# highlight 90% confidence interval
+# -> find upper/lower 5%
+alpha <- (1 - .9)/2
+# simulate confidence interval
+helper.conf <- function(length, phat, expected = length * phat) {
+  xs <- abs(rbinom(nsim, length, phat) - expected)
+  tibble(
+    conf.up = quantile(xs, alpha),
+    conf.low = quantile(xs, 1 - alpha)
+  )
+}
+conf.band <-
+  binom.mod |>
+  select(AA, phat, length) |>
+  unique() |>
+  group_by_all() |>
+  reframe(helper.conf(length, phat)) |>
+  select(- phat)
+
+
+binom.mod |>
+  mutate(
+    expected = length * phat,
+    dev = abs(value - expected)
+  ) |>
+  ggplot(aes(length, dev)) +
+  geom_point(aes(color = 'observed'), alpha = .5) +
+  geom_line(aes(y = conf.up, color =  'Simulated 90% confidence'),
+            data = conf.band,
+            size = 1.2) +
+  geom_line(aes(y = conf.low, color = 'Simulated 90% confidence'),
+            data = conf.band,
+            size = 1.2) +
+  scale_color_manual(values = cbPalette[c(1, 7)], name = NULL) +
+  xlab('Gene length') +
+  ylab('Abolute residuals') +
+  facet_wrap(~ AA, scales = 'free') +
+  theme_pubr(18)
+
+ggsave('~/Downloads/foo2.jpeg', width = 18, height = 8)
+
+################################################################################
+
+
+qq.normal.helper <- function(xs) {
+  tibble(
+    xs = xs[order(xs)],
+    ps = ppoints(xs),
+    expected = qnorm(ps)
+  )
+}
+
+freqs.len |>
+  pull(length) |>
+  log10() |>
+  qq.normal.helper() |>
+  ggplot(aes(expected, xs)) +
+  geom_point() +
+  geom_smooth(method = 'lm') +
+  stat_cor(size = 5, color = 'blue') +
+  ylab('log10 gene length quantiles') +
+  xlab('Normal distribution quantiles') +
+  theme_pubr(18)
+
+
+ggsave('~/Downloads/foo3.jpeg', width = 8, height = 6)
+
+################################################################################
+
+assertthat::are_equal(
+  rownames(freqs.mat),
+  freqs.len$Geneid
+)
+
+glm.mod <- glmGamPoi::glm_gp(
+  t(freqs.mat),
+  # ~ log10(length) - 1,
+  ~ length - 1,
+  col_data = freqs.len,
+  size_factors = 1
+)
+
+
+my.glm <-
+  glm.mod$Mu  |>
+  t() |>
+  as_tibble(rownames = 'Geneid') |>
+  left_join(freqs.len, 'Geneid') |>
+  select(-Geneid) |>
+  unique() |>
+  # count(length) |> count(n) # good, works to extract expected values
+  pivot_longer(- length, names_to = 'AA', values_to = 'expected') |>
+  mutate(dispersion = glm.mod$overdispersions[AA])
+
+
+
+binom.mod |>
+  select(AA, phat) |>
+  unique() |>
+  left_join(
+    glm.mod$Beta |>
+      as_tibble(rownames = 'AA'),
+    'AA'
+  ) |>
+  # rename(length = `log10(length)`) |>
+  ggscatter('phat', 'length') +
+  geom_smooth(aes(color = 'Loess'), method = 'loess', se = FALSE) +
+  geom_smooth(aes(color = 'linear regression'), method = 'lm', se = FALSE) +
+  ggsci::scale_color_jama(name = NULL) +
+  xlab('Binomial p MLE') +
+  ylab('Negative binomial regression length coefficient') +
+  theme_pubr(18)
+  
+ggsave('~/Downloads/foo4.jpeg', width = 8, height = 6)
+
+################################################################################
+
+# highlight 90% confidence interval
+# -> find upper/lower 5%
+a <- (1 - .9)/2
+
+freqs |>
+  pivot_longer(- Geneid, names_to = 'AA') |>
+  left_join(freqs.len, 'Geneid') |>
+  left_join(my.glm, c('AA', 'length')) |>
+  mutate(expected = ifelse(expected > 500, NA, expected)) |>
+  group_by_all() |>
+  reframe(
+    low = qnbinom(a,      size = 1 / dispersion, mu = expected),
+    up = qnbinom(1 - a,   size = 1 / dispersion, mu = expected)
+  ) -> nb.data
+
+
+nb.data |>
+  ggplot(aes(x = length, group = 1)) +
+  geom_point(aes(y = value, color = 'observed'), alpha = .5) +
+  #
+  geom_line(aes(y = up, color = '90% confidence'), size = 1.2) +
+  geom_line(aes(y = low, color = '90% confidence'), size = 1.2) +
+  #
+  geom_line(aes(y = expected, color = 'expected'), size = 1.2) +
+  scale_color_manual(values = cbPalette[c(7, 6, 1)], name = NULL) +
+  xlab('Genes length') +
+  ylab('Absolute AA abundence') +
+  facet_wrap(~ AA,scales = 'free') +
+  theme_pubr(18)
+
+
+
+################################################################################
+################################################################################
+# Given the NB model, check residuals with simulated confidence envelope
+
+# no. simulations for envelope
+nsim <- 100
+# highlight 90% confidence interval
+# -> find upper/lower 5%
+alpha <- (1 - .9)/2
+# simulate confidence interval
+helper.conf <- function(mu, dispersion) {
+  xs <- abs(rbinom(nsim, length, phat) - expected)
+  tibble(
+    conf.up = quantile(xs, alpha),
+    conf.low = quantile(xs, 1 - alpha)
+  )
+}
+conf.band <-
+  binom.mod |>
+  select(AA, phat, length) |>
+  unique() |>
+  group_by_all() |>
+  reframe(helper.conf(length, phat)) |>
+  select(- phat)
+
+
+binom.mod |>
+  mutate(
+    expected = length * phat,
+    dev = abs(value - expected)
+  ) |>
+  ggplot(aes(length, dev)) +
+  geom_point(aes(color = 'observed'), alpha = .5) +
+  geom_line(aes(y = conf.up, color =  'Simulated 90% confidence'),
+            data = conf.band,
+            size = 1.2) +
+  geom_line(aes(y = conf.low, color = 'Simulated 90% confidence'),
+            data = conf.band,
+            size = 1.2) +
+  scale_color_manual(values = cbPalette[c(1, 7)], name = NULL) +
+  scale_x_log10() +
+  xlab('Gene length') +
+  ylab('Abolute residuals') +
+  facet_wrap(~ AA, scales = 'free') +
+  theme_pubr(18)
+
+ggsave('~/Downloads/foo2.jpeg', width = 18, height = 8)
+
+################################################################################
+
+
+
+
+
+
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
 
 ################################################################################
 binom.mod |>
