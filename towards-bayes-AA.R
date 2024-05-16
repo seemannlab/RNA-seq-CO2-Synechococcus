@@ -351,18 +351,42 @@ aa.ps |>
   filter(extreme.p <= 0.05) |>
   group_by(Geneid) |>
   slice_min(extreme.p) |>
-  left_join(annot, 'Geneid') |>
-  View()
+  left_join(annot, 'Geneid') -> short.list
 
 
 
 ################################################################################
 
-
+list(
+'DE coding gene' = deg |>
+  filter(is.de, type == 'protein_coding') |>
+  pull(Geneid) |>
+  unique(),
+'DE 30% vs rest' = deg30 |>
+  filter(padj <= 0.001) |>
+  filter(abs(log2FoldChange) >= 1) |>
+  semi_join(annot |> filter(type == 'protein_coding')) |>
+  pull(Geneid) |>
+  unique(),
+'Changing AA?' = short.list$Geneid
+) |>
+  venn::venn(zcolor = 'style',  ilcs = 1.5, sncs = 1.5)
 
 
 ################################################################################
+
+foo <-
+  short.list |>
+  semi_join(deg |> filter(is.de)) |>
+  pull(Geneid)
+
+
+pheatmap::pheatmap(vz.mat[foo, ], show_rownames = FALSE)
+
 ################################################################################
+
+
+
 ################################################################################
 ################################################################################
 ################################################################################
@@ -392,6 +416,10 @@ deg <-
 
 vst <-
   'analysis/D_vst-expression.tsv' |>
+  read_tsv()
+
+deg30 <-
+  'analysis/M_logFC-vs-30.tsv' |>
   read_tsv()
 
 ################################################################################
