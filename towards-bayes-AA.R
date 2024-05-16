@@ -120,6 +120,7 @@ bar |>
   # geom_line(aes(y = low2, color = '98% confidence'), size = 1.2) +
   geom_line(aes(y = expected, color = 'expected'), size = 1.2) +
   scale_color_manual(values = cbPalette[c(7, 6, 1)], name = NULL) +
+  scale_x_log10() +
   xlab('Genes length') +
   ylab('Absolute AA abundence') +
   facet_wrap(~ AA,scales = 'free') +
@@ -151,6 +152,12 @@ conf.band <-
   reframe(helper.conf(length, phat)) |>
   select(- phat)
 
+conf.poly <-
+  conf.band |>
+  select(AA, length, conf.up, conf.low) |>
+  pivot_longer(contains('conf')) |>
+  mutate(v2 = length * ifelse(name == 'conf.low', -1, 1)) |>
+  arrange(name, v2)
 
 binom.mod |>
   mutate(
@@ -159,13 +166,15 @@ binom.mod |>
   ) |>
   ggplot(aes(length, dev)) +
   geom_point(aes(color = 'observed'), alpha = .5) +
-  geom_line(aes(y = conf.up, color =  'Simulated 90% confidence'),
-            data = conf.band,
-            size = 1.2) +
-  geom_line(aes(y = conf.low, color = 'Simulated 90% confidence'),
-            data = conf.band,
-            size = 1.2) +
-  scale_color_manual(values = cbPalette[c(1, 7)], name = NULL) +
+  geom_polygon(aes(x = length, y = value,
+                    fill = 'Simulated 90% confidence',
+                    color = NULL),
+            data = conf.poly,
+            linewidth = 0,
+            alpha = .4) +
+  scale_x_log10() +
+  scale_color_manual(values = cbPalette[c(1)], name = NULL) +
+  scale_fill_manual(values = cbPalette[c(7)], name = NULL) +
   xlab('Gene length') +
   ylab('Abolute residuals') +
   facet_wrap(~ AA, scales = 'free') +
@@ -253,10 +262,10 @@ nb.data |>
   #
   geom_line(aes(y = mu, color = 'expected'), size = 1.2) +
   scale_color_manual(values = cbPalette[c(7, 6, 1)], name = NULL) +
+  scale_x_log10() +
   xlab('Genes length') +
   ylab('Absolute AA abundence') +
   facet_wrap(~ AA,scales = 'free') +
-  # ylim(c(0, 400)) +
   theme_pubr(18)
 
 
@@ -272,89 +281,95 @@ nsim <- 100
 # -> find upper/lower 5%
 alpha <- (1 - .9)/2
 # simulate confidence interval
-helper.conf <- function(mu, dispersion) {
-  xs <- abs(rbinom(nsim, length, phat) - expected)
+helper.nb.conf <- function(mu, dispersion) {
+  xs <- abs(rnbinom(nsim, mu = mu, size = 1 / dispersion) - mu)
   tibble(
     conf.up = quantile(xs, alpha),
     conf.low = quantile(xs, 1 - alpha)
   )
 }
-conf.band <-
-  binom.mod |>
-  select(AA, phat, length) |>
-  unique() |>
+conf.nb.band <-
+  my.mod |>
   group_by_all() |>
-  reframe(helper.conf(length, phat)) |>
-  select(- phat)
+  reframe(helper.nb.conf(mu, adhoc.disp))
 
+conf.poly <-
+  conf.nb.band |>
+  select(AA, length, conf.up, conf.low) |>
+  pivot_longer(contains('conf')) |>
+  mutate(v2 = length * ifelse(name == 'conf.low', -1, 1)) |>
+  arrange(name, v2)
 
-binom.mod |>
+freqs |>
+  pivot_longer(- Geneid, names_to = 'AA') |>
+  left_join(freqs.len, 'Geneid') |>
+  left_join(my.mod, c('AA', 'length')) |>
   mutate(
-    expected = length * phat,
-    dev = abs(value - expected)
+    dev = abs(value - mu)
   ) |>
   ggplot(aes(length, dev)) +
   geom_point(aes(color = 'observed'), alpha = .5) +
-  geom_line(aes(y = conf.up, color =  'Simulated 90% confidence'),
-            data = conf.band,
-            size = 1.2) +
-  geom_line(aes(y = conf.low, color = 'Simulated 90% confidence'),
-            data = conf.band,
-            size = 1.2) +
-  scale_color_manual(values = cbPalette[c(1, 7)], name = NULL) +
   scale_x_log10() +
+  geom_polygon(aes(x = length, y = value,
+                    fill = 'Simulated 90% confidence',
+                    color = NULL),
+            data = conf.poly,
+            linewidth = 0,
+            alpha = .4) +
+  scale_color_manual(values = cbPalette[c(1)], name = NULL) +
+  scale_fill_manual(values = cbPalette[c(7)], name = NULL) +
   xlab('Gene length') +
   ylab('Abolute residuals') +
   facet_wrap(~ AA, scales = 'free') +
   theme_pubr(18)
 
-ggsave('~/Downloads/foo2.jpeg', width = 18, height = 8)
+ggsave('~/Downloads/foo7.jpeg', width = 18, height = 8)
 
 ################################################################################
 
 
-
-
-
-
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-
-################################################################################
-binom.mod |>
-  mutate(AA = fct_reorder(AA, ratio)) |>
-  ggplot(aes(AA, ratio)) +
-  geom_violin() +
-  geom_boxplot(fill = 'white', width = .2) +
-  geom_point(aes(y = phat, color = 'MLE'), size = 3, 
-             position = 'jitter') +
-  geom_point(aes(y = avg, color = 'average'), size = 3) +
-  xlab(NULL) +
-  ylab('Abundance / length\n(AA frequency)') +
-  theme_pubr(18) +
-  theme(
-    axis.text.x = element_text(angle = 60, hjust = 1)
-  )
-
-ggsave('~/Downloads/foo2.jpeg', width = 14, height = 12)
-
-################################################################################
-
-binom.mod |>
-  mutate(
-    expected = length * phat
-  ) |>
+freqs |>
+  pivot_longer(- Geneid, names_to = 'AA') |>
+  left_join(freqs.len, 'Geneid') |>
+  left_join(my.mod, c('AA', 'length')) |>
   group_by_all() |>
-  engrame(p = pbinom(value, length, phat))
-  
-  
-# TODO repeat half normal plot of residuals, but for binomial model
+  reframe(cum.p = pnbinom(value, mu = mu, size = 1 / adhoc.disp)) |>
+  mutate(extreme.p = ifelse(cum.p > .5, 1 - cum.p, cum.p)) -> aa.ps
+
+
+
+aa.ps |>
+  ggplot(aes(value - mu, -log10(extreme.p))) +
+  geom_point() +
+  scale_color_viridis_c() +
+  xlab('Difference Observed - Expected AA abundance') +
+  geom_hline(yintercept = -log10(0.05), color = 'red') +
+  facet_wrap(~ AA, scales = 'free') +
+  theme_pubr(18)
+
+aa.ps |>
+  filter(extreme.p <= 0.05) |>
+  group_by(Geneid) |>
+  slice_min(extreme.p) |>
+  left_join(annot, 'Geneid') |>
+  View()
+
+
+
+################################################################################
+
+
+
+
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+
+################################################################################
 
 
 ################################################################################
