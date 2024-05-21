@@ -273,15 +273,34 @@ my.disp <-
 
 
 my.disp |>
-  ggplot(aes(avg, adhoc.disp, label = AA)) +
+  # ggplot(aes(avg, adhoc.disp, label = AA)) +
+  ggplot(aes(avg, var)) +
   geom_point() +
-  ggrepel::geom_label_repel() +
+  geom_smooth(formula = y ~ poly(x, 2), method = 'lm', color = 'blue', se = FALSE) +
+  stat_regline_equation(formula = y ~ poly(x, 2), color = 'blue', size = 5) +
+  geom_smooth(method = 'lm', color = 'red', se = FALSE) +
+  stat_regline_equation(formula = y ~ x, color = 'red', size = 5, label.y.npc = .9) +
+  ggrepel::geom_label_repel(aes(label = AA)) +
   xlab('Average AA abundance') +
-  ylab('Dispersion estimation') +
+  # ylab('Dispersion estimation') +
+  ylab('Empirical variance') +
   theme_pubr(18)
 
 
 ggsave('~/Downloads/foo4.jpeg', width = 8, height = 6)
+
+################################################################################
+
+my.disp <-
+  freqs |>
+  pivot_longer(- Geneid, names_to = 'AA') |>
+  group_by(AA) |>
+  summarize(
+    avg = mean(value),
+    var = var(value)
+  ) |>
+  ungroup() |>
+  mutate(adhoc.disp = (var - avg) / (avg**2) )
 
 ################################################################################
 
