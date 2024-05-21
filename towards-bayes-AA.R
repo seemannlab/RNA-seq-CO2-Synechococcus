@@ -135,14 +135,63 @@ ggsave('~/Downloads/foo.jpeg', width = 18, height = 8)
 
 # no. simulations for envelope
 nsim <- 100
+
+
+matrix(1:9, nrow = 3, ncol = 3)
+
 # simulate confidence interval
-helper.conf <- function(length, phat, expected = length * phat) {
-  xs <- abs(rbinom(nsim, length, phat) - expected)
-  tibble(
-    conf.up  = quantile(xs, conf.alpha),
-    conf.low = quantile(xs, 1 - conf.alpha)
-  )
-}
+sim.data <-
+  binom.mod |>
+  pmap(function(Geneid, AA, value, length, ratio, phat, avg) {
+    expected <- length * phat
+    res <- abs(rbinom(nsim, length, phat) - expected)
+    sort(res)
+  }) |>
+  invoke(.f = rbind)
+
+binom.mod |>
+  mutate(
+    conf.up  = apply(sim.data, 1, \(x) quantile(x, 1 - conf.alpha)),
+    conf.low = apply(sim.data, 1, \(x) quantile(x, conf.alpha))
+  ) -> foo
+
+foo |>
+  select(AA, conf.up) |>
+  arrange(AA, conf.up) |>
+  group_by(AA) |>
+  mutate(ps = ppoints(nrow(freqs.len))) |>
+  ungroup() |>
+  mutate(xs = fdrtool::qhalfnorm(ps)) -> foo.up
+
+foo |>
+  select(AA, conf.low) |>
+  arrange(AA, conf.low) |>
+  group_by(AA) |>
+  mutate(ps = ppoints(nrow(freqs.len))) |>
+  ungroup() |>
+  mutate(xs = fdrtool::qhalfnorm(ps)) -> foo.low
+  
+# expected = fdrtool::qhalfnorm(ps)
+
+binom.mod |>
+  mutate(
+    dev = abs(value - phat * length)
+  ) |>
+  select(AA, length, dev) |>
+  arrange(AA, dev) |>
+  group_by(AA) |>
+  mutate(ps = ppoints(nrow(freqs.len))) |>
+  ungroup() |>
+  mutate(xs = fdrtool::qhalfnorm(ps)) |>
+  ggplot(aes(xs, dev)) +
+  geom_point(aes(color = length)) +
+  scale_color_viridis_c() +
+  geom_line(aes(y = conf.up), data = foo.up, color = 'red') +
+  geom_line(aes(y = conf.low), data = foo.low, color = 'red') +
+  facet_wrap(~ AA)
+      
+################################################################################
+  
 conf.band <-
   binom.mod |>
   select(AA, phat, length) |>
@@ -165,12 +214,12 @@ binom.mod |>
   ) |>
   ggplot(aes(length, dev)) +
   geom_point(aes(color = 'observed'), alpha = .5) +
-  geom_polygon(aes(x = length, y = value,
-                    fill = 'Simulated 90% confidence',
-                    color = NULL),
-            data = conf.poly,
-            linewidth = 0,
-            alpha = .4) +
+  # geom_polygon(aes(x = length, y = value,
+  #                   fill = 'Simulated 90% confidence',
+  #                   color = NULL),
+  #           data = conf.poly,
+  #           linewidth = 0,
+  #           alpha = .4) +
   scale_x_log10() +
   scale_color_manual(values = cbPalette[c(1)], name = NULL) +
   scale_fill_manual(values = cbPalette[c(7)], name = NULL) +
@@ -274,7 +323,69 @@ nb.data |>
 ggsave('~/Downloads/foo5.jpeg', width = 18, height = 8)
 
 ################################################################################
+
+nsim <- 100
+
+
+matrix(1:9, nrow = 3, ncol = 3)
+
+# simulate confidence interval
+sim.nb.data <-
+  my.mod |>
+  select(Geneid, AA, length, phat, adhoc.disp) |>
+  pmap(function(Geneid, AA, length, phat, adhoc.disp) {
+    expected <- length * phat
+    res <- abs(rnbinom(nsim, mu = expected, size = 1 / adhoc.disp) - expected)
+    sort(res)
+  }) |>
+  invoke(.f = rbind)
+
+my.mod |>
+  mutate(
+    conf.up  = apply(sim.nb.data, 1, \(x) quantile(x, 1 - conf.alpha)),
+    conf.low = apply(sim.nb.data, 1, \(x) quantile(x, conf.alpha))
+  ) -> foo
+
+foo |>
+  select(AA, conf.up) |>
+  arrange(AA, conf.up) |>
+  group_by(AA) |>
+  mutate(ps = ppoints(nrow(freqs.len))) |>
+  ungroup() |>
+  mutate(xs = fdrtool::qhalfnorm(ps)) -> foo.up
+
+foo |>
+  select(AA, conf.low) |>
+  arrange(AA, conf.low) |>
+  group_by(AA) |>
+  mutate(ps = ppoints(nrow(freqs.len))) |>
+  ungroup() |>
+  mutate(xs = fdrtool::qhalfnorm(ps)) -> foo.low
+  
+# expected = fdrtool::qhalfnorm(ps)
+
+freqs |>
+  pivot_longer(- Geneid, names_to = 'AA') |>
+  left_join(my.mod, c('Geneid', 'AA')) |>
+  mutate(
+    dev = abs(value - phat * length)
+  ) |>
+  select(AA, length, dev) |>
+  arrange(AA, dev) |>
+  group_by(AA) |>
+  mutate(ps = ppoints(nrow(freqs.len))) |>
+  ungroup() |>
+  mutate(xs = fdrtool::qhalfnorm(ps)) |>
+  ggplot(aes(xs, dev)) +
+  geom_point() +
+  xlab('Normal quantiles')
+  scale_color_viridis_c() +
+  geom_line(aes(y = conf.up), data = foo.up, color = 'red') +
+  geom_line(aes(y = conf.low), data = foo.low, color = 'red') +
+  facet_wrap(~ AA)
+  
 ################################################################################
+
 # Given the NB model, check residuals with simulated confidence envelope
 
 # no. simulations for envelope
