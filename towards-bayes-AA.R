@@ -71,7 +71,7 @@ freqs |>
     'length', 'value',
     alpha = .5,
     add = 'reg.line', add.params = list(color = 'red'),
-    cor.coef = TRUE, cor.coeff.args = list(color = 'red', size = 5)
+    cor.coef = TRUE, cor.coeff.args = list(color = 'red', size = 3)
   ) +
   scale_x_log10() +
   scale_y_log10() +
@@ -80,7 +80,7 @@ freqs |>
   facet_wrap(~ AA, scales = 'free_y')
             
 
-ggsave('~/Downloads/foo.jpeg', width = 12, height = 7)
+ggsave('~/Downloads/foo.jpeg', width = 10, height = 6)
 
 ################################################################################
 ################################################################################
@@ -106,8 +106,8 @@ foo |>
 binom.mod |>
   mutate(
     expected = length * phat,
-    low = qbinom(a, length, phat),
-    up = qbinom(1 - a, length, phat),
+    low = qbinom(conf.alpha, length, phat),
+    up = qbinom(1 - conf.alpha, length, phat),
     # low2 = qbinom(a2, length, phat),
     # up2 = qbinom(1 - a2, length, phat)
   ) -> bar
@@ -131,105 +131,6 @@ bar |>
 ggsave('~/Downloads/foo.jpeg', width = 18, height = 8)
 
 ################################################################################
-# Given the binomial model, check residuals with simulated confidence envelope
-
-# no. simulations for envelope
-nsim <- 100
-
-
-matrix(1:9, nrow = 3, ncol = 3)
-
-# simulate confidence interval
-sim.data <-
-  binom.mod |>
-  pmap(function(Geneid, AA, value, length, ratio, phat, avg) {
-    expected <- length * phat
-    res <- abs(rbinom(nsim, length, phat) - expected)
-    sort(res)
-  }) |>
-  invoke(.f = rbind)
-
-binom.mod |>
-  mutate(
-    conf.up  = apply(sim.data, 1, \(x) quantile(x, 1 - conf.alpha)),
-    conf.low = apply(sim.data, 1, \(x) quantile(x, conf.alpha))
-  ) -> foo
-
-foo |>
-  select(AA, conf.up) |>
-  arrange(AA, conf.up) |>
-  group_by(AA) |>
-  mutate(ps = ppoints(nrow(freqs.len))) |>
-  ungroup() |>
-  mutate(xs = fdrtool::qhalfnorm(ps)) -> foo.up
-
-foo |>
-  select(AA, conf.low) |>
-  arrange(AA, conf.low) |>
-  group_by(AA) |>
-  mutate(ps = ppoints(nrow(freqs.len))) |>
-  ungroup() |>
-  mutate(xs = fdrtool::qhalfnorm(ps)) -> foo.low
-  
-# expected = fdrtool::qhalfnorm(ps)
-
-binom.mod |>
-  mutate(
-    dev = abs(value - phat * length)
-  ) |>
-  select(AA, length, dev) |>
-  arrange(AA, dev) |>
-  group_by(AA) |>
-  mutate(ps = ppoints(nrow(freqs.len))) |>
-  ungroup() |>
-  mutate(xs = fdrtool::qhalfnorm(ps)) |>
-  ggplot(aes(xs, dev)) +
-  geom_point(aes(color = length)) +
-  scale_color_viridis_c() +
-  geom_line(aes(y = conf.up), data = foo.up, color = 'red') +
-  geom_line(aes(y = conf.low), data = foo.low, color = 'red') +
-  facet_wrap(~ AA)
-      
-################################################################################
-  
-conf.band <-
-  binom.mod |>
-  select(AA, phat, length) |>
-  unique() |>
-  group_by_all() |>
-  reframe(helper.conf(length, phat)) |>
-  select(- phat)
-
-conf.poly <-
-  conf.band |>
-  select(AA, length, conf.up, conf.low) |>
-  pivot_longer(contains('conf')) |>
-  mutate(v2 = length * ifelse(name == 'conf.low', -1, 1)) |>
-  arrange(name, v2)
-
-binom.mod |>
-  mutate(
-    expected = length * phat,
-    dev = abs(value - expected)
-  ) |>
-  ggplot(aes(length, dev)) +
-  geom_point(aes(color = 'observed'), alpha = .5) +
-  # geom_polygon(aes(x = length, y = value,
-  #                   fill = 'Simulated 90% confidence',
-  #                   color = NULL),
-  #           data = conf.poly,
-  #           linewidth = 0,
-  #           alpha = .4) +
-  scale_x_log10() +
-  scale_color_manual(values = cbPalette[c(1)], name = NULL) +
-  scale_fill_manual(values = cbPalette[c(7)], name = NULL) +
-  xlab('Gene length') +
-  ylab('Abolute residuals') +
-  facet_wrap(~ AA, scales = 'free') +
-  theme_pubr(18)
-
-ggsave('~/Downloads/foo2.jpeg', width = 18, height = 8)
-
 ################################################################################
 
 
@@ -260,8 +161,7 @@ ggsave('~/Downloads/foo3.jpeg', width = 8, height = 6)
 ################################################################################
 
 
-my.disp <-
-  freqs |>
+freqs |>
   pivot_longer(- Geneid, names_to = 'AA') |>
   group_by(AA) |>
   summarize(
@@ -269,17 +169,12 @@ my.disp <-
     var = var(value)
   ) |>
   ungroup() |>
-  mutate(adhoc.disp = (var - avg) / (avg**2) )
-
-
-my.disp |>
-  # ggplot(aes(avg, adhoc.disp, label = AA)) +
   ggplot(aes(avg, var)) +
   geom_point() +
   geom_smooth(formula = y ~ poly(x, 2), method = 'lm', color = 'blue', se = FALSE) +
-  stat_regline_equation(formula = y ~ poly(x, 2), color = 'blue', size = 5) +
+  stat_regline_equation(formula = y ~ poly(x, 2), color = 'blue', size = 8) +
   geom_smooth(method = 'lm', color = 'red', se = FALSE) +
-  stat_regline_equation(formula = y ~ x, color = 'red', size = 5, label.y.npc = .9) +
+  stat_regline_equation(formula = y ~ x, color = 'red', size = 8, label.y.npc = .9) +
   ggrepel::geom_label_repel(aes(label = AA)) +
   xlab('Average AA abundance') +
   # ylab('Dispersion estimation') +
@@ -287,20 +182,41 @@ my.disp |>
   theme_pubr(18)
 
 
-ggsave('~/Downloads/foo4.jpeg', width = 8, height = 6)
+ggsave('~/Downloads/foo4.jpeg', width = 8, height = 8)
 
 ################################################################################
 
-my.disp <-
-  freqs |>
-  pivot_longer(- Geneid, names_to = 'AA') |>
-  group_by(AA) |>
-  summarize(
-    avg = mean(value),
-    var = var(value)
-  ) |>
-  ungroup() |>
-  mutate(adhoc.disp = (var - avg) / (avg**2) )
+# Convert per Amino acid to functiont that has only dispersion
+# open for optimization
+aa.fns <-
+  binom.mod %>%
+  plyr::dlply(plyr::`.`(AA), function(tbl) {
+    # tbl <- filter(binom.mod, AA == 'valine')
+    # disp <- .5
+    function(disp) {
+      tbl |>
+        group_by_all() |>
+        reframe(p = dnbinom(value, mu = phat * length, size = 1 / disp)) |>
+        pull(p) |>
+        log() |>
+        sum() |>
+        # convert to min problem for optim
+        prod(-1)
+    }
+  })
+
+
+# Find optimal non-negative dispersion parameters
+aa.disp <-
+  aa.fns |>
+  map(function(f) {
+    optim(.5, f, method = 'L-BFGS-B',
+          upper = .Machine$double.xmax,
+          lower = .Machine$double.xmin)
+  }) |>
+  map('par') %>%
+  tibble(AA = names(.), disp = .) |>
+  unnest(disp)
 
 ################################################################################
 
@@ -308,7 +224,7 @@ my.mod <-
   binom.mod |>
   select(Geneid, AA, length, phat) |>
   unique() |>
-  left_join(my.disp, 'AA') |>
+  left_join(aa.disp, 'AA') |>
   mutate(mu = length * phat)
 
 freqs |>
@@ -318,8 +234,8 @@ freqs |>
   left_join(my.mod, c('AA', 'length')) |>
   group_by_all() |>
   reframe(
-    low = qnbinom(conf.alpha,    size = 1 / adhoc.disp, mu = mu),
-    up = qnbinom(1 - conf.alpha, size = 1 / adhoc.disp, mu = mu)
+    low = qnbinom(conf.alpha,    size = 1 / disp, mu = mu),
+    up = qnbinom(1 - conf.alpha, size = 1 / disp, mu = mu)
   ) -> nb.data
 
 
@@ -342,147 +258,62 @@ nb.data |>
 ggsave('~/Downloads/foo5.jpeg', width = 18, height = 8)
 
 ################################################################################
+################################################################################
 
-nsim <- 100
-
-
-matrix(1:9, nrow = 3, ncol = 3)
-
-# simulate confidence interval
-sim.nb.data <-
-  my.mod |>
-  select(Geneid, AA, length, phat, adhoc.disp) |>
-  pmap(function(Geneid, AA, length, phat, adhoc.disp) {
-    expected <- length * phat
-    res <- abs(rnbinom(nsim, mu = expected, size = 1 / adhoc.disp) - expected)
-    sort(res)
-  }) |>
-  invoke(.f = rbind)
-
-my.mod |>
-  mutate(
-    conf.up  = apply(sim.nb.data, 1, \(x) quantile(x, 1 - conf.alpha)),
-    conf.low = apply(sim.nb.data, 1, \(x) quantile(x, conf.alpha))
-  ) -> foo
-
-foo |>
-  select(AA, conf.up) |>
-  arrange(AA, conf.up) |>
-  group_by(AA) |>
-  mutate(ps = ppoints(nrow(freqs.len))) |>
-  ungroup() |>
-  mutate(xs = fdrtool::qhalfnorm(ps)) -> foo.up
-
-foo |>
-  select(AA, conf.low) |>
-  arrange(AA, conf.low) |>
-  group_by(AA) |>
-  mutate(ps = ppoints(nrow(freqs.len))) |>
-  ungroup() |>
-  mutate(xs = fdrtool::qhalfnorm(ps)) -> foo.low
-  
-# expected = fdrtool::qhalfnorm(ps)
-
-freqs |>
+aa.ps <-
+  freqs |>
   pivot_longer(- Geneid, names_to = 'AA') |>
   left_join(my.mod, c('Geneid', 'AA')) |>
-  mutate(
-    dev = abs(value - phat * length)
-  ) |>
-  select(AA, length, dev) |>
-  arrange(AA, dev) |>
-  group_by(AA) |>
-  mutate(ps = ppoints(nrow(freqs.len))) |>
-  ungroup() |>
-  mutate(xs = fdrtool::qhalfnorm(ps)) |>
-  ggplot(aes(xs, dev)) +
-  geom_point() +
-  xlab('Normal quantiles')
-  scale_color_viridis_c() +
-  geom_line(aes(y = conf.up), data = foo.up, color = 'red') +
-  geom_line(aes(y = conf.low), data = foo.low, color = 'red') +
-  facet_wrap(~ AA)
-  
-################################################################################
-
-# Given the NB model, check residuals with simulated confidence envelope
-
-# no. simulations for envelope
-nsim <- 100
-# simulate confidence interval
-helper.nb.conf <- function(mu, dispersion) {
-  xs <- abs(rnbinom(nsim, mu = mu, size = 1 / dispersion) - mu)
-  tibble(
-    conf.up = quantile(xs, alpha),
-    conf.low = quantile(xs, 1 - alpha)
-  )
-}
-conf.nb.band <-
-  my.mod |>
   group_by_all() |>
-  reframe(helper.nb.conf(mu, adhoc.disp))
-
-conf.poly <-
-  conf.nb.band |>
-  select(AA, length, conf.up, conf.low) |>
-  pivot_longer(contains('conf')) |>
-  mutate(v2 = length * ifelse(name == 'conf.low', -1, 1)) |>
-  arrange(name, v2)
-
-freqs |>
-  pivot_longer(- Geneid, names_to = 'AA') |>
-  left_join(freqs.len, 'Geneid') |>
-  left_join(my.mod, c('AA', 'length')) |>
-  mutate(
-    dev = abs(value - mu)
-  ) |>
-  ggplot(aes(length, dev)) +
-  geom_point(aes(color = 'observed'), alpha = .5, shape = 20) +
-  scale_x_log10() +
-  geom_polygon(aes(x = length, y = value,
-                    fill = 'Simulated 90% confidence',
-                    color = NULL),
-            data = conf.poly,
-            linewidth = 0,
-            alpha = .4) +
-  scale_color_manual(values = cbPalette[c(1)], name = NULL) +
-  scale_fill_manual(values = cbPalette[c(7)], name = NULL) +
-  xlab('Gene length') +
-  ylab('Abolute residuals') +
-  facet_wrap(~ AA, scales = 'free') +
-  theme_pubr(18)
-
-ggsave('~/Downloads/foo7.jpeg', width = 18, height = 8)
-
-################################################################################
-
-
-freqs |>
-  pivot_longer(- Geneid, names_to = 'AA') |>
-  left_join(freqs.len, 'Geneid') |>
-  left_join(my.mod, c('AA', 'length')) |>
-  group_by_all() |>
-  reframe(cum.p = pnbinom(value, mu = mu, size = 1 / adhoc.disp)) |>
-  mutate(extreme.p = ifelse(cum.p > .5, 1 - cum.p, cum.p)) -> aa.ps
+  reframe(cum.p = pnbinom(value, mu = mu, size = 1 / disp)) |>
+  mutate(extreme.p = ifelse(cum.p > .5, 1 - cum.p, cum.p))
 
 
 
 aa.ps |>
-  ggplot(aes(value - mu, -log10(extreme.p))) +
+  ggplot(aes(value - mu, -log10(extreme.p), color = log10(length))) +
   geom_point() +
   scale_color_viridis_c() +
   xlab('Difference Observed - Expected AA abundance') +
+  ylab('-log10(P-Value)') +
   geom_hline(yintercept = -log10(0.05), color = 'red') +
   facet_wrap(~ AA, scales = 'free') +
   theme_pubr(18)
 
+
+ggsave('~/Downloads/foo6.jpeg', width = 12, height = 8)
+
+# aa.ps |>
+#   ggplot(aes(length, -log10(extreme.p))) +
+#   geom_point() +
+#   scale_x_log10() +
+#   stat_cor(color = 'red') +
+#   facet_wrap(~ AA)
+
+
+################################################################################
+
 aa.ps |>
-  filter(extreme.p <= 0.05) |>
+  gghistogram('extreme.p', facet.by = 'AA')
+
+aa.ps |>
+  group_by(Geneid) |>
+  summarize_at('extreme.p', min) |>
+  gghistogram('extreme.p') +
+  geom_vline(xintercept = 0.001, color = 'red') +
+  xlab('Min P-Value per gene')
+
+aa.ps |>
+  group_by(Geneid) |>
+  summarize(p = 1 - prod(1 - extreme.p)) |>
+  count(p <= 0.1)
+#   pull(p) |> log1p() |> hist()
+
+aa.ps |>
+  filter(extreme.p <= 0.001) |>
   group_by(Geneid) |>
   slice_min(extreme.p) |>
   left_join(annot, 'Geneid') -> short.list
-
-
 
 
 ################################################################################
@@ -492,15 +323,78 @@ list(
   filter(is.de, type == 'protein_coding') |>
   pull(Geneid) |>
   unique(),
-'DE 30% vs rest' = deg30 |>
-  filter(padj <= 0.001) |>
-  filter(abs(log2FoldChange) >= 1) |>
-  semi_join(annot |> filter(type == 'protein_coding')) |>
-  pull(Geneid) |>
-  unique(),
-'Changing AA?' = short.list$Geneid
+'"Extreme" AA composition' = short.list$Geneid
 ) |>
   venn::venn(zcolor = 'style',  ilcs = 1.5, sncs = 1.5)
+
+################################################################################
+
+aa.enrich <-
+  short.list |>
+  drop_na(old_locus_tag) |>
+  pull(old_locus_tag) |>
+  clusterProfiler::enrichKEGG(
+    organism = 'syp',
+    pvalueCutoff = 0.05,
+    pAdjustMethod = "fdr"
+  ) |>
+  as_tibble() |>
+  transmute(
+    KEGG = ID,
+    Pathway = str_remove(Description, ' - Picosynechococcus sp. PCC 7002$'),
+    GeneRatio, BgRatio,
+    Pvalue = pvalue,
+    FDR = p.adjust,
+    genes = geneID
+  ) |>
+  # Extract enrichment factor
+  mutate(
+    path.size = BgRatio |>
+      str_remove('/.*') |>
+      as.integer(),
+    genes.with.signal.in.path = GeneRatio |>
+      str_remove('/.*') |>
+      as.integer(),
+    genes.with.signal = GeneRatio |>
+      str_remove('.*/') |>
+      as.integer(),
+    prop.all.genes.in.pathway = BgRatio |>
+      map(~ parse(text = .x)) |>
+      map(eval) |>
+      unlist(),
+    expected.genes = genes.with.signal * prop.all.genes.in.pathway,
+    enrichment = genes.with.signal.in.path / expected.genes
+  )
+
+
+################################################################################
+aa.enrich |>
+  mutate(
+    y = sprintf('%s (%s)',  Pathway, KEGG) |>
+      fct_reorder(enrichment),
+    nice = sprintf(
+      'Pathway size: %g\nGenes with "extreme" AA: %g\nEnrichment: %.1f, FDR: %.1e',
+      path.size,
+      genes.with.signal.in.path, 
+      enrichment, FDR
+    ),
+    hj = ifelse(enrichment > 5, 1, 0),
+    x2 = enrichment + ifelse(enrichment > 5, -1, 1) * 0.5,
+  ) |>
+  ggplot(aes(enrichment, y, color = - log10(FDR),
+             size = path.size, label = nice)) +
+  # geom_point(size = 8) +
+  geom_point() +
+  scale_size(range = c(5, 20), name = 'Pathway size') +
+  geom_text(aes(x = x2, hjust = hj), color = 'black', size = 5) +
+  scale_color_viridis_c() +
+  guides(color = guide_colorbar(barwidth = unit(5, 'cm'))) +
+  ylab(NULL) +
+  xlab('Enrichment ratio observed over expected genes in pathway') +
+  theme_pubr(18) +
+  theme(
+    panel.grid.major.y = element_line(linetype = 'dotted')
+  )
 
 
 ################################################################################
