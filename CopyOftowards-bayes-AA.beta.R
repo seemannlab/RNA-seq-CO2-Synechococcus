@@ -216,10 +216,11 @@ p.qq2 <-
   plot_layout(heights = c(3, 1), guides = 'collect')
 
 ggsave('~/Downloads/foo2.jpeg', width = 16, height = 9)
+p.qq1
+ggsave('~/Downloads/foo2.jpeg', width = 16, height = 9)
 
 ################################################################################
-# Inspect half-normal plot of residuals
-
+# Given the NB model, check residuals with simulated confidence envelope
 
 # For an observation vector and model parameters calc qqplot data
 qq.normal.helper <- function(xs) {
@@ -229,6 +230,72 @@ qq.normal.helper <- function(xs) {
     expected = fdrtool::qhalfnorm(ps)
   )
 }
+
+# no. simulations for envelope
+nsim <- 100
+# highlight 90% confidence interval
+# -> find upper/lower 5%
+alpha <- (1 - .9)/2
+# simulate confidence interval
+helper.beta.conf <- function(mu, shape1, shape2) {
+  abs(rbeta(nsim, shape1, shape2) - mu) |>
+    qq.normal.helper()
+}
+conf.beta.band <-
+  beta.fits |>
+  group_by_all() |>
+  reframe(helper.beta.conf(mean, shape1, shape2))
+
+conf.poly <-
+  conf.beta.band |>
+  mutate(
+    low = which.min(set_names(abs(ps - alpha), ps)) |> names() |> first(),
+    up = which.min(set_names(abs(ps - (1 - alpha)), ps)) |> names() |> first(),
+    low = ps == low,
+    up = ps == up,
+    name = case_when(
+      low ~ 'conf.low',
+      up ~ 'conf.up',
+      TRUE ~ NA
+    )
+  ) |>
+  View()
+  drop_na(name) |>
+  select(AA, expected, xs, name) |>
+  mutate(v2 = expected * ifelse(name == 'conf.low', -1, 1)) |>
+  arrange(AA, name, v2)
+
+freqs |>
+  pivot_longer(- Geneid, names_to = 'AA') |>
+  left_join(beta.fits, 'AA') |>
+  mutate(
+    dev = abs(value - mean)
+  ) |>
+  group_by(AA) |>
+  reframe(qq.normal.helper(dev)) |>
+  ggplot(aes(expected, xs)) +
+  # geom_point(aes(color = 'observed'), alpha = .5) +
+  geom_polygon(aes(x = expected, y = xs,
+                    fill = 'Simulated 90% confidence',
+                    color = NULL),
+            data = conf.poly,
+            linewidth = 0,
+            alpha = .4) +
+  scale_color_manual(values = cbPalette[c(1)], name = NULL) +
+  scale_fill_manual(values = cbPalette[c(7)], name = NULL) +
+  xlab('Half-normal quantile') +
+  ylab('Abolute residuals') +
+  facet_wrap(~ AA, scales = 'free') +
+  theme_pubr(18)
+
+ggsave('~/Downloads/foo7.jpeg', width = 18, height = 8)
+
+################################################################################
+
+################################################################################
+# Inspect half-normal plot of residuals
+
+
 
 # Compute residuals from beta model
 residuals.helper <- function(xs, shape1, shape2) {

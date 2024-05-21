@@ -16,6 +16,10 @@ cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442",
 # nicer amino acid names
 data(aaMap, package = 'Biobase')
 
+# highlight 90% confidence interval in the various plots
+# -> find upper/lower 5%
+conf.alpha <- (1 - .9)/2
+
 ################################################################################
 # Load amino acid composition, but as absolute counts
 
@@ -38,6 +42,7 @@ freqs <-
 rm(freqs2)
 
 ################################################################################
+# As matrix
 
 freqs.mat <-
   freqs |>
@@ -46,6 +51,7 @@ freqs.mat <-
   magrittr::set_rownames(freqs$Geneid)
 
 ################################################################################
+# Get peptide lengths
 
 freqs.len <-
   freqs.mat |>
@@ -96,10 +102,6 @@ foo |>
   left_join(foo.est, 'AA') -> binom.mod
 
 
-# highlight 90% confidence interval
-# -> find upper/lower 5%
-a <- (1 - .9)/2
-# a2 <- (1 - .98)/2
 
 binom.mod |>
   mutate(
@@ -133,15 +135,12 @@ ggsave('~/Downloads/foo.jpeg', width = 18, height = 8)
 
 # no. simulations for envelope
 nsim <- 100
-# highlight 90% confidence interval
-# -> find upper/lower 5%
-alpha <- (1 - .9)/2
 # simulate confidence interval
 helper.conf <- function(length, phat, expected = length * phat) {
   xs <- abs(rbinom(nsim, length, phat) - expected)
   tibble(
-    conf.up = quantile(xs, alpha),
-    conf.low = quantile(xs, 1 - alpha)
+    conf.up  = quantile(xs, conf.alpha),
+    conf.low = quantile(xs, 1 - conf.alpha)
   )
 }
 conf.band <-
@@ -237,9 +236,12 @@ ggsave('~/Downloads/foo4.jpeg', width = 8, height = 6)
 
 ################################################################################
 
-# highlight 90% confidence interval
-# -> find upper/lower 5%
-a <- (1 - .9)/2
+my.mod <-
+  binom.mod |>
+  select(Geneid, AA, length, phat) |>
+  unique() |>
+  left_join(my.disp, 'AA') |>
+  mutate(mu = length * phat)
 
 freqs |>
   pivot_longer(- Geneid, names_to = 'AA') |>
@@ -248,8 +250,8 @@ freqs |>
   left_join(my.mod, c('AA', 'length')) |>
   group_by_all() |>
   reframe(
-    low = qnbinom(a,      size = 1 / adhoc.disp, mu = mu),
-    up = qnbinom(1 - a,   size = 1 / adhoc.disp, mu = mu)
+    low = qnbinom(conf.alpha,    size = 1 / adhoc.disp, mu = mu),
+    up = qnbinom(1 - conf.alpha, size = 1 / adhoc.disp, mu = mu)
   ) -> nb.data
 
 
@@ -277,9 +279,6 @@ ggsave('~/Downloads/foo5.jpeg', width = 18, height = 8)
 
 # no. simulations for envelope
 nsim <- 100
-# highlight 90% confidence interval
-# -> find upper/lower 5%
-alpha <- (1 - .9)/2
 # simulate confidence interval
 helper.nb.conf <- function(mu, dispersion) {
   xs <- abs(rnbinom(nsim, mu = mu, size = 1 / dispersion) - mu)
@@ -308,7 +307,7 @@ freqs |>
     dev = abs(value - mu)
   ) |>
   ggplot(aes(length, dev)) +
-  geom_point(aes(color = 'observed'), alpha = .5) +
+  geom_point(aes(color = 'observed'), alpha = .5, shape = 20) +
   scale_x_log10() +
   geom_polygon(aes(x = length, y = value,
                     fill = 'Simulated 90% confidence',
@@ -352,6 +351,7 @@ aa.ps |>
   group_by(Geneid) |>
   slice_min(extreme.p) |>
   left_join(annot, 'Geneid') -> short.list
+
 
 
 
