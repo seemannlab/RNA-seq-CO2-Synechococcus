@@ -313,6 +313,24 @@ rule L_pathways:
     log: 'logs/L_pathways.txt'
     shell:
         "Rscript {input.script} > {log}"
+        
+################################################################################
+# Amino acid metabolic pathway overview
+
+rule L2_amino:
+    input:
+        script = 'scripts/L2_amino.R',
+        xs = [
+            'data/C_annotation.tsv',
+            'data/C_meta.tsv',
+            'analysis/D_vst-expression.tsv'
+        ]
+    output:
+        'analysis/L2_amino-acid-biosynthesis.jpeg',
+    log: 'logs/L2_amino.txt'
+    shell:
+        "Rscript {input.script} > {log}"
+        
 ################################################################################
 # Differential expression analysis
 # Focus: 30% CO2 vs all others

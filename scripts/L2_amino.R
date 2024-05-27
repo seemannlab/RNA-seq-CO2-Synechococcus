@@ -1,42 +1,45 @@
 #Purpose: Check general expression patterns in Amino Acid biosynthesis
 
 library(tidyverse)
-
-# All SYP7002 AA metabolic pathways
-paths <-
-  tribble(
-    ~ kegg, ~ title,
-    'syp00250', 'Alanine, aspartate and glutamate metabolism',
-    'syp00260', 'Glycine, serine and threonine metabolism',
-    'syp00270', 'Cysteine and methionine metabolism',
-    'syp00280', 'Valine, leucine and isoleucine degradation',
-    'syp00290', 'Valine, leucine and isoleucine biosynthesis',
-    'syp00300', 'Lysine biosynthesis',
-    'syp00310', 'Lysine degradation',
-    'syp00220', 'Arginine biosynthesis',
-    'syp00330', 'Arginine and proline metabolism',
-    'syp00340', 'Histidine metabolism',
-    'syp00350', 'Tyrosine metabolism',
-    'syp00360', 'Phenylalanine metabolism',
-    'syp00380', 'Tryptophan metabolism',
-    'syp00400', 'Phenylalanine, tyrosine and tryptophan biosynthesis'
-)
-
-################################################################################
-
-
-paths.gene <-
-  'analysis/I_gene2pathway.tsv' |>
-  read_tsv() |>
-  semi_join(paths, c('Pathway' = 'kegg'))
-
-paths.gene |>
-  plyr::dlply('Title', \(x) x$old_locus_tag) |>
-  venn::venn(zcolor = 'style', ilcs = 2, sncs = 2)
-
-################################################################################
-
 library(ggkegg)
+
+################################################################################
+# All SYP7002 AA metabolic pathways
+# paths <-
+#   tribble(
+#     ~ kegg, ~ title,
+#     'syp00250', 'Alanine, aspartate and glutamate metabolism',
+#     'syp00260', 'Glycine, serine and threonine metabolism',
+#     'syp00270', 'Cysteine and methionine metabolism',
+#     'syp00280', 'Valine, leucine and isoleucine degradation',
+#     'syp00290', 'Valine, leucine and isoleucine biosynthesis',
+#     'syp00300', 'Lysine biosynthesis',
+#     'syp00310', 'Lysine degradation',
+#     'syp00220', 'Arginine biosynthesis',
+#     'syp00330', 'Arginine and proline metabolism',
+#     'syp00340', 'Histidine metabolism',
+#     'syp00350', 'Tyrosine metabolism',
+#     'syp00360', 'Phenylalanine metabolism',
+#     'syp00380', 'Tryptophan metabolism',
+#     'syp00400', 'Phenylalanine, tyrosine and tryptophan biosynthesis'
+# )
+# 
+# 
+# paths.gene <-
+#   'analysis/I_gene2pathway.tsv' |>
+#   read_tsv() |>
+#   semi_join(paths, c('Pathway' = 'kegg'))
+# 
+# paths.gene |>
+#   plyr::dlply('Title', \(x) x$old_locus_tag) |>
+#   venn::venn(zcolor = 'style', ilcs = 2, sncs = 2)
+
+################################################################################
+# There is only some nice pattern when looking at the large global view of
+# syp01230 - Biosynthesis of amino acids 
+# https://www.kegg.jp/kegg-bin/show_pathway?syp01230
+# But, the plotting need adaptation to position the expression
+# Different to L_pathways.R, which could position to the 'EC+number' boxes
 
 ################################################################################
 
@@ -74,49 +77,6 @@ z.expr <-
   pivot_longer(- Geneid, names_to = 'lib', values_to = 'z.expression') |>
   left_join(meta, 'lib')
 
-################################################################################
-# Test for CyanoCyc
-
-deg <-
-  'analysis/D_stagewise-adjusted-DEGs.tsv' |>
-  read_tsv()
-
-deg |>
-  filter(is.de, abs(log2FoldChange) >= 1) |>
-  select(Geneid) |>
-  unique() -> de.mask
-
-z.expr |>
-  filter(str_detect(Geneid, 'gene')) |>
-  group_by(Geneid, CO2) |>
-  summarize(avg = mean(z.expression)) |>
-  ungroup() |>
-  mutate(CO2 = paste0(CO2, 'pct')) |>
-  spread(CO2, avg) |>
-  semi_join(de.mask, 'Geneid') |>
-  mutate(Geneid = str_remove(Geneid, 'gene-')) |>
-  select(Geneid, `0.04pct`, `4pct`, `8pct`, `30pct`) |>
-  write_tsv('~/Downloads/cyanocyc-vst-scaled.tsv')
-
-expression <-
-  'analysis/D_normalized-counts.tsv' |>
-  read_tsv()
-
-expression |>
-  filter(str_detect(Geneid, 'gene')) |>
-  pivot_longer(- Geneid, names_to = 'lib') |>
-  left_join(meta, 'lib') |>
-  group_by(Geneid, CO2) |>
-  summarize(avg = mean(value)) |>
-  ungroup() |>
-  mutate(CO2 = paste0(CO2, 'pct')) |>
-  spread(CO2, avg) |>
-  semi_join(de.mask, 'Geneid') |>
-  mutate(Geneid = str_remove(Geneid, 'gene-')) |>
-  select(Geneid, `0.04pct`, `4pct`, `8pct`, `30pct`) |>
-  write_tsv('~/Downloads/cyanocyc-sf.tsv')
-           
-  
 
 ################################################################################
 # Adaptation of function from `L_pathways` to also show metabolic pathways
@@ -280,7 +240,7 @@ foo <- my.extra.path(
   # remove ugly thick border
   theme(plot.margin = unit(c(-1, -2, -1, -2), "cm"))
 
-ggsave('foo.jpeg', plot = foo,
+ggsave('analysis/L2_amino-acid-biosynthesis.jpeg', plot = foo,
        width = 12, height = 12, dpi = 400)
 
 ########################################
