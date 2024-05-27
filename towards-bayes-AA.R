@@ -398,18 +398,31 @@ aa.enrich |>
 
 
 ################################################################################
+paths <-
+  'analysis/I_gene2pathway.tsv' |>
+  read_tsv()
+
+short.list |>
+  semi_join(deg |> filter(is.de)) |>
+  left_join(paths) |>
+  View()
 
 foo <-
   short.list |>
   semi_join(deg |> filter(is.de)) |>
   pull(Geneid)
 
+short.list |>
+  semi_join(deg |> filter(is.de)) |>
+  left_join(paths) |>
+  filter(Title == 'Photosynthesis') |>
+  pull(Geneid) -> mask
 
+  
 pheatmap::pheatmap(vz.mat[foo, ], show_rownames = FALSE)
+pheatmap::pheatmap(vz.mat[mask, ])
 
 ################################################################################
-
-
 
 ################################################################################
 ################################################################################
