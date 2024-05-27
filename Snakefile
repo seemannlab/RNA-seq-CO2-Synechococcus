@@ -239,27 +239,6 @@ rule I_process:
         "Rscript {input.script} > {log}"
         
         
-################################################################################
-# inspect potential expression/AA correlation
-
-rule J_AA:
-    input:
-        script = 'scripts/J_aa-freqs.R',
-        xs = [
-            'data/C_annotation.tsv',
-            'analysis/D_stagewise-adjusted-DEGs.tsv',
-            'analysis/D_normalized-counts.tsv',
-            'data/C_meta.tsv',
-            'analysis/G_frequencies.tsv',
-            'raw-data/PCC7002-genome.gff.gz'
-        ]
-    output:
-        'analysis/J_expression-length-logFC.jpeg',
-        'analysis/J_freqs-overall.jpeg',
-        'analysis/J_AA-expr-cor.jpeg',
-    log: 'logs/J_aa.txt'
-    shell:
-        "Rscript {input.script} > {log}"
         
 ################################################################################
 # Complement with GSEA plots
@@ -377,6 +356,28 @@ rule M2_clusters:
         'analysis/M2_string-enrichment.tsv',
         'analysis/M2_string-enrichment-genes.tsv',
     log: 'logs/M2_clusters.txt'
+    shell:
+        "Rscript {input.script} > {log}"
+        
+################################################################################
+# inspect potential expression/AA correlation
+
+rule N_AA:
+    input:
+        script = 'scripts/N_aa-composition.R',
+        xs = [
+            'data/C_annotation.tsv',
+            'analysis/D_stagewise-adjusted-DEGs.tsv',
+            'analysis/D_normalized-counts.tsv',
+            'data/C_meta.tsv',
+            'analysis/G_frequencies.tsv',
+            'raw-data/PCC7002-genome.gff.gz'
+        ]
+    output:
+        'analysis/N_expression-length-logFC.jpeg',
+        'analysis/N_freqs-overall.jpeg',
+        'analysis/N_AA-expr-cor.jpeg',
+    log: 'logs/N_aa.txt'
     shell:
         "Rscript {input.script} > {log}"
 
