@@ -89,7 +89,9 @@ freqs.rel <-
 
 deg30 <-
   'analysis/M_logFC-vs-30.tsv' |>
-  read_tsv()
+  read_tsv() |>
+  mutate(is.de =  (padj <= 0.001) & (abs(log2FoldChange) >= 1) ) |>
+  left_join(annot, 'Geneid')
 
 ################################################################################
 # Data from Akashi 2002 on metabolic cost of AA
@@ -338,6 +340,13 @@ nb.model |>
   scale_fill_manual(values = cbPalette[c(7, 6, 1)], name = NULL) +
   scale_x_log10(breaks = c(100, 1000)) +
   annotation_logticks(sides = 'b') +
+  # Show dispersion estimates
+  geom_text(
+    aes(x = 100, y = y2, label = lab),
+    data = aa.disp |>
+      mutate(lab = sprintf('Disp.: %.4f', disp)) |>
+      left_join(nb.conf |> group_by(AA) |> summarize(y2 = max(up) * .8), 'AA')
+  ) +
   xlab('Peptide length') +
   ylab('Absolute AA abundence') +
   facet_wrap(~ AA,scales = 'free') +
@@ -351,74 +360,58 @@ ggsave('analysis/N_negative-binomial-model.jpeg', width = 16, height = 9)
 ################################################################################
 # Part 3: Identify "extreme" genes
 
+# Compute P-Value of per chance observing No. AAs
 aa.ps <-
   nb.model |>
   group_by_all() |>
   reframe(cum.p = pnbinom(value, mu = expected, size = 1 / disp)) |>
   # *2 for two-sided test
-  mutate(extreme.p = ifelse(cum.p > .5, 1 - cum.p, cum.p) * 2)
+  mutate(extreme.p = ifelse(cum.p > .5, 1 - cum.p, cum.p) * 2) |>
+  # fdr adjust
+  group_by(AA) |>
+  mutate(fdr = p.adjust(extreme.p, 'fdr')) |>
+  ungroup()
 
 aa.ps |>
-  gghistogram('extreme.p', facet.by = 'AA')
+  write_tsv('analysis/N_aa-analysis.tsv')
+
+################################################################################
+
+# Volcano-like plot
 
 aa.ps |>
-  group_by(Geneid) |>
-  summarize_at('extreme.p', min) |>
-  gghistogram('extreme.p') +
-  geom_vline(xintercept = 0.001, color = 'red') +
-  xlab('Min P-Value per gene')
-
-aa.ps |>
-  group_by(Geneid) |>
-  summarize(p = 1 - prod(1 - extreme.p)) |>
-  count(p <= 0.1)
-
-aa.ps |>
-  ggplot(aes(value - expected, -log10(extreme.p), color = log10(length))) +
+  ggplot(aes(value - expected, -log10(fdr), color = log10(length))) +
   geom_point() +
   scale_color_viridis_c() +
   xlab('Difference Observed - Expected AA abundance') +
-  ylab('-log10(P-Value)') +
+  ylab('-log10(P-Value, FDR adjusted)') +
   geom_hline(yintercept = -log10(0.05), color = 'red') +
+  geom_hline(yintercept = -log10(0.1), color = 'orange') +
   facet_wrap(~ AA, scales = 'free') +
   theme_pubr(18)
 
+ggsave('analysis/N_volcano-like.jpeg', width = 12, height = 8)
 
-ggsave('~/Downloads/foo6.jpeg', width = 12, height = 8)
+################################################################################
 
-aa.ps |>
-  ggplot(aes(length, -log10(extreme.p))) +
-  geom_point() +
-  scale_x_log10() +
-  stat_cor(color = 'red') +
-  facet_wrap(~ AA)
+short.list <-
+  aa.ps |>
+  filter(fdr <= .1) |>
+  select(Geneid, AA, value, expected, length, phat, disp, fdr) |>
+  left_join(annot, 'Geneid')
+
 
 ################################################################################
 ################################################################################
 ################################################################################
 # Part 4: Correlated to DEG
 
-################################################################################
-################################################################################
-################################################################################
-
-
-
-
-################################################################################
-
-#   pull(p) |> log1p() |> hist()
-
-aa.ps |>
-  filter(extreme.p <= 0.001) |>
-  group_by(Geneid) |>
-  slice_min(extreme.p) |>
-  left_join(annot, 'Geneid') -> short.list
-
-
-################################################################################
 
 list(
+  # 'DE30 coding gene' = deg30 |>
+  #   filter(is.de, type == 'protein_coding') |>
+  #   pull(Geneid) |>
+  #   unique(),
   'DE coding gene' = deg |>
     filter(is.de, type == 'protein_coding') |>
     pull(Geneid) |>
@@ -521,6 +514,11 @@ short.list |>
 
 pheatmap::pheatmap(vz.mat[foo, ], show_rownames = FALSE)
 pheatmap::pheatmap(vz.mat[mask, ])
+
+################################################################################
+################################################################################
+################################################################################
+
 
 
 
