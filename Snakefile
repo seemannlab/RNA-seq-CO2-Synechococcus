@@ -367,16 +367,23 @@ rule N_AA:
         script = 'scripts/N_aa-composition.R',
         xs = [
             'data/C_annotation.tsv',
-            'analysis/D_stagewise-adjusted-DEGs.tsv',
-            'analysis/D_normalized-counts.tsv',
             'data/C_meta.tsv',
+            'analysis/G_peptides.faa',
+            'analysis/D_stagewise-adjusted-DEGs.tsv',
+            'analysis/D_vst-expression.tsv',
             'analysis/G_frequencies.tsv',
-            'raw-data/PCC7002-genome.gff.gz'
+            'analysis/I_signals.tsv',
         ]
     output:
-        'analysis/N_expression-length-logFC.jpeg',
-        'analysis/N_freqs-overall.jpeg',
-        'analysis/N_AA-expr-cor.jpeg',
+        'analysis/N_aa-overall.jpeg',
+        'analysis/N_correlation-aa-length.jpeg',
+        'analysis/N_length-log-normal.jpeg',
+        'analysis/N_binomial-model.jpeg',
+        'analysis/N_negative-binomial-model.jpeg',
+        'analysis/N_aa-analysis.tsv',
+        'analysis/N_volcano-like.jpeg',
+        'analysis/N_extreme-AA-deg.jpeg',
+        'analysis/N_extreme-AA.jpeg',
     log: 'logs/N_aa.txt'
     shell:
         "Rscript {input.script} > {log}"
@@ -394,8 +401,8 @@ rule all:
         'analysis/E_string-loci.txt',
         'analysis/F_mcl-clustering.tsv',
         'analysis/G_peptides.faa',
-        'analysis/J_freqs-overall.jpeg',
         'analysis/K_gsea.tsv',
         'analysis/L_2component.jpeg',
         'analysis/M_logFC-vs-30.tsv',
         'analysis/M2_mcl-clustering.tsv',
+        'analysis/N_aa-analysis.tsv',
