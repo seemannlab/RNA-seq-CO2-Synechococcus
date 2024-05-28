@@ -87,14 +87,9 @@ freqs.rel <-
   'analysis/G_frequencies.tsv' |>
   read_tsv()
 
-deg30 <-
-  'analysis/M_logFC-vs-30.tsv' |>
-  read_tsv() |>
-  mutate(is.de =  (padj <= 0.001) & (abs(log2FoldChange) >= 1) ) |>
-  left_join(annot, 'Geneid')
 
-paths <-
-  'analysis/I_gene2pathway.tsv' |>
+signals <-
+  'analysis/I_signals.tsv' |>
   read_tsv()
 
 ################################################################################
@@ -384,13 +379,13 @@ aa.ps |>
 # Volcano-like plot
 
 aa.ps |>
-  ggplot(aes(value - expected, -log10(fdr), color = log10(length))) +
+  mutate(ratio = log2( (value + 1) / (expected + 1) )) |>
+  ggplot(aes(ratio, -log10(fdr), color = log10(length))) +
   geom_point() +
-  scale_color_viridis_c() +
-  xlab('Difference Observed - Expected AA abundance') +
+  scale_color_viridis_c(name = 'log10 Peptide length') +
+  xlab('log2 ratio Observed / Expected AA abundance') +
   ylab('-log10(P-Value, FDR adjusted)') +
   geom_hline(yintercept = -log10(0.05), color = 'red') +
-  geom_hline(yintercept = -log10(0.1), color = 'orange') +
   facet_wrap(~ AA, scales = 'free') +
   theme_pubr(18)
 
@@ -412,28 +407,33 @@ short.list <-
 
 
 list(
-  # 'DE30 coding gene' = deg30 |>
-  #   filter(is.de, type == 'protein_coding') |>
-  #   pull(Geneid) |>
-  #   unique(),
   'DE coding gene' = deg |>
     filter(is.de, type == 'protein_coding') |>
     pull(Geneid) |>
     unique(),
-  '"Extreme" AA composition' = short.list$Geneid
+  '"Extreme" AA composition' = short.list$Geneid,
+  'Secretion Signal' = signals |>
+    filter(signal != 'No SP') |>
+    pull(Geneid)
 ) |>
-  venn::venn(zcolor = 'style',  ilcs = 1.5, sncs = 1.5)
+  venn::venn(zcolor = 'style',  ilcs = 1.5, sncs = 1.5,
+             box = FALSE, ggplot = TRUE)
+
+ggsave(
+  'analysis/N_extreme-AA-deg.jpeg',
+  width = 10, height = 10, dpi = 400
+)
 
 ################################################################################
 # Heatmap of expression
 
 my.list <-
   short.list |>
-  semi_join(deg |> filter(is.de)) |>
+  semi_join(deg |> filter(is.de), 'Geneid') |>
   transmute(
     Geneid,
     old_locus_tag, AA, observed = value, expected,
-    ratio = log1p(observed) - log1p(expected),
+    ratio = log2( (value + 1) / (expected + 1) ),
     length, fdr,
     name, product
   ) |>
@@ -444,7 +444,9 @@ my.list <-
       Geneid,
       old_locus_tag
     ) |> str_remove('^.*SYNPCC7002_'),
-    nice = sprintf('%s (%s)', product, old_locus_tag)
+    nice = sprintf('%s (%s)',
+                   str_replace(product, '(?<=.{45}).....+$', '...'),
+                   old_locus_tag)
   )
 
 # build matrix
@@ -459,18 +461,35 @@ dat.mat <- my.list |>
   unique() |>
   with(vst.mat[Geneid, ] |> magrittr::set_rownames(old_locus_tag))
 
+with(
+  meta,
+  data.frame('CO2' = as.character(CO2), row.names = lib)
+) -> col.df
+
+
+col.row <-
+  signals |>
+  filter(signal != 'No SP') |>
+  inner_join(my.list, 'Geneid') |>
+  select(ol = old_locus_tag.y, signal) |>
+  unique() |>
+  with(data.frame(Signal = signal, row.names = ol))
+
 cl <- list(
   'CO2' = meta |>
     pull(CO2) |>
     unique() |>
     sort() |>
     as.character() %>%
-    set_names(cbPalette[c(1, 6, 2, 7)], .)
+    set_names(cbPalette[c(1, 6, 2, 7)], .),
+  Signal = col.row |>
+    pull(Signal) |>
+    unique() %>%
+    set_names(
+      RColorBrewer::brewer.pal(length(.), 'Dark2'),
+      .
+    )
 )
-with(
-  meta,
-  data.frame('CO2' = as.character(CO2), row.names = lib)
-) -> col.df
 
 # Cluster columns ahead of pheatmap to rotate tree nicely
 lib.clust <-
@@ -491,8 +510,11 @@ dat.mat |>
   pheatmap::pheatmap(
     scale = 'row',
     show_colnames = FALSE,
+    border_color = NA,
     cluster_cols = lib.clust,
     annotation_col = col.df,
+    annotation_row = col.row,
+    annotation_names_row = FALSE,
     annotation_colors = cl,
     color = colorRampPalette(rev(
       RColorBrewer::brewer.pal(n = 9, name = "RdBu")))(59),
@@ -501,43 +523,43 @@ dev.off()
 
     
 ################################################################################
+# AA ratios per gene and AA as colored raster/table
 
-my.list |>
+p.ratio <-
+  my.list |>
   mutate_at('old_locus_tag', fct_relevel,
             with(heat.expr$tree_row, labels[order]) ) |>
   arrange(desc(old_locus_tag)) |>
   mutate_at('nice', fct_inorder) |>
-  ggplot(aes(AA, nice, fill = ratio)) +
+  mutate(
+    lab = round(ratio, 2),
+    lab.cl = ifelse(lab < 0, 'white', 'black')
+  ) |>
+  ggplot(aes(AA, nice, fill = ratio, label = lab, color = I(lab.cl))) +
   geom_raster() +
-  scale_fill_viridis_c() +
+  geom_text() +
+  scale_fill_viridis_c(name = 'log2 ratio Observed / Expected AA abundance') +
+  guides(fill = guide_colorbar(barwidth = unit(3, 'cm'))) +
   xlab(NULL) +
   ylab(NULL) +
   theme_pubr() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
-################################################################################
+  theme(axis.text.x = element_text(angle = 20, hjust = 1))
 
 ################################################################################
 
 cowplot::plot_grid(
-  cowplot::plot_grid(
-    heat.cor$gtable,
-    heat.expr$gtable,
-    nrow = 2,
-    label_size = 18,
-    labels = c("A", "B")
-  ),
-  p.boxes,
-  labels = c(NA, "C"),
-  rel_widths = c(1, 3),
+  heat.expr$gtable,
+  p.ratio,
+  labels = 'AUTO',
+  rel_widths = c(1, 2),
   label_size = 18,
   nrow = 1
 )
 ggsave(
-  'analysis/J_AA-expr-cor.jpeg',
-  width = 20, height = 14, dpi = 400
+  'analysis/N_extreme-AA.jpeg',
+  width = 14, height = 7, dpi = 400
 )
 
-
+################################################################################
 ################################################################################
 sessionInfo()
