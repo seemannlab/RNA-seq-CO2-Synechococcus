@@ -1,3 +1,0 @@
-"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"10","4","STRING Clusters","","Mixed, incl. Flavin reductase like domain, and Phospholipase D-like domain","3.63E-6","ACA98096.1|ACA98463.1|ACA99732.1|ACB00751.1","163300","5521|6151|5869|3943","5.61E-9","","CL:426","1.0","0"
-"5","3","STRING Clusters","","Mixed, incl. Plastid organization, and Flavin reductase like domain","9.57E-5","ACA98096.1|ACA98463.1|ACB00751.1","163300","5521|6151|3943","2.96E-7","","CL:429","0.7387902716375407","0"

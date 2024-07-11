@@ -1,4 +1,0 @@
-"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"35","5","STRING Clusters","","Mostly uncharacterized, incl. SGNH hydrolase superfamily, and S-layer homology domain","2.83E-7","ACA98195.1|hetR|ACA98650.1|ACA98658.1|ACA99798.1","163300","4099|5821|2815|2770|3469","4.38E-10","","CL:773","1.0","0"
-"21","4","STRING Clusters","","Mostly uncharacterized, incl. SGNH hydrolase superfamily, and S-layer homology domain","3.82E-6","ACA98195.1|hetR|ACA98650.1|ACA98658.1","163300","4099|5821|2815|2770","2.36E-8","","CL:777","0.827391560116608","0"
-"15","3","STRING Clusters","","Mostly uncharacterized, incl. Heterocyst differentiation, and Subtilase family","2.3E-4","ACA98195.1|hetR|ACA98650.1","163300","4099|5821|2815","2.15E-6","","CL:780","0.5556129359799995","0"

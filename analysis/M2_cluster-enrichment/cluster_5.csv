@@ -1,4 +1,0 @@
-"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"92","5","STRING Clusters","","Signaling, and GGDEF domain","2.78E-5","ACA98450.1|rpaB|ACB00097.1|ACB00100.1|ACB00101.1","655","175|275|213|215|221","4.29E-8","","CL:1666","1.0","0"
-"47","3","STRING Clusters","","Phosphorelay signal transduction system","0.0055","ACA98450.1|rpaB|ACB00097.1","655","175|275|213","5.08E-5","","CL:1670","0.4959744354995472","0"
-"6","2","STRING Clusters","","Anti-sigma factor antagonist, and Protein serine/threonine phosphatase activity","0.0064","ACB00100.1|ACB00101.1","655","215|221","6.97E-5","","CL:1828","0.4815280062566358","0"

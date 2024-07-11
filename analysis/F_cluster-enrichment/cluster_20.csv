@@ -1,5 +1,0 @@
-"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"11","5","STRING Clusters","","Mixed, incl. NO signalling/Golgi transport ligand-binding domain superfamily, and P450-containing electron transport chain","1.04E-7","ACB00647.1|ACB00648.1|ACB00649.1|ACB00650.1|ACB00652.1","163300","5380|5356|5365|5344|5323","1.6E-10","","CL:1244","1.0","0"
-"5","3","STRING Clusters","","NO signalling/Golgi transport ligand-binding domain superfamily, and P450-containing electron transport chain","1.3E-4","ACB00647.1|ACB00648.1|ACB00650.1","163300","5380|5356|5344","8.25E-7","","CL:1247","0.5565051125853336","0"
-"2","2","InterPro Domains","","NO signalling/Golgi transport ligand-binding domain superfamily","0.0496","ACB00647.1|ACB00650.1","163300","5380|5344","4.18E-5","","IPR024096","0.18681434222668977","0"
-"2","2","InterPro Domains","","Radical SAM domain-containing protein, N-terminal","0.0496","ACA99345.1|ACB00430.1","163300","5305|2113","4.18E-5","","IPR045784","0.18681434222668977","0"

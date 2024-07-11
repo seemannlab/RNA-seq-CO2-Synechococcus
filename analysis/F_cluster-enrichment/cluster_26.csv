@@ -1,8 +1,0 @@
-"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"60","6","STRING Clusters","","Mostly uncharacterized, incl. Protein-containing complex assembly, and Photosystem II","5.69E-7","ACA98174.1|slr0815|ACA99122.1|ACA99587.1|ACB00614.1|ACB00704.1","163300","4234|4768|2119|2173|6145|4306","8.8E-10","","CL:886","1.0","0"
-"29","5","STRING Clusters","","Mixed, incl. Protein-containing complex assembly, and Photosystem II oxygen evolving complex","6.16E-7","ACA98174.1|slr0815|ACA99122.1|ACB00614.1|ACB00704.1","163300","4234|4768|2119|6145|4306","3.81E-9","","CL:890","0.9944805339599825","0"
-"5","2","STRING Clusters","","Mixed, incl. Tab2-like, and tRNA 5-leader removal","0.0089","ACA99122.1|ACB00704.1","163300","2119|4306","1.1E-4","","CL:897","0.3283661902071297","0"
-"29","3","COMPARTMENTS","","Chloroplast","0.0117","ACA98174.1|slr0815|ACA99122.1","163300","4234|4768|2119","4.46E-5","","GOCC:0009507","0.3093432933723338","0"
-"142","4","COMPARTMENTS","","Intracellular membrane-bounded organelle","0.0184","ACA98174.1|slr0815|ACA99122.1|ACB00222.1","163300","4234|4768|2119|5569","2.1E-4","","GOCC:0043231","0.27785642448832476","0"
-"9","2","COMPARTMENTS","","Plastid membrane","0.0187","ACA98174.1|slr0815","163300","4234|4768","2.9E-4","","GOCC:0042170","0.27673169914071505","0"
-"59","3","GO Cellular Component","","Intracellular membrane-bounded organelle","0.0471","ACA99122.1|ACA99587.1|ACB00614.1","163300","2119|2173|6145","3.3E-4","","GO:0043231","0.212490464116813","0"

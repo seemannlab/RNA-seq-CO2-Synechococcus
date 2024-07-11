@@ -1,8 +1,0 @@
-"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"10","5","STRING Clusters","","Mixed, incl. D-Ala-D-Ala carboxypeptidase 3 (S13) family, and Ammonia transport","7.72E-9","dacB|ACA98601.1|dacB-2|mscS|mltA","163300","4432|4531|4873|625|4024","1.19E-11","","CL:4555","1.0","0"
-"5","4","STRING Clusters","","D-Ala-D-Ala carboxypeptidase 3 (S13) family, and Peptidoglycan turnover","1.53E-7","dacB|dacB-2|mscS|mltA","163300","4432|4873|625|4024","7.08E-10","","CL:4557","0.840111816897452","0"
-"2","2","Pfam","","D-Ala-D-Ala carboxypeptidase 3 (S13) family","0.0094","dacB|dacB-2","163300","4432|4873","2.25E-5","","PF02113","0.24984917766320178","0"
-"4","2","UniProt Keywords","","Carboxypeptidase","0.012","dacB|dacB-2","163300","4432|4873","5.6E-5","","KW-0121","0.2367761513558611","0"
-"306","5","COMPARTMENTS","","Cell periphery","0.0223","dacB|dacB-2|mscS|ACB00189.1|mltA","163300","4432|4873|625|5230|4024","8.52E-5","","GOCC:0071944","0.20360172813595143","0"
-"3","2","GO Molecular Function","","Serine-type carboxypeptidase activity","0.0224","dacB|dacB-2","163300","4432|4873","3.74E-5","","GO:0004185","0.20336219859722757","0"
-"2","2","InterPro Domains","","Peptidase S13, D-Ala-D-Ala carboxypeptidase C","0.0266","dacB|dacB-2","163300","4432|4873","2.25E-5","","IPR000667","0.19416223589083392","0"

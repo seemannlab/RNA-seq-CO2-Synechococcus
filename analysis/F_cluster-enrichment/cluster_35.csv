@@ -1,4 +1,0 @@
-"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"21","6","STRING Clusters","","Mixed, incl. ABC-2 transporter, and ABC-2 family transporter protein","2.7E-10","ACA99709.1|ACA99710.1|ACA99712.1|ACA99713.1|ACA99714.1|ACB00611.1","163300","6016|6007|5995|6001|5989|6157","4.18E-13","","CL:4418","1.0","0"
-"7","5","STRING Clusters","","Mixed, incl. ABC-2 family transporter protein, and Domain of unknown function DUF4162","1.02E-9","ACA99709.1|ACA99710.1|ACA99712.1|ACA99713.1|ACA99714.1","163300","6016|6007|5995|6001|5989","3.15E-12","","CL:4445","0.9396741193441142","0"
-"3","2","Pfam","","ABC-2 family transporter protein","0.0157","ACA99709.1|ACA99710.1","163300","6016|6007","3.74E-5","","PF12698","0.18854310093147766","0"

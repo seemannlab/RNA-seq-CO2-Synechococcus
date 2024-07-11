@@ -1,7 +1,0 @@
-"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"23","6","STRING Clusters","","Mixed, incl. S-adenosylmethionine metabolic process, and DNA alkylation","4.34E-10","ACA98267.1|mtnC|mtnD|mtnB|mtnA-2|ACB00287.1","163300","2227|4300|4825|4813|3868|3874","6.71E-13","","CL:5145","1.0","0"
-"5","5","STRING Clusters","","S-adenosylmethionine cycle","4.34E-10","ACA98267.1|mtnC|mtnD|mtnB|mtnA-2","163300","2227|4300|4825|4813|3868","1.0E-12","","CL:5165","1.0","0"
-"5","5","GO Biological Process","","L-methionine salvage from S-adenosylmethionine","1.12E-9","ACA98267.1|mtnC|mtnD|mtnB|mtnA-2","163300","2227|4300|4825|4813|3868","1.0E-12","","GO:0019284","0.9560237285447343","0"
-"8","5","GO Biological Process","","L-methionine salvage from methylthioadenosine","1.42E-9","ACA98267.1|mtnC|mtnD|mtnB|mtnA-2","163300","2227|4300|4825|4813|3868","5.12E-12","","GO:0019509","0.9450148945103651","0"
-"26","5","KEGG Pathways","","Cysteine and methionine metabolism","6.52E-8","ACA98267.1|mtnC|mtnD|mtnB|mtnA-2","163300","2227|4300|4825|4813|3868","6.72E-10","","syp00270","0.7675027526451974","0"
-"8","4","UniProt Keywords","","Methionine biosynthesis","5.94E-7","mtnC|mtnD|mtnB|mtnA-2","163300","4300|4825|4813|3868","2.78E-9","","KW-0486","0.6650154045379347","0"

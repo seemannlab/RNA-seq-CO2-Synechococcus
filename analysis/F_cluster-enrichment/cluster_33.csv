@@ -1,3 +1,0 @@
-"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"5","5","STRING Clusters","","Mixed, incl. Radical SAM superfamily, and Phosphotransferase enzyme family","2.26E-9","ACA99136.1|ACA99137.1|ACA99138.1|ACA99139.1|ACA99140.1","163300","2569|2575|2560|2566|2554","3.5E-12","","CL:4211","1.0","0"
-"74","7","STRING Clusters","","Mixed, incl. Polysaccharide metabolic process, and Glycosyl transferases group 1","3.93E-9","ACA99134.1|ACA99136.1|ACA99137.1|ACA99138.1|ACA99139.1|ACA99140.1|ACA99141.1","163300","2581|2569|2575|2560|2566|2554|2539","1.21E-11","","CL:4077","0.9722082899679197","0"

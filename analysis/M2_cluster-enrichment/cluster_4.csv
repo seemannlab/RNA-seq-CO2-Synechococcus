@@ -1,7 +1,0 @@
-"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"36","5","STRING Clusters","","Protein folding, and ATP-dependent peptidase activity","3.23E-7","hspA|ftsH-4|ACA99912.1|clpB1|dnaK-4","655","305|247|169|203|263","4.99E-10","","CL:2738","1.0","0"
-"16","4","STRING Clusters","","Unfolded protein binding, and Stress response","2.93E-6","hspA|ACA99912.1|clpB1|dnaK-4","655","305|169|203|263","9.07E-9","","CL:2742","0.8524580220970103","0"
-"15","3","UniProt Keywords","","Stress response","4.6E-4","hspA|clpB1|dnaK-4","655","305|203|263","2.15E-6","","KW-0346","0.5141497912698645","0"
-"6","2","STRING Clusters","","Stress response","0.0113","ACA99912.1|dnaK-4","655","169|263","6.97E-5","","CL:2748","0.2999510558163027","0"
-"27","3","GO Biological Process","","Protein folding","0.0118","ACA99912.1|clpB1|dnaK-4","655","169|203|263","1.06E-5","","GO:0006457","0.2970540984104681","0"
-"48","3","GO Molecular Function","","Protein binding","0.0323","hspA|ACA99912.1|dnaK-4","655","305|169|263","5.39E-5","","GO:0005515","0.22967863083047563","0"

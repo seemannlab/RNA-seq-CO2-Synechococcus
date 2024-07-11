@@ -1,4 +1,0 @@
-"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"14","8","STRING Clusters","","Mixed, incl. Response to virus, and Antiviral defense","2.04E-15","ACA99758.1|ACA99759.1|ACA99761.1|ACA99762.1|ACA99763.1|ACA99764.1|ACA99765.1|cas","163300","6274|6259|6250|6256|6241|6247|6229|6238","3.16E-18","","CL:2324","1.4690369832574102","0"
-"6","4","STRING Clusters","","Response to virus","8.84E-7","ACA99759.1|ACA99762.1|ACA99765.1|cas","163300","6259|6256|6229|6238","5.47E-9","","CL:2328","0.6053547734986927","0"
-"6","4","GO Biological Process","","Defense response to virus","6.08E-6","ACA99759.1|ACA99761.1|ACA99762.1|ACA99765.1","163300","6259|6250|6256|6229","5.47E-9","","GO:0051607","0.5216096420727265","0"

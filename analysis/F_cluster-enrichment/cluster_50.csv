@@ -1,3 +1,0 @@
-"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"5","3","STRING Clusters","","Mixed, incl. Regulation of endocytosis, and SpoVT-AbrB domain superfamily","9.6E-5","ACA98562.1|ACA98611.1|ACB00560.1","163300","4843|1906|1225","1.48E-7","","CL:116","1.0","0"
-"109","4","STRING Clusters","","Mixed, incl. Coiled coil, and Transmembrane helix","0.0019","ACA98194.1|ACA98562.1|ACA98611.1|ACB00560.1","163300","4102|4843|1906|1225","1.17E-5","","CL:90","0.6773096335982631","0"

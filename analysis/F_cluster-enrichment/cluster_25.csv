@@ -1,8 +1,0 @@
-"# background genes","# genes","category","chart color","description","FDR value","genes","network.SUID","nodes.SUID","p-value","PMID","term name","transferred FDR value","year"
-"35","7","STRING Clusters","","Mixed, incl. Nicotinate and nicotinamide metabolism, and Pantothenate and CoA biosynthesis","6.1E-11","ppnK|ACA98986.1|pntB|pntC|pntA|ACA98990.1|nadE","163300","3022|3373|3394|3388|3349|3340|6199","9.42E-14","","CL:3101","1.0214670164989232","0"
-"6","5","STRING Clusters","","Nicotinate and nicotinamide metabolism","2.07E-9","ppnK|pntB|pntC|pntA|nadE","163300","3022|3394|3388|3349|6199","6.41E-12","","CL:3156","0.8684029654543082","0"
-"16","5","KEGG Pathways","","Nicotinate and nicotinamide metabolism","2.72E-8","ppnK|pntB|pntC|pntA|nadE","163300","3022|3394|3388|3349|6199","2.81E-10","","syp00760","0.7565431095965801","0"
-"12","3","GO Biological Process","","NADP metabolic process","0.0046","ppnK|pntB|pntA","163300","3022|3394|3349","4.17E-6","","GO:0006739","0.23372421683184258","0"
-"25","3","COMPARTMENTS","","Integral component of plasma membrane","0.0078","pntB|pntC|pntA","163300","3394|3388|3349","2.96E-5","","GOCC:0005887","0.21079053973095196","0"
-"21","3","GO Biological Process","","Proton transmembrane transport","0.0102","pntB|pntC|pntA","163300","3394|3388|3349","1.84E-5","","GO:1902600","0.19913998282380824","0"
-"45","3","UniProt Keywords","","NAD","0.0327","ppnK|pntB|nadE","163300","3022|3394|6199","1.5E-4","","KW-0520","0.14854522473397141","0"
