@@ -371,7 +371,7 @@ list(
   ) +
   plot_annotation(tag_levels = 'A')
 
-ggsave('analysis/D_overview.jpeg', width = 11, height = 11)
+ggsave('analysis/D_overview.jpeg', width = 11, height = 11, dpi = 600)
 
 ################################################################################
 ################################################################################
