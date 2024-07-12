@@ -12,7 +12,8 @@ rule setup:
     shell:
         """
 # Shorter paths
-P=/home/projects/rth/co2capture/subprojects/RNA-seq_air-to-30-pct-CO2
+#P=/home/projects/rth/co2capture/subprojects/RNA-seq_air-to-30-pct-CO2
+P=~/remote-server/projects/rth/co2capture/subprojects/RNA-seq_air-to-30-pct-CO2/
 
 mkdir raw-data
 cd raw-data
@@ -25,10 +26,10 @@ cp $P/PCC7002-genome.fna.gz                         PCC7002-genome.fna.gz
 cp $P/experimental-data/RNA_JAN23.xlsx .
 
 # Expression matrices project data
-cp $P/RNA-browser-dataset2/analysis/41_counts.tsv   co2-adaptation-counts.tsv
+cp $P/RNA-browser-Dataset2/analysis/41_counts.tsv   co2-adaptation-counts.tsv
 
 # MultiQC stat
-cp $P/RNA-browser-dataset2/multiqc/multiqc_data/multiqc_data.json                   browser-data-multiqc.json
+cp $P/RNA-browser-Dataset2/multiqc/multiqc_data/multiqc_data.json                   browser-data-multiqc.json
 cp $P/RNA-Schlange-Dataset2/analysis/53_main_multiqc/multiqc_data/multiqc_data.json schlange-data-multiqc.json
         """
 
