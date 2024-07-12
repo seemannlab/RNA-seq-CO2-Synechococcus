@@ -3,6 +3,7 @@
 
 library(tidyverse)
 library(ggpubr)
+library(cowplot)
 library(patchwork)
 
 library(DESeq2)
@@ -18,6 +19,9 @@ conflicts_prefer(purrr::reduce)
 conflicts_prefer(dplyr::count)
 
 source('scripts/helper_deg.R')
+
+library(gt)
+Sys.setenv(CHROMOTE_CHROME = '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser')
 
 ALPHA <- 0.05
 
@@ -68,9 +72,12 @@ deg.res |>
 ################################################################################
 # Normalized expression levels
 
-des.vst <-
+des.d <-
   des|>
-  DESeq2::DESeq() |>
+  DESeq2::DESeq()
+
+des.vst <-
+  des.d|>
   DESeq2::vst()
 
 dat.vst <-
@@ -78,8 +85,7 @@ dat.vst <-
   SummarizedExperiment::assay()
 
 dat.norm <-
-  des|>
-  DESeq2::DESeq() |>
+  des.d |>
   DESeq2::counts(normalized = TRUE)
 
 dat.vst |>
@@ -94,12 +100,12 @@ dat.norm |>
 # PCA
 
 
-p1 <- helper.pca(des.vst, sh = 'lane', color_values = cbPalette[c(1, 6, 2, 7)])
-p2 <- helper.skree(des.vst, nudge = 10) + xlim(c(1, 16))
+p.pca <- helper.pca(des.vst, sh = 'lane', color_values = cbPalette[c(1, 6, 2, 7)])
+p.skree <- helper.skree(des.vst, nudge = 10) + xlim(c(1, 16))
 
 
-p1 | p2
-ggsave('analysis/D_PCA.jpeg', width = 18, height = 8)
+p.pca | p.skree
+ggsave('analysis/D_PCA.jpeg', width = 15, height = 8)
 
 ################################################################################
 # Volcano plot
@@ -117,57 +123,6 @@ deg.res |>
   theme_pubr(18)
 
 ggsave('analysis/D_volcano.jpeg', width = 12, height = 8)
-
-
-################################################################################
-###############################################################################
-# Overview table
-
-foo <- 
-  deg.res |>
-  filter(is.de)
-
-bar <-
-  foo |>
-  mutate(x = 'DE in any comparison') |>
-  select(x, Geneid, type) |>
-  unique() |>
-  count(x, type)
-
-foo |>
-  count(type, test) |>
-  spread(type, n) |>
-  mutate_if(is.numeric, replace_na, 0) %>%
-  bind_rows(
-    bar |>
-      rename(test = x) |>
-      spread(type, n)
-  ) |>
-  write_tsv('analysis/D_overview-by-type.tsv')
-
-################################################################################
-# No DEGs above logFC
-
-list(0, 1, 2, 3, 4, 5) |>
-  map(function(i) {
-    deg.res |>
-      filter(is.de, abs(log2FoldChange) >= i) |>
-      mutate(x = sprintf('|logFC| ≥ %g', i))
-  }) |>
-  bind_rows() -> foo
-
-foo |>
-  count(x, test) |>
-  spread(x, n, fill = 0) |>
-  bind_rows(
-    foo |>
-      mutate(test = 'DE in any comparison') |>
-      select(test, x, Geneid) |>
-      unique() |>
-      count(test, x) |>
-      spread(x, n, fill = 0)
-  ) |>
-  write_tsv('analysis/D_overview-by-logFC.tsv')
 
 ################################################################################
 # Heatmap of expression
@@ -217,6 +172,10 @@ pheatmap::pheatmap(
     RColorBrewer::brewer.pal(n = 7, name = "RdBu")))(59),
   filename = 'analysis/D_heatmap.jpeg'
 )
+dev.off()
+
+
+
 
 ################################################################################
 # Correlation of logFCs
@@ -250,5 +209,170 @@ lfc.mat |>
   )
 dev.off()
 
+################################################################################
+###############################################################################
+# Overview tables
+
+dat.de <- 
+  deg.res |>
+  filter(is.de)
+
+dat.total <-
+  dat.de |>
+  mutate(x = 'DE in any comparison') |>
+  select(x, Geneid, type) |>
+  unique() |>
+  count(x, type) |>
+  # sort columns by ammount
+  arrange(desc(n))
+
+annot |>
+  # highlight Rfam hits with a star
+  mutate(is.rfam = str_detect(Geneid, '^Candidate_RF')) |>
+  count(Type = type, is.rfam, name = 'Annotated') |>
+  arrange(desc(Annotated), Type) |>
+  left_join(
+    dat.de |>
+      select(Geneid, type) |>
+      unique() |>
+      count(Type = type, name = 'DE'),
+    'Type'
+  ) |>
+  mutate(
+    Type = paste0(
+      Type,
+      ifelse(is.rfam, '*', '')
+    ),
+    DE = replace_na(DE, 0),
+    `%` = DE / Annotated * 100
+  ) |>
+  select(- is.rfam) -> over.table
+
+over.table |>
+  write_tsv('analysis/D_overview.tsv')
+
+###############################################################################
+# diff expression by type
+
+
+dat.de |>
+  count(type, test) |>
+  mutate_at('type', fct_relevel, dat.total$type) |>
+  spread(type, n) |>
+  mutate_if(is.numeric, replace_na, 0) %>%
+  bind_rows(
+    dat.total |>
+      rename(test = x) |>
+      spread(type, n)
+  ) -> type.table
+
+
+type.table |>
+  write_tsv('analysis/D_overview-by-type.tsv')
+
+################################################################################
+# No DEGs above logFC
+
+# arrange rows numerically, not by string characters
+deg.res |>
+  select(test) |>
+  unique() |>
+  separate(test, c('a', 'b'), sep = '->', remove = FALSE) |>
+  mutate_at('b', str_remove, '%.*$') |>
+  mutate_at(c('a', 'b'), as.numeric) |>
+  arrange(a, b) |>
+  drop_na() |>
+  pull(test) -> test.ord
+
+list(0, 1, 2, 3, 4, 5) |>
+  map(function(i) {
+    dat.de |>
+      filter(abs(log2FoldChange) >= i) |>
+      mutate(x = sprintf('|logFC| ≥ %g', i))
+  }) |>
+  bind_rows() -> foo
+
+foo |>
+  count(x, test) |>
+  mutate_at('test', fct_relevel, test.ord) |>
+  arrange(test) |>
+  spread(x, n, fill = 0) |>
+  bind_rows(
+    foo |>
+      mutate(test = 'DE in any comparison') |>
+      select(test, x, Geneid) |>
+      unique() |>
+      count(test, x) |>
+      spread(x, n, fill = 0)
+  ) -> lf.table
+
+lf.table |>
+  write_tsv('analysis/D_overview-by-logFC.tsv')
+
+################################################################################
+################################################################################
+# Compile key results into a single pretty overview
+
+
+# wrap heatmap
+p.heat <-
+  ggdraw() +
+  draw_image(
+    'analysis/D_heatmap.jpeg'
+  ) +
+  theme_pubr(18) +
+  theme(axis.line = element_blank())
+
+# prettify tables
+lf.table |>
+  gt(rowname_col = 'test') |>
+  fmt_number(decimals = 0) |>
+  data_color(
+    rows =  test != 'DE in any comparison',
+    palette = "viridis"
+  ) |>
+  gtsave('tmp-foo.png', zoom = 5)
+p.tab <-
+  ggdraw() +
+  draw_image('tmp-foo.png') +
+  theme_pubr(18) +
+  theme(axis.line = element_blank())
+file.remove('tmp-foo.png')
+
+
+over.table |>
+  gt(rowname_col = 'Type') |>
+  fmt_integer() |>
+  fmt_percent('%', scale_values = FALSE) |>
+  gtsave('tmp-foo.png', zoom = 5)
+p.over <-
+  ggdraw() +
+  draw_image('tmp-foo.png') +
+  theme_pubr(18) +
+  theme(axis.line = element_blank())
+file.remove('tmp-foo.png')
+
+list(
+  p.pca + theme(legend.box = 'vertical'),
+  wrap_elements(full = p.tab) + theme_pubr(18),
+  wrap_elements(full = p.over) + theme_pubr(18),
+  wrap_elements(full = p.heat) + theme_pubr(18)
+) |>
+  # map(~ wrap_elements(full = .x)) |>
+  reduce(.f = `+`) +
+  plot_layout(
+    design = "
+    AABBBB
+    AADDDD
+    CCDDDD
+    CCDDDD
+    CCDDDD
+    "
+  ) +
+  plot_annotation(tag_levels = 'A')
+
+ggsave('analysis/D_overview.jpeg', width = 11, height = 11)
+
+################################################################################
 ################################################################################
 sessionInfo()

@@ -106,7 +106,9 @@ rule D_deg:
         'analysis/D_vst-expression.tsv',
         'analysis/D_normalized-counts.tsv',
         'analysis/D_heatmap.jpeg',
-        'analysis/D_logFC-cor.jpeg'
+        'analysis/D_logFC-cor.jpeg',
+        'analysis/D_overview.tsv',
+        'analysis/D_overview.jpeg'
     log: 'logs/D_deg.txt'
     shell:
         "Rscript {input.script} > {log}"
