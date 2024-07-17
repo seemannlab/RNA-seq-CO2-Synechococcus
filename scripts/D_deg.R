@@ -147,6 +147,13 @@ with(
 # Cluster columns ahead of pheatmap to rotate tree nicely
 dat <-  dat.vst[mask, ]
 
+# z-scale data ahead of heatmap to keep clustering of rows consistent
+dat <-
+  dat |>
+  apply(1, scale) |>
+  t() |>
+  magrittr::set_colnames(colnames(dat))
+
 lib.clust <-
   dat |>
   t() |>
@@ -162,7 +169,7 @@ lib.clust <-
 
 pheatmap::pheatmap(
   dat,
-  scale = 'row',
+  scale = 'none',
   cluster_cols = lib.clust,
   show_rownames = FALSE,
   show_colnames = FALSE,
