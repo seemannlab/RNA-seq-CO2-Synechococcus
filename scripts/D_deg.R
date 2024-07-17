@@ -175,6 +175,7 @@ pheatmap::pheatmap(
   show_colnames = FALSE,
   annotation_col = cl.df,
   annotation_colors = cl,
+  breaks = seq(-2, 2, length.out = 60),
   color = colorRampPalette(rev(
     RColorBrewer::brewer.pal(n = 7, name = "RdBu")))(59),
   filename = 'analysis/D_heatmap.jpeg'
