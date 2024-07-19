@@ -1,0 +1,756 @@
+## gff-version 3
+gene-SYNPCC7002_RS00315	SignalP-6.0	n-region	1	9	.	.	.	.
+gene-SYNPCC7002_RS00315	SignalP-6.0	h-region	10	27	.	.	.	.
+gene-SYNPCC7002_RS00315	SignalP-6.0	c-region	28	32	.	.	.	.
+gene-SYNPCC7002_RS00325	SignalP-6.0	n-region	1	11	.	.	.	.
+gene-SYNPCC7002_RS00325	SignalP-6.0	h-region	12	27	.	.	.	.
+gene-SYNPCC7002_RS00325	SignalP-6.0	c-region	28	31	.	.	.	.
+gene-SYNPCC7002_RS00410	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS00410	SignalP-6.0	h-region	5	26	.	.	.	.
+gene-SYNPCC7002_RS00410	SignalP-6.0	c-region	27	29	.	.	.	.
+gene-SYNPCC7002_RS00430	SignalP-6.0	n-region	1	27	.	.	.	.
+gene-SYNPCC7002_RS00430	SignalP-6.0	h-region	28	43	.	.	.	.
+gene-SYNPCC7002_RS00430	SignalP-6.0	lipid-modified cysteine	44	44	.	.	.	.
+gene-SYNPCC7002_RS00430	SignalP-6.0	twin-arginine motif	25	26	.	.	.	.
+gene-SYNPCC7002_RS00460	SignalP-6.0	n-region	1	10	.	.	.	.
+gene-SYNPCC7002_RS00460	SignalP-6.0	h-region	11	26	.	.	.	.
+gene-SYNPCC7002_RS00460	SignalP-6.0	c-region	27	31	.	.	.	.
+gene-SYNPCC7002_RS00485	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS00485	SignalP-6.0	h-region	2	13	.	.	.	.
+gene-SYNPCC7002_RS00485	SignalP-6.0	c-region	14	19	.	.	.	.
+gene-SYNPCC7002_RS00510	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS00510	SignalP-6.0	h-region	7	24	.	.	.	.
+gene-SYNPCC7002_RS00510	SignalP-6.0	c-region	25	35	.	.	.	.
+gene-SYNPCC7002_RS00510	SignalP-6.0	twin-arginine motif	4	5	.	.	.	.
+gene-SYNPCC7002_RS00555	SignalP-6.0	n-region	1	11	.	.	.	.
+gene-SYNPCC7002_RS00555	SignalP-6.0	h-region	12	28	.	.	.	.
+gene-SYNPCC7002_RS00555	SignalP-6.0	c-region	29	33	.	.	.	.
+gene-SYNPCC7002_RS00830	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS00830	SignalP-6.0	h-region	3	17	.	.	.	.
+gene-SYNPCC7002_RS00830	SignalP-6.0	c-region	18	23	.	.	.	.
+gene-SYNPCC7002_RS00875	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS00875	SignalP-6.0	h-region	2	15	.	.	.	.
+gene-SYNPCC7002_RS00875	SignalP-6.0	lipid-modified cysteine	16	16	.	.	.	.
+gene-SYNPCC7002_RS00945	SignalP-6.0	n-region	1	11	.	.	.	.
+gene-SYNPCC7002_RS00945	SignalP-6.0	h-region	12	26	.	.	.	.
+gene-SYNPCC7002_RS00945	SignalP-6.0	c-region	27	30	.	.	.	.
+gene-SYNPCC7002_RS01090	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS01090	SignalP-6.0	h-region	2	17	.	.	.	.
+gene-SYNPCC7002_RS01090	SignalP-6.0	lipid-modified cysteine	18	18	.	.	.	.
+gene-SYNPCC7002_RS01140	SignalP-6.0	n-region	1	12	.	.	.	.
+gene-SYNPCC7002_RS01140	SignalP-6.0	h-region	13	25	.	.	.	.
+gene-SYNPCC7002_RS01140	SignalP-6.0	lipid-modified cysteine	26	26	.	.	.	.
+gene-SYNPCC7002_RS01155	SignalP-6.0	n-region	1	8	.	.	.	.
+gene-SYNPCC7002_RS01155	SignalP-6.0	h-region	9	22	.	.	.	.
+gene-SYNPCC7002_RS01155	SignalP-6.0	c-region	23	30	.	.	.	.
+gene-SYNPCC7002_RS01210	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS01210	SignalP-6.0	h-region	3	16	.	.	.	.
+gene-SYNPCC7002_RS01210	SignalP-6.0	c-region	17	22	.	.	.	.
+gene-SYNPCC7002_RS01330	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS01330	SignalP-6.0	h-region	2	19	.	.	.	.
+gene-SYNPCC7002_RS01330	SignalP-6.0	lipid-modified cysteine	20	20	.	.	.	.
+gene-SYNPCC7002_RS01545	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS01545	SignalP-6.0	h-region	6	21	.	.	.	.
+gene-SYNPCC7002_RS01545	SignalP-6.0	lipid-modified cysteine	22	22	.	.	.	.
+gene-SYNPCC7002_RS01545	SignalP-6.0	twin-arginine motif	3	4	.	.	.	.
+gene-SYNPCC7002_RS01570	SignalP-6.0	n-region	1	12	.	.	.	.
+gene-SYNPCC7002_RS01570	SignalP-6.0	h-region	13	26	.	.	.	.
+gene-SYNPCC7002_RS01570	SignalP-6.0	c-region	27	31	.	.	.	.
+gene-SYNPCC7002_RS01655	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS01655	SignalP-6.0	h-region	4	17	.	.	.	.
+gene-SYNPCC7002_RS01655	SignalP-6.0	lipid-modified cysteine	18	18	.	.	.	.
+gene-SYNPCC7002_RS01675	SignalP-6.0	n-region	1	7	.	.	.	.
+gene-SYNPCC7002_RS01675	SignalP-6.0	h-region	8	23	.	.	.	.
+gene-SYNPCC7002_RS01675	SignalP-6.0	c-region	24	26	.	.	.	.
+gene-SYNPCC7002_RS01695	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS01695	SignalP-6.0	h-region	7	23	.	.	.	.
+gene-SYNPCC7002_RS01695	SignalP-6.0	c-region	24	29	.	.	.	.
+gene-SYNPCC7002_RS01775	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS01775	SignalP-6.0	h-region	2	20	.	.	.	.
+gene-SYNPCC7002_RS01775	SignalP-6.0	lipid-modified cysteine	21	21	.	.	.	.
+gene-SYNPCC7002_RS01885	SignalP-6.0	n-region	1	10	.	.	.	.
+gene-SYNPCC7002_RS01885	SignalP-6.0	h-region	11	24	.	.	.	.
+gene-SYNPCC7002_RS01885	SignalP-6.0	c-region	25	30	.	.	.	.
+gene-SYNPCC7002_RS01945	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS01945	SignalP-6.0	h-region	6	22	.	.	.	.
+gene-SYNPCC7002_RS01945	SignalP-6.0	lipid-modified cysteine	23	23	.	.	.	.
+gene-SYNPCC7002_RS01970	SignalP-6.0	n-region	1	7	.	.	.	.
+gene-SYNPCC7002_RS01970	SignalP-6.0	h-region	8	24	.	.	.	.
+gene-SYNPCC7002_RS01970	SignalP-6.0	lipid-modified cysteine	25	25	.	.	.	.
+gene-SYNPCC7002_RS01970	SignalP-6.0	twin-arginine motif	5	6	.	.	.	.
+gene-SYNPCC7002_RS02105	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS02105	SignalP-6.0	h-region	7	21	.	.	.	.
+gene-SYNPCC7002_RS02105	SignalP-6.0	c-region	22	27	.	.	.	.
+gene-SYNPCC7002_RS02205	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS02205	SignalP-6.0	h-region	6	21	.	.	.	.
+gene-SYNPCC7002_RS02205	SignalP-6.0	lipid-modified cysteine	22	22	.	.	.	.
+gene-SYNPCC7002_RS02285	SignalP-6.0	n-region	1	10	.	.	.	.
+gene-SYNPCC7002_RS02285	SignalP-6.0	h-region	11	30	.	.	.	.
+gene-SYNPCC7002_RS02285	SignalP-6.0	c-region	31	34	.	.	.	.
+gene-SYNPCC7002_RS02365	SignalP-6.0	n-region	1	18	.	.	.	.
+gene-SYNPCC7002_RS02365	SignalP-6.0	h-region	19	33	.	.	.	.
+gene-SYNPCC7002_RS02365	SignalP-6.0	c-region	34	39	.	.	.	.
+gene-SYNPCC7002_RS02390	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS02390	SignalP-6.0	h-region	3	15	.	.	.	.
+gene-SYNPCC7002_RS02390	SignalP-6.0	c-region	16	22	.	.	.	.
+gene-SYNPCC7002_RS02430	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS02430	SignalP-6.0	h-region	6	18	.	.	.	.
+gene-SYNPCC7002_RS02430	SignalP-6.0	c-region	19	22	.	.	.	.
+gene-SYNPCC7002_RS02475	SignalP-6.0	n-region	1	9	.	.	.	.
+gene-SYNPCC7002_RS02475	SignalP-6.0	h-region	10	22	.	.	.	.
+gene-SYNPCC7002_RS02475	SignalP-6.0	lipid-modified cysteine	23	23	.	.	.	.
+gene-SYNPCC7002_RS02495	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS02495	SignalP-6.0	h-region	5	21	.	.	.	.
+gene-SYNPCC7002_RS02495	SignalP-6.0	c-region	22	25	.	.	.	.
+gene-SYNPCC7002_RS02825	SignalP-6.0	n-region	1	9	.	.	.	.
+gene-SYNPCC7002_RS02825	SignalP-6.0	h-region	10	22	.	.	.	.
+gene-SYNPCC7002_RS02825	SignalP-6.0	c-region	23	28	.	.	.	.
+gene-SYNPCC7002_RS02835	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS02835	SignalP-6.0	h-region	2	49	.	.	.	.
+gene-SYNPCC7002_RS02835	SignalP-6.0	lipid-modified cysteine	50	50	.	.	.	.
+gene-SYNPCC7002_RS02875	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS02875	SignalP-6.0	h-region	2	15	.	.	.	.
+gene-SYNPCC7002_RS02875	SignalP-6.0	c-region	16	21	.	.	.	.
+gene-SYNPCC7002_RS02905	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS02905	SignalP-6.0	h-region	3	16	.	.	.	.
+gene-SYNPCC7002_RS02905	SignalP-6.0	c-region	17	20	.	.	.	.
+gene-SYNPCC7002_RS02910	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS02910	SignalP-6.0	h-region	6	19	.	.	.	.
+gene-SYNPCC7002_RS02910	SignalP-6.0	c-region	20	25	.	.	.	.
+gene-SYNPCC7002_RS02940	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS02940	SignalP-6.0	h-region	4	22	.	.	.	.
+gene-SYNPCC7002_RS02940	SignalP-6.0	lipid-modified cysteine	23	23	.	.	.	.
+gene-SYNPCC7002_RS03140	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS03140	SignalP-6.0	h-region	3	15	.	.	.	.
+gene-SYNPCC7002_RS03140	SignalP-6.0	lipid-modified cysteine	16	16	.	.	.	.
+gene-SYNPCC7002_RS03170	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS03170	SignalP-6.0	h-region	2	23	.	.	.	.
+gene-SYNPCC7002_RS03170	SignalP-6.0	lipid-modified cysteine	24	24	.	.	.	.
+gene-SYNPCC7002_RS03180	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS03180	SignalP-6.0	h-region	3	18	.	.	.	.
+gene-SYNPCC7002_RS03180	SignalP-6.0	c-region	19	25	.	.	.	.
+gene-SYNPCC7002_RS03195	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS03195	SignalP-6.0	h-region	3	15	.	.	.	.
+gene-SYNPCC7002_RS03195	SignalP-6.0	lipid-modified cysteine	16	16	.	.	.	.
+gene-SYNPCC7002_RS03345	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS03345	SignalP-6.0	h-region	3	17	.	.	.	.
+gene-SYNPCC7002_RS03345	SignalP-6.0	lipid-modified cysteine	18	18	.	.	.	.
+gene-SYNPCC7002_RS16070	SignalP-6.0	n-region	1	8	.	.	.	.
+gene-SYNPCC7002_RS16070	SignalP-6.0	h-region	9	21	.	.	.	.
+gene-SYNPCC7002_RS16070	SignalP-6.0	lipid-modified cysteine	22	22	.	.	.	.
+gene-SYNPCC7002_RS03805	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS03805	SignalP-6.0	h-region	4	19	.	.	.	.
+gene-SYNPCC7002_RS03805	SignalP-6.0	lipid-modified cysteine	20	20	.	.	.	.
+gene-SYNPCC7002_RS03850	SignalP-6.0	n-region	1	9	.	.	.	.
+gene-SYNPCC7002_RS03850	SignalP-6.0	h-region	10	28	.	.	.	.
+gene-SYNPCC7002_RS03850	SignalP-6.0	c-region	29	35	.	.	.	.
+gene-SYNPCC7002_RS03880	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS03880	SignalP-6.0	h-region	4	19	.	.	.	.
+gene-SYNPCC7002_RS03880	SignalP-6.0	c-region	20	22	.	.	.	.
+gene-SYNPCC7002_RS03885	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS03885	SignalP-6.0	h-region	4	22	.	.	.	.
+gene-SYNPCC7002_RS03885	SignalP-6.0	c-region	23	27	.	.	.	.
+gene-SYNPCC7002_RS03895	SignalP-6.0	n-region	1	9	.	.	.	.
+gene-SYNPCC7002_RS03895	SignalP-6.0	h-region	10	22	.	.	.	.
+gene-SYNPCC7002_RS03895	SignalP-6.0	c-region	23	25	.	.	.	.
+gene-SYNPCC7002_RS03905	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS03905	SignalP-6.0	h-region	5	16	.	.	.	.
+gene-SYNPCC7002_RS03905	SignalP-6.0	c-region	17	22	.	.	.	.
+gene-SYNPCC7002_RS03910	SignalP-6.0	n-region	1	10	.	.	.	.
+gene-SYNPCC7002_RS03910	SignalP-6.0	h-region	11	25	.	.	.	.
+gene-SYNPCC7002_RS03910	SignalP-6.0	c-region	26	31	.	.	.	.
+gene-SYNPCC7002_RS03970	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS03970	SignalP-6.0	h-region	5	22	.	.	.	.
+gene-SYNPCC7002_RS03970	SignalP-6.0	lipid-modified cysteine	23	23	.	.	.	.
+gene-SYNPCC7002_RS16075	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS16075	SignalP-6.0	h-region	2	22	.	.	.	.
+gene-SYNPCC7002_RS16075	SignalP-6.0	lipid-modified cysteine	23	23	.	.	.	.
+gene-SYNPCC7002_RS04075	SignalP-6.0	n-region	1	7	.	.	.	.
+gene-SYNPCC7002_RS04075	SignalP-6.0	h-region	8	22	.	.	.	.
+gene-SYNPCC7002_RS04075	SignalP-6.0	c-region	23	28	.	.	.	.
+gene-SYNPCC7002_RS04210	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS04210	SignalP-6.0	h-region	5	21	.	.	.	.
+gene-SYNPCC7002_RS04210	SignalP-6.0	c-region	22	28	.	.	.	.
+gene-SYNPCC7002_RS04460	SignalP-6.0	n-region	1	27	.	.	.	.
+gene-SYNPCC7002_RS04460	SignalP-6.0	h-region	28	50	.	.	.	.
+gene-SYNPCC7002_RS04460	SignalP-6.0	c-region	51	55	.	.	.	.
+gene-SYNPCC7002_RS04460	SignalP-6.0	twin-arginine motif	25	26	.	.	.	.
+gene-SYNPCC7002_RS04470	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS04470	SignalP-6.0	h-region	7	20	.	.	.	.
+gene-SYNPCC7002_RS04470	SignalP-6.0	c-region	21	26	.	.	.	.
+gene-SYNPCC7002_RS04500	SignalP-6.0	n-region	1	24	.	.	.	.
+gene-SYNPCC7002_RS04500	SignalP-6.0	h-region	25	39	.	.	.	.
+gene-SYNPCC7002_RS04500	SignalP-6.0	c-region	40	44	.	.	.	.
+gene-SYNPCC7002_RS04660	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS04660	SignalP-6.0	h-region	3	19	.	.	.	.
+gene-SYNPCC7002_RS04660	SignalP-6.0	c-region	20	25	.	.	.	.
+gene-SYNPCC7002_RS04665	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS04665	SignalP-6.0	h-region	3	14	.	.	.	.
+gene-SYNPCC7002_RS04665	SignalP-6.0	c-region	15	18	.	.	.	.
+gene-SYNPCC7002_RS04675	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS04675	SignalP-6.0	h-region	3	16	.	.	.	.
+gene-SYNPCC7002_RS04675	SignalP-6.0	c-region	17	21	.	.	.	.
+gene-SYNPCC7002_RS04710	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS04710	SignalP-6.0	h-region	6	22	.	.	.	.
+gene-SYNPCC7002_RS04710	SignalP-6.0	c-region	23	25	.	.	.	.
+gene-SYNPCC7002_RS04810	SignalP-6.0	n-region	1	7	.	.	.	.
+gene-SYNPCC7002_RS04810	SignalP-6.0	h-region	8	23	.	.	.	.
+gene-SYNPCC7002_RS04810	SignalP-6.0	c-region	24	28	.	.	.	.
+gene-SYNPCC7002_RS04865	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS04865	SignalP-6.0	h-region	4	16	.	.	.	.
+gene-SYNPCC7002_RS04865	SignalP-6.0	c-region	17	21	.	.	.	.
+gene-SYNPCC7002_RS04925	SignalP-6.0	n-region	1	9	.	.	.	.
+gene-SYNPCC7002_RS04925	SignalP-6.0	h-region	10	24	.	.	.	.
+gene-SYNPCC7002_RS04925	SignalP-6.0	c-region	25	30	.	.	.	.
+gene-SYNPCC7002_RS05030	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS05030	SignalP-6.0	h-region	3	20	.	.	.	.
+gene-SYNPCC7002_RS05030	SignalP-6.0	c-region	21	26	.	.	.	.
+gene-SYNPCC7002_RS05055	SignalP-6.0	n-region	1	9	.	.	.	.
+gene-SYNPCC7002_RS05055	SignalP-6.0	h-region	10	26	.	.	.	.
+gene-SYNPCC7002_RS05055	SignalP-6.0	lipid-modified cysteine	27	27	.	.	.	.
+gene-SYNPCC7002_RS05155	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS05155	SignalP-6.0	h-region	6	21	.	.	.	.
+gene-SYNPCC7002_RS05155	SignalP-6.0	c-region	22	27	.	.	.	.
+gene-SYNPCC7002_RS05325	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS05325	SignalP-6.0	h-region	5	21	.	.	.	.
+gene-SYNPCC7002_RS05325	SignalP-6.0	c-region	22	24	.	.	.	.
+gene-SYNPCC7002_RS16960	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS16960	SignalP-6.0	h-region	4	19	.	.	.	.
+gene-SYNPCC7002_RS16960	SignalP-6.0	lipid-modified cysteine	20	20	.	.	.	.
+gene-SYNPCC7002_RS05445	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS05445	SignalP-6.0	h-region	3	20	.	.	.	.
+gene-SYNPCC7002_RS05445	SignalP-6.0	lipid-modified cysteine	21	21	.	.	.	.
+gene-SYNPCC7002_RS05470	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS05470	SignalP-6.0	h-region	5	24	.	.	.	.
+gene-SYNPCC7002_RS05470	SignalP-6.0	lipid-modified cysteine	25	25	.	.	.	.
+gene-SYNPCC7002_RS05470	SignalP-6.0	twin-arginine motif	2	3	.	.	.	.
+gene-SYNPCC7002_RS05560	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS05560	SignalP-6.0	h-region	7	22	.	.	.	.
+gene-SYNPCC7002_RS05560	SignalP-6.0	lipid-modified cysteine	23	23	.	.	.	.
+gene-SYNPCC7002_RS05625	SignalP-6.0	n-region	1	7	.	.	.	.
+gene-SYNPCC7002_RS05625	SignalP-6.0	h-region	8	21	.	.	.	.
+gene-SYNPCC7002_RS05625	SignalP-6.0	c-region	22	26	.	.	.	.
+gene-SYNPCC7002_RS05710	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS05710	SignalP-6.0	h-region	3	25	.	.	.	.
+gene-SYNPCC7002_RS05710	SignalP-6.0	lipid-modified cysteine	26	26	.	.	.	.
+gene-SYNPCC7002_RS05820	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS05820	SignalP-6.0	h-region	4	29	.	.	.	.
+gene-SYNPCC7002_RS05820	SignalP-6.0	c-region	30	34	.	.	.	.
+gene-SYNPCC7002_RS05825	SignalP-6.0	n-region	1	9	.	.	.	.
+gene-SYNPCC7002_RS05825	SignalP-6.0	h-region	10	28	.	.	.	.
+gene-SYNPCC7002_RS05825	SignalP-6.0	c-region	29	34	.	.	.	.
+gene-SYNPCC7002_RS05875	SignalP-6.0	n-region	1	8	.	.	.	.
+gene-SYNPCC7002_RS05875	SignalP-6.0	h-region	9	23	.	.	.	.
+gene-SYNPCC7002_RS05875	SignalP-6.0	c-region	24	28	.	.	.	.
+gene-SYNPCC7002_RS05880	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS05880	SignalP-6.0	h-region	4	19	.	.	.	.
+gene-SYNPCC7002_RS05880	SignalP-6.0	lipid-modified cysteine	20	20	.	.	.	.
+gene-SYNPCC7002_RS06030	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS06030	SignalP-6.0	h-region	3	17	.	.	.	.
+gene-SYNPCC7002_RS06030	SignalP-6.0	c-region	18	26	.	.	.	.
+gene-SYNPCC7002_RS06170	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS06170	SignalP-6.0	h-region	5	21	.	.	.	.
+gene-SYNPCC7002_RS06170	SignalP-6.0	lipid-modified cysteine	22	22	.	.	.	.
+gene-SYNPCC7002_RS06220	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS06220	SignalP-6.0	h-region	4	18	.	.	.	.
+gene-SYNPCC7002_RS06220	SignalP-6.0	c-region	19	24	.	.	.	.
+gene-SYNPCC7002_RS06245	SignalP-6.0	n-region	1	13	.	.	.	.
+gene-SYNPCC7002_RS06245	SignalP-6.0	h-region	14	29	.	.	.	.
+gene-SYNPCC7002_RS06245	SignalP-6.0	c-region	30	33	.	.	.	.
+gene-SYNPCC7002_RS06245	SignalP-6.0	twin-arginine motif	11	12	.	.	.	.
+gene-SYNPCC7002_RS06435	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS06435	SignalP-6.0	h-region	2	10	.	.	.	.
+gene-SYNPCC7002_RS06435	SignalP-6.0	c-region	11	15	.	.	.	.
+gene-SYNPCC7002_RS06485	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS06485	SignalP-6.0	h-region	5	19	.	.	.	.
+gene-SYNPCC7002_RS06485	SignalP-6.0	lipid-modified cysteine	20	20	.	.	.	.
+gene-SYNPCC7002_RS06490	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS06490	SignalP-6.0	h-region	4	16	.	.	.	.
+gene-SYNPCC7002_RS06490	SignalP-6.0	c-region	17	22	.	.	.	.
+gene-SYNPCC7002_RS16105	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS16105	SignalP-6.0	h-region	7	25	.	.	.	.
+gene-SYNPCC7002_RS16105	SignalP-6.0	c-region	26	29	.	.	.	.
+gene-SYNPCC7002_RS06515	SignalP-6.0	n-region	1	7	.	.	.	.
+gene-SYNPCC7002_RS06515	SignalP-6.0	h-region	8	22	.	.	.	.
+gene-SYNPCC7002_RS06515	SignalP-6.0	lipid-modified cysteine	23	23	.	.	.	.
+gene-SYNPCC7002_RS06620	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS06620	SignalP-6.0	h-region	4	18	.	.	.	.
+gene-SYNPCC7002_RS06620	SignalP-6.0	c-region	19	23	.	.	.	.
+gene-SYNPCC7002_RS06650	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS06650	SignalP-6.0	h-region	4	20	.	.	.	.
+gene-SYNPCC7002_RS06650	SignalP-6.0	c-region	21	27	.	.	.	.
+gene-SYNPCC7002_RS06680	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS06680	SignalP-6.0	h-region	3	17	.	.	.	.
+gene-SYNPCC7002_RS06680	SignalP-6.0	c-region	18	24	.	.	.	.
+gene-SYNPCC7002_RS06850	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS06850	SignalP-6.0	h-region	2	12	.	.	.	.
+gene-SYNPCC7002_RS06850	SignalP-6.0	lipid-modified cysteine	13	13	.	.	.	.
+gene-SYNPCC7002_RS06895	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS06895	SignalP-6.0	h-region	3	18	.	.	.	.
+gene-SYNPCC7002_RS06895	SignalP-6.0	c-region	19	24	.	.	.	.
+gene-SYNPCC7002_RS07100	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS07100	SignalP-6.0	h-region	2	15	.	.	.	.
+gene-SYNPCC7002_RS07100	SignalP-6.0	lipid-modified cysteine	16	16	.	.	.	.
+gene-SYNPCC7002_RS07165	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS07165	SignalP-6.0	h-region	7	22	.	.	.	.
+gene-SYNPCC7002_RS07165	SignalP-6.0	c-region	23	27	.	.	.	.
+gene-SYNPCC7002_RS07175	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS07175	SignalP-6.0	h-region	5	17	.	.	.	.
+gene-SYNPCC7002_RS07175	SignalP-6.0	c-region	18	24	.	.	.	.
+gene-SYNPCC7002_RS07230	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS07230	SignalP-6.0	h-region	5	21	.	.	.	.
+gene-SYNPCC7002_RS07230	SignalP-6.0	c-region	22	25	.	.	.	.
+gene-SYNPCC7002_RS07260	SignalP-6.0	n-region	1	13	.	.	.	.
+gene-SYNPCC7002_RS07260	SignalP-6.0	h-region	14	30	.	.	.	.
+gene-SYNPCC7002_RS07260	SignalP-6.0	c-region	31	34	.	.	.	.
+gene-SYNPCC7002_RS07355	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS07355	SignalP-6.0	h-region	5	18	.	.	.	.
+gene-SYNPCC7002_RS07355	SignalP-6.0	c-region	19	24	.	.	.	.
+gene-SYNPCC7002_RS07365	SignalP-6.0	n-region	1	12	.	.	.	.
+gene-SYNPCC7002_RS07365	SignalP-6.0	h-region	13	27	.	.	.	.
+gene-SYNPCC7002_RS07365	SignalP-6.0	c-region	28	33	.	.	.	.
+gene-SYNPCC7002_RS07375	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS07375	SignalP-6.0	h-region	2	14	.	.	.	.
+gene-SYNPCC7002_RS07375	SignalP-6.0	c-region	15	18	.	.	.	.
+gene-SYNPCC7002_RS07435	SignalP-6.0	n-region	1	11	.	.	.	.
+gene-SYNPCC7002_RS07435	SignalP-6.0	h-region	12	26	.	.	.	.
+gene-SYNPCC7002_RS07435	SignalP-6.0	c-region	27	29	.	.	.	.
+gene-SYNPCC7002_RS16120	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS16120	SignalP-6.0	h-region	7	20	.	.	.	.
+gene-SYNPCC7002_RS16120	SignalP-6.0	c-region	21	27	.	.	.	.
+gene-SYNPCC7002_RS07455	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS07455	SignalP-6.0	h-region	2	16	.	.	.	.
+gene-SYNPCC7002_RS07455	SignalP-6.0	c-region	17	22	.	.	.	.
+gene-SYNPCC7002_RS07465	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS07465	SignalP-6.0	h-region	2	8	.	.	.	.
+gene-SYNPCC7002_RS07465	SignalP-6.0	c-region	9	13	.	.	.	.
+gene-SYNPCC7002_RS07470	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS07470	SignalP-6.0	h-region	5	20	.	.	.	.
+gene-SYNPCC7002_RS07470	SignalP-6.0	c-region	21	26	.	.	.	.
+gene-SYNPCC7002_RS07525	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS07525	SignalP-6.0	h-region	2	16	.	.	.	.
+gene-SYNPCC7002_RS07525	SignalP-6.0	c-region	17	23	.	.	.	.
+gene-SYNPCC7002_RS07630	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS07630	SignalP-6.0	h-region	5	23	.	.	.	.
+gene-SYNPCC7002_RS07630	SignalP-6.0	c-region	24	26	.	.	.	.
+gene-SYNPCC7002_RS07730	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS07730	SignalP-6.0	h-region	3	20	.	.	.	.
+gene-SYNPCC7002_RS07730	SignalP-6.0	c-region	21	23	.	.	.	.
+gene-SYNPCC7002_RS16980	SignalP-6.0	n-region	1	11	.	.	.	.
+gene-SYNPCC7002_RS16980	SignalP-6.0	h-region	12	24	.	.	.	.
+gene-SYNPCC7002_RS16980	SignalP-6.0	lipid-modified cysteine	25	25	.	.	.	.
+gene-SYNPCC7002_RS07865	SignalP-6.0	n-region	1	7	.	.	.	.
+gene-SYNPCC7002_RS07865	SignalP-6.0	h-region	8	25	.	.	.	.
+gene-SYNPCC7002_RS07865	SignalP-6.0	c-region	26	31	.	.	.	.
+gene-SYNPCC7002_RS07890	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS07890	SignalP-6.0	h-region	2	25	.	.	.	.
+gene-SYNPCC7002_RS07890	SignalP-6.0	lipid-modified cysteine	26	26	.	.	.	.
+gene-SYNPCC7002_RS07925	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS07925	SignalP-6.0	h-region	3	18	.	.	.	.
+gene-SYNPCC7002_RS07925	SignalP-6.0	lipid-modified cysteine	19	19	.	.	.	.
+gene-SYNPCC7002_RS07935	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS07935	SignalP-6.0	h-region	3	16	.	.	.	.
+gene-SYNPCC7002_RS07935	SignalP-6.0	c-region	17	21	.	.	.	.
+gene-SYNPCC7002_RS08005	SignalP-6.0	n-region	1	9	.	.	.	.
+gene-SYNPCC7002_RS08005	SignalP-6.0	h-region	10	24	.	.	.	.
+gene-SYNPCC7002_RS08005	SignalP-6.0	c-region	25	30	.	.	.	.
+gene-SYNPCC7002_RS08040	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS08040	SignalP-6.0	h-region	4	21	.	.	.	.
+gene-SYNPCC7002_RS08040	SignalP-6.0	lipid-modified cysteine	22	22	.	.	.	.
+gene-SYNPCC7002_RS08200	SignalP-6.0	n-region	1	9	.	.	.	.
+gene-SYNPCC7002_RS08200	SignalP-6.0	h-region	10	23	.	.	.	.
+gene-SYNPCC7002_RS08200	SignalP-6.0	c-region	24	28	.	.	.	.
+gene-SYNPCC7002_RS08230	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS08230	SignalP-6.0	h-region	2	20	.	.	.	.
+gene-SYNPCC7002_RS08230	SignalP-6.0	c-region	21	26	.	.	.	.
+gene-SYNPCC7002_RS08285	SignalP-6.0	n-region	1	8	.	.	.	.
+gene-SYNPCC7002_RS08285	SignalP-6.0	h-region	9	19	.	.	.	.
+gene-SYNPCC7002_RS08285	SignalP-6.0	lipid-modified cysteine	20	20	.	.	.	.
+gene-SYNPCC7002_RS08330	SignalP-6.0	n-region	1	8	.	.	.	.
+gene-SYNPCC7002_RS08330	SignalP-6.0	h-region	9	24	.	.	.	.
+gene-SYNPCC7002_RS08330	SignalP-6.0	c-region	25	29	.	.	.	.
+gene-SYNPCC7002_RS16145	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS16145	SignalP-6.0	h-region	4	18	.	.	.	.
+gene-SYNPCC7002_RS16145	SignalP-6.0	lipid-modified cysteine	19	19	.	.	.	.
+gene-SYNPCC7002_RS08665	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS08665	SignalP-6.0	h-region	3	19	.	.	.	.
+gene-SYNPCC7002_RS08665	SignalP-6.0	c-region	20	24	.	.	.	.
+gene-SYNPCC7002_RS08755	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS08755	SignalP-6.0	h-region	3	22	.	.	.	.
+gene-SYNPCC7002_RS08755	SignalP-6.0	lipid-modified cysteine	23	23	.	.	.	.
+gene-SYNPCC7002_RS08775	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS08775	SignalP-6.0	h-region	2	16	.	.	.	.
+gene-SYNPCC7002_RS08775	SignalP-6.0	c-region	17	22	.	.	.	.
+gene-SYNPCC7002_RS08820	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS08820	SignalP-6.0	h-region	5	23	.	.	.	.
+gene-SYNPCC7002_RS08820	SignalP-6.0	c-region	24	30	.	.	.	.
+gene-SYNPCC7002_RS08820	SignalP-6.0	twin-arginine motif	2	3	.	.	.	.
+gene-SYNPCC7002_RS08995	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS08995	SignalP-6.0	h-region	4	20	.	.	.	.
+gene-SYNPCC7002_RS08995	SignalP-6.0	c-region	21	27	.	.	.	.
+gene-SYNPCC7002_RS09200	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS09200	SignalP-6.0	h-region	6	21	.	.	.	.
+gene-SYNPCC7002_RS09200	SignalP-6.0	lipid-modified cysteine	22	22	.	.	.	.
+gene-SYNPCC7002_RS09465	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS09465	SignalP-6.0	h-region	7	23	.	.	.	.
+gene-SYNPCC7002_RS09465	SignalP-6.0	c-region	24	28	.	.	.	.
+gene-SYNPCC7002_RS09500	SignalP-6.0	n-region	1	7	.	.	.	.
+gene-SYNPCC7002_RS09500	SignalP-6.0	h-region	8	22	.	.	.	.
+gene-SYNPCC7002_RS09500	SignalP-6.0	lipid-modified cysteine	23	23	.	.	.	.
+gene-SYNPCC7002_RS09505	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS09505	SignalP-6.0	h-region	3	18	.	.	.	.
+gene-SYNPCC7002_RS09505	SignalP-6.0	c-region	19	26	.	.	.	.
+gene-SYNPCC7002_RS16165	SignalP-6.0	n-region	1	7	.	.	.	.
+gene-SYNPCC7002_RS16165	SignalP-6.0	h-region	8	24	.	.	.	.
+gene-SYNPCC7002_RS16165	SignalP-6.0	c-region	25	31	.	.	.	.
+gene-SYNPCC7002_RS09555	SignalP-6.0	n-region	1	16	.	.	.	.
+gene-SYNPCC7002_RS09555	SignalP-6.0	h-region	17	38	.	.	.	.
+gene-SYNPCC7002_RS09555	SignalP-6.0	c-region	39	39	.	.	.	.
+gene-SYNPCC7002_RS09555	SignalP-6.0	twin-arginine motif	14	15	.	.	.	.
+gene-SYNPCC7002_RS09560	SignalP-6.0	n-region	1	14	.	.	.	.
+gene-SYNPCC7002_RS09560	SignalP-6.0	h-region	15	33	.	.	.	.
+gene-SYNPCC7002_RS09560	SignalP-6.0	c-region	34	38	.	.	.	.
+gene-SYNPCC7002_RS09715	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS09715	SignalP-6.0	h-region	6	18	.	.	.	.
+gene-SYNPCC7002_RS09715	SignalP-6.0	c-region	19	24	.	.	.	.
+gene-SYNPCC7002_RS09745	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS09745	SignalP-6.0	h-region	2	22	.	.	.	.
+gene-SYNPCC7002_RS09745	SignalP-6.0	lipid-modified cysteine	23	23	.	.	.	.
+gene-SYNPCC7002_RS09755	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS09755	SignalP-6.0	h-region	3	27	.	.	.	.
+gene-SYNPCC7002_RS09755	SignalP-6.0	lipid-modified cysteine	28	28	.	.	.	.
+gene-SYNPCC7002_RS09925	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS09925	SignalP-6.0	h-region	3	23	.	.	.	.
+gene-SYNPCC7002_RS09925	SignalP-6.0	c-region	24	32	.	.	.	.
+gene-SYNPCC7002_RS16170	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS16170	SignalP-6.0	h-region	3	24	.	.	.	.
+gene-SYNPCC7002_RS16170	SignalP-6.0	c-region	25	29	.	.	.	.
+gene-SYNPCC7002_RS10075	SignalP-6.0	n-region	1	10	.	.	.	.
+gene-SYNPCC7002_RS10075	SignalP-6.0	h-region	11	30	.	.	.	.
+gene-SYNPCC7002_RS10075	SignalP-6.0	lipid-modified cysteine	31	31	.	.	.	.
+gene-SYNPCC7002_RS10170	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS10170	SignalP-6.0	h-region	2	24	.	.	.	.
+gene-SYNPCC7002_RS10170	SignalP-6.0	lipid-modified cysteine	25	25	.	.	.	.
+gene-SYNPCC7002_RS10225	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS10225	SignalP-6.0	h-region	3	16	.	.	.	.
+gene-SYNPCC7002_RS10225	SignalP-6.0	c-region	17	19	.	.	.	.
+gene-SYNPCC7002_RS10235	SignalP-6.0	n-region	1	11	.	.	.	.
+gene-SYNPCC7002_RS10235	SignalP-6.0	h-region	12	31	.	.	.	.
+gene-SYNPCC7002_RS10235	SignalP-6.0	c-region	32	36	.	.	.	.
+gene-SYNPCC7002_RS10370	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS10370	SignalP-6.0	h-region	3	18	.	.	.	.
+gene-SYNPCC7002_RS10370	SignalP-6.0	c-region	19	25	.	.	.	.
+gene-SYNPCC7002_RS10385	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS10385	SignalP-6.0	h-region	4	16	.	.	.	.
+gene-SYNPCC7002_RS10385	SignalP-6.0	c-region	17	23	.	.	.	.
+gene-SYNPCC7002_RS16175	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS16175	SignalP-6.0	h-region	5	30	.	.	.	.
+gene-SYNPCC7002_RS16175	SignalP-6.0	c-region	31	36	.	.	.	.
+gene-SYNPCC7002_RS16180	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS16180	SignalP-6.0	h-region	4	16	.	.	.	.
+gene-SYNPCC7002_RS16180	SignalP-6.0	c-region	17	22	.	.	.	.
+gene-SYNPCC7002_RS10610	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS10610	SignalP-6.0	h-region	3	17	.	.	.	.
+gene-SYNPCC7002_RS10610	SignalP-6.0	lipid-modified cysteine	18	18	.	.	.	.
+gene-SYNPCC7002_RS10620	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS10620	SignalP-6.0	h-region	4	19	.	.	.	.
+gene-SYNPCC7002_RS10620	SignalP-6.0	c-region	20	23	.	.	.	.
+gene-SYNPCC7002_RS10735	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS10735	SignalP-6.0	h-region	7	25	.	.	.	.
+gene-SYNPCC7002_RS10735	SignalP-6.0	c-region	26	32	.	.	.	.
+gene-SYNPCC7002_RS10735	SignalP-6.0	twin-arginine motif	4	5	.	.	.	.
+gene-SYNPCC7002_RS10750	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS10750	SignalP-6.0	h-region	4	16	.	.	.	.
+gene-SYNPCC7002_RS10750	SignalP-6.0	c-region	17	23	.	.	.	.
+gene-SYNPCC7002_RS10780	SignalP-6.0	n-region	1	8	.	.	.	.
+gene-SYNPCC7002_RS10780	SignalP-6.0	h-region	9	28	.	.	.	.
+gene-SYNPCC7002_RS10780	SignalP-6.0	c-region	29	32	.	.	.	.
+gene-SYNPCC7002_RS10785	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS10785	SignalP-6.0	h-region	6	18	.	.	.	.
+gene-SYNPCC7002_RS10785	SignalP-6.0	c-region	19	24	.	.	.	.
+gene-SYNPCC7002_RS10795	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS10795	SignalP-6.0	h-region	3	18	.	.	.	.
+gene-SYNPCC7002_RS10795	SignalP-6.0	c-region	19	23	.	.	.	.
+gene-SYNPCC7002_RS10805	SignalP-6.0	n-region	1	20	.	.	.	.
+gene-SYNPCC7002_RS10805	SignalP-6.0	h-region	21	39	.	.	.	.
+gene-SYNPCC7002_RS10805	SignalP-6.0	c-region	40	44	.	.	.	.
+gene-SYNPCC7002_RS10815	SignalP-6.0	n-region	1	13	.	.	.	.
+gene-SYNPCC7002_RS10815	SignalP-6.0	h-region	14	31	.	.	.	.
+gene-SYNPCC7002_RS10815	SignalP-6.0	c-region	32	34	.	.	.	.
+gene-SYNPCC7002_RS10820	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS10820	SignalP-6.0	h-region	4	19	.	.	.	.
+gene-SYNPCC7002_RS10820	SignalP-6.0	c-region	20	24	.	.	.	.
+gene-SYNPCC7002_RS16990	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS16990	SignalP-6.0	h-region	3	18	.	.	.	.
+gene-SYNPCC7002_RS16990	SignalP-6.0	c-region	19	23	.	.	.	.
+gene-SYNPCC7002_RS10845	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS10845	SignalP-6.0	h-region	3	19	.	.	.	.
+gene-SYNPCC7002_RS10845	SignalP-6.0	c-region	20	26	.	.	.	.
+gene-SYNPCC7002_RS10940	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS10940	SignalP-6.0	h-region	5	22	.	.	.	.
+gene-SYNPCC7002_RS10940	SignalP-6.0	lipid-modified cysteine	23	23	.	.	.	.
+gene-SYNPCC7002_RS10945	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS10945	SignalP-6.0	h-region	2	18	.	.	.	.
+gene-SYNPCC7002_RS10945	SignalP-6.0	c-region	19	24	.	.	.	.
+gene-SYNPCC7002_RS11205	SignalP-6.0	n-region	1	12	.	.	.	.
+gene-SYNPCC7002_RS11205	SignalP-6.0	h-region	13	30	.	.	.	.
+gene-SYNPCC7002_RS11205	SignalP-6.0	c-region	31	35	.	.	.	.
+gene-SYNPCC7002_RS11265	SignalP-6.0	n-region	1	18	.	.	.	.
+gene-SYNPCC7002_RS11265	SignalP-6.0	h-region	19	38	.	.	.	.
+gene-SYNPCC7002_RS11265	SignalP-6.0	c-region	39	42	.	.	.	.
+gene-SYNPCC7002_RS11295	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS11295	SignalP-6.0	h-region	5	18	.	.	.	.
+gene-SYNPCC7002_RS11295	SignalP-6.0	c-region	19	24	.	.	.	.
+gene-SYNPCC7002_RS11325	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS11325	SignalP-6.0	h-region	3	25	.	.	.	.
+gene-SYNPCC7002_RS11325	SignalP-6.0	lipid-modified cysteine	26	26	.	.	.	.
+gene-SYNPCC7002_RS11370	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS11370	SignalP-6.0	h-region	3	20	.	.	.	.
+gene-SYNPCC7002_RS11370	SignalP-6.0	c-region	21	26	.	.	.	.
+gene-SYNPCC7002_RS11415	SignalP-6.0	n-region	1	9	.	.	.	.
+gene-SYNPCC7002_RS11415	SignalP-6.0	h-region	10	25	.	.	.	.
+gene-SYNPCC7002_RS11415	SignalP-6.0	c-region	26	30	.	.	.	.
+gene-SYNPCC7002_RS11420	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS11420	SignalP-6.0	h-region	7	23	.	.	.	.
+gene-SYNPCC7002_RS11420	SignalP-6.0	c-region	24	28	.	.	.	.
+gene-SYNPCC7002_RS11485	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS11485	SignalP-6.0	h-region	7	21	.	.	.	.
+gene-SYNPCC7002_RS11485	SignalP-6.0	c-region	22	29	.	.	.	.
+gene-SYNPCC7002_RS11485	SignalP-6.0	twin-arginine motif	4	5	.	.	.	.
+gene-SYNPCC7002_RS11490	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS11490	SignalP-6.0	h-region	4	23	.	.	.	.
+gene-SYNPCC7002_RS11490	SignalP-6.0	c-region	24	28	.	.	.	.
+gene-SYNPCC7002_RS11505	SignalP-6.0	n-region	1	11	.	.	.	.
+gene-SYNPCC7002_RS11505	SignalP-6.0	h-region	12	26	.	.	.	.
+gene-SYNPCC7002_RS11505	SignalP-6.0	lipid-modified cysteine	27	27	.	.	.	.
+gene-SYNPCC7002_RS11740	SignalP-6.0	n-region	1	11	.	.	.	.
+gene-SYNPCC7002_RS11740	SignalP-6.0	h-region	12	29	.	.	.	.
+gene-SYNPCC7002_RS11740	SignalP-6.0	c-region	30	35	.	.	.	.
+gene-SYNPCC7002_RS11745	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS11745	SignalP-6.0	h-region	2	17	.	.	.	.
+gene-SYNPCC7002_RS11745	SignalP-6.0	c-region	18	20	.	.	.	.
+gene-SYNPCC7002_RS11850	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS11850	SignalP-6.0	h-region	4	21	.	.	.	.
+gene-SYNPCC7002_RS11850	SignalP-6.0	c-region	22	27	.	.	.	.
+gene-SYNPCC7002_RS11855	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS11855	SignalP-6.0	h-region	5	18	.	.	.	.
+gene-SYNPCC7002_RS11855	SignalP-6.0	lipid-modified cysteine	19	19	.	.	.	.
+gene-SYNPCC7002_RS12030	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS12030	SignalP-6.0	h-region	7	17	.	.	.	.
+gene-SYNPCC7002_RS12030	SignalP-6.0	c-region	18	24	.	.	.	.
+gene-SYNPCC7002_RS12075	SignalP-6.0	n-region	1	11	.	.	.	.
+gene-SYNPCC7002_RS12075	SignalP-6.0	h-region	12	24	.	.	.	.
+gene-SYNPCC7002_RS12075	SignalP-6.0	c-region	25	31	.	.	.	.
+gene-SYNPCC7002_RS17010	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS17010	SignalP-6.0	h-region	6	22	.	.	.	.
+gene-SYNPCC7002_RS17010	SignalP-6.0	c-region	23	27	.	.	.	.
+gene-SYNPCC7002_RS16195	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS16195	SignalP-6.0	h-region	6	22	.	.	.	.
+gene-SYNPCC7002_RS16195	SignalP-6.0	c-region	23	27	.	.	.	.
+gene-SYNPCC7002_RS12210	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS12210	SignalP-6.0	h-region	4	16	.	.	.	.
+gene-SYNPCC7002_RS12210	SignalP-6.0	c-region	17	22	.	.	.	.
+gene-SYNPCC7002_RS12410	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS12410	SignalP-6.0	h-region	2	19	.	.	.	.
+gene-SYNPCC7002_RS12410	SignalP-6.0	lipid-modified cysteine	20	20	.	.	.	.
+gene-SYNPCC7002_RS12440	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS12440	SignalP-6.0	h-region	4	19	.	.	.	.
+gene-SYNPCC7002_RS12440	SignalP-6.0	lipid-modified cysteine	20	20	.	.	.	.
+gene-SYNPCC7002_RS12450	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS12450	SignalP-6.0	h-region	2	19	.	.	.	.
+gene-SYNPCC7002_RS12450	SignalP-6.0	lipid-modified cysteine	20	20	.	.	.	.
+gene-SYNPCC7002_RS12550	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS12550	SignalP-6.0	h-region	4	18	.	.	.	.
+gene-SYNPCC7002_RS12550	SignalP-6.0	c-region	19	25	.	.	.	.
+gene-SYNPCC7002_RS12560	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS12560	SignalP-6.0	h-region	4	24	.	.	.	.
+gene-SYNPCC7002_RS12560	SignalP-6.0	lipid-modified cysteine	25	25	.	.	.	.
+gene-SYNPCC7002_RS12660	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS12660	SignalP-6.0	h-region	5	19	.	.	.	.
+gene-SYNPCC7002_RS12660	SignalP-6.0	c-region	20	25	.	.	.	.
+gene-SYNPCC7002_RS12705	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS12705	SignalP-6.0	h-region	3	22	.	.	.	.
+gene-SYNPCC7002_RS12705	SignalP-6.0	c-region	23	28	.	.	.	.
+gene-SYNPCC7002_RS12755	SignalP-6.0	n-region	1	8	.	.	.	.
+gene-SYNPCC7002_RS12755	SignalP-6.0	h-region	9	26	.	.	.	.
+gene-SYNPCC7002_RS12755	SignalP-6.0	lipid-modified cysteine	27	27	.	.	.	.
+gene-SYNPCC7002_RS12780	SignalP-6.0	n-region	1	8	.	.	.	.
+gene-SYNPCC7002_RS12780	SignalP-6.0	h-region	9	23	.	.	.	.
+gene-SYNPCC7002_RS12780	SignalP-6.0	c-region	24	29	.	.	.	.
+gene-SYNPCC7002_RS12785	SignalP-6.0	n-region	1	10	.	.	.	.
+gene-SYNPCC7002_RS12785	SignalP-6.0	h-region	11	22	.	.	.	.
+gene-SYNPCC7002_RS12785	SignalP-6.0	lipid-modified cysteine	23	23	.	.	.	.
+gene-SYNPCC7002_RS12790	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS12790	SignalP-6.0	h-region	2	20	.	.	.	.
+gene-SYNPCC7002_RS12790	SignalP-6.0	c-region	21	25	.	.	.	.
+gene-SYNPCC7002_RS12795	SignalP-6.0	n-region	1	16	.	.	.	.
+gene-SYNPCC7002_RS12795	SignalP-6.0	h-region	17	35	.	.	.	.
+gene-SYNPCC7002_RS12795	SignalP-6.0	c-region	36	41	.	.	.	.
+gene-SYNPCC7002_RS12810	SignalP-6.0	n-region	1	8	.	.	.	.
+gene-SYNPCC7002_RS12810	SignalP-6.0	h-region	9	25	.	.	.	.
+gene-SYNPCC7002_RS12810	SignalP-6.0	c-region	26	29	.	.	.	.
+gene-SYNPCC7002_RS12865	SignalP-6.0	n-region	1	12	.	.	.	.
+gene-SYNPCC7002_RS12865	SignalP-6.0	h-region	13	32	.	.	.	.
+gene-SYNPCC7002_RS12865	SignalP-6.0	c-region	33	36	.	.	.	.
+gene-SYNPCC7002_RS12870	SignalP-6.0	n-region	1	10	.	.	.	.
+gene-SYNPCC7002_RS12870	SignalP-6.0	h-region	11	24	.	.	.	.
+gene-SYNPCC7002_RS12870	SignalP-6.0	c-region	25	31	.	.	.	.
+gene-SYNPCC7002_RS12875	SignalP-6.0	n-region	1	10	.	.	.	.
+gene-SYNPCC7002_RS12875	SignalP-6.0	h-region	11	24	.	.	.	.
+gene-SYNPCC7002_RS12875	SignalP-6.0	c-region	25	28	.	.	.	.
+gene-SYNPCC7002_RS12920	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS12920	SignalP-6.0	h-region	3	21	.	.	.	.
+gene-SYNPCC7002_RS12920	SignalP-6.0	c-region	22	35	.	.	.	.
+gene-SYNPCC7002_RS12935	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS12935	SignalP-6.0	h-region	4	19	.	.	.	.
+gene-SYNPCC7002_RS12935	SignalP-6.0	c-region	20	24	.	.	.	.
+gene-SYNPCC7002_RS12975	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS12975	SignalP-6.0	h-region	4	22	.	.	.	.
+gene-SYNPCC7002_RS12975	SignalP-6.0	c-region	23	28	.	.	.	.
+gene-SYNPCC7002_RS12990	SignalP-6.0	n-region	1	12	.	.	.	.
+gene-SYNPCC7002_RS12990	SignalP-6.0	h-region	13	28	.	.	.	.
+gene-SYNPCC7002_RS12990	SignalP-6.0	c-region	29	33	.	.	.	.
+gene-SYNPCC7002_RS13015	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS13015	SignalP-6.0	h-region	2	19	.	.	.	.
+gene-SYNPCC7002_RS13015	SignalP-6.0	lipid-modified cysteine	20	20	.	.	.	.
+gene-SYNPCC7002_RS13025	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS13025	SignalP-6.0	h-region	3	15	.	.	.	.
+gene-SYNPCC7002_RS13025	SignalP-6.0	c-region	16	21	.	.	.	.
+gene-SYNPCC7002_RS13165	SignalP-6.0	n-region	1	10	.	.	.	.
+gene-SYNPCC7002_RS13165	SignalP-6.0	h-region	11	26	.	.	.	.
+gene-SYNPCC7002_RS13165	SignalP-6.0	c-region	27	30	.	.	.	.
+gene-SYNPCC7002_RS13175	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS13175	SignalP-6.0	h-region	6	20	.	.	.	.
+gene-SYNPCC7002_RS13175	SignalP-6.0	lipid-modified cysteine	21	21	.	.	.	.
+gene-SYNPCC7002_RS13180	SignalP-6.0	n-region	1	16	.	.	.	.
+gene-SYNPCC7002_RS13180	SignalP-6.0	h-region	17	35	.	.	.	.
+gene-SYNPCC7002_RS13180	SignalP-6.0	c-region	36	44	.	.	.	.
+gene-SYNPCC7002_RS13180	SignalP-6.0	twin-arginine motif	14	15	.	.	.	.
+gene-SYNPCC7002_RS13260	SignalP-6.0	n-region	1	13	.	.	.	.
+gene-SYNPCC7002_RS13260	SignalP-6.0	h-region	14	26	.	.	.	.
+gene-SYNPCC7002_RS13260	SignalP-6.0	lipid-modified cysteine	27	27	.	.	.	.
+gene-SYNPCC7002_RS13265	SignalP-6.0	n-region	1	12	.	.	.	.
+gene-SYNPCC7002_RS13265	SignalP-6.0	h-region	13	27	.	.	.	.
+gene-SYNPCC7002_RS13265	SignalP-6.0	c-region	28	33	.	.	.	.
+gene-SYNPCC7002_RS13270	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS13270	SignalP-6.0	h-region	2	21	.	.	.	.
+gene-SYNPCC7002_RS13270	SignalP-6.0	c-region	22	30	.	.	.	.
+gene-SYNPCC7002_RS13275	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS13275	SignalP-6.0	h-region	7	21	.	.	.	.
+gene-SYNPCC7002_RS13275	SignalP-6.0	c-region	22	26	.	.	.	.
+gene-SYNPCC7002_RS13295	SignalP-6.0	n-region	1	20	.	.	.	.
+gene-SYNPCC7002_RS13295	SignalP-6.0	h-region	21	33	.	.	.	.
+gene-SYNPCC7002_RS13295	SignalP-6.0	c-region	34	38	.	.	.	.
+gene-SYNPCC7002_RS13300	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS13300	SignalP-6.0	h-region	4	20	.	.	.	.
+gene-SYNPCC7002_RS13300	SignalP-6.0	c-region	21	23	.	.	.	.
+gene-SYNPCC7002_RS16225	SignalP-6.0	n-region	1	9	.	.	.	.
+gene-SYNPCC7002_RS16225	SignalP-6.0	h-region	10	26	.	.	.	.
+gene-SYNPCC7002_RS16225	SignalP-6.0	c-region	27	32	.	.	.	.
+gene-SYNPCC7002_RS13340	SignalP-6.0	n-region	1	10	.	.	.	.
+gene-SYNPCC7002_RS13340	SignalP-6.0	h-region	11	27	.	.	.	.
+gene-SYNPCC7002_RS13340	SignalP-6.0	c-region	28	32	.	.	.	.
+gene-SYNPCC7002_RS13400	SignalP-6.0	n-region	1	13	.	.	.	.
+gene-SYNPCC7002_RS13400	SignalP-6.0	h-region	14	30	.	.	.	.
+gene-SYNPCC7002_RS13400	SignalP-6.0	lipid-modified cysteine	31	31	.	.	.	.
+gene-SYNPCC7002_RS13470	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS13470	SignalP-6.0	h-region	6	22	.	.	.	.
+gene-SYNPCC7002_RS13470	SignalP-6.0	lipid-modified cysteine	23	23	.	.	.	.
+gene-SYNPCC7002_RS13500	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS13500	SignalP-6.0	h-region	7	19	.	.	.	.
+gene-SYNPCC7002_RS13500	SignalP-6.0	c-region	20	31	.	.	.	.
+gene-SYNPCC7002_RS13595	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS13595	SignalP-6.0	h-region	5	20	.	.	.	.
+gene-SYNPCC7002_RS13595	SignalP-6.0	c-region	21	26	.	.	.	.
+gene-SYNPCC7002_RS13760	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS13760	SignalP-6.0	h-region	3	17	.	.	.	.
+gene-SYNPCC7002_RS13760	SignalP-6.0	c-region	18	23	.	.	.	.
+gene-SYNPCC7002_RS13900	SignalP-6.0	n-region	1	8	.	.	.	.
+gene-SYNPCC7002_RS13900	SignalP-6.0	h-region	9	24	.	.	.	.
+gene-SYNPCC7002_RS13900	SignalP-6.0	c-region	25	29	.	.	.	.
+gene-SYNPCC7002_RS13975	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS13975	SignalP-6.0	h-region	2	19	.	.	.	.
+gene-SYNPCC7002_RS13975	SignalP-6.0	lipid-modified cysteine	20	20	.	.	.	.
+gene-SYNPCC7002_RS14065	SignalP-6.0	n-region	1	11	.	.	.	.
+gene-SYNPCC7002_RS14065	SignalP-6.0	h-region	12	26	.	.	.	.
+gene-SYNPCC7002_RS14065	SignalP-6.0	c-region	27	31	.	.	.	.
+gene-SYNPCC7002_RS16240	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS16240	SignalP-6.0	h-region	4	23	.	.	.	.
+gene-SYNPCC7002_RS16240	SignalP-6.0	c-region	24	27	.	.	.	.
+gene-SYNPCC7002_RS14125	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS14125	SignalP-6.0	h-region	6	19	.	.	.	.
+gene-SYNPCC7002_RS14125	SignalP-6.0	c-region	20	25	.	.	.	.
+gene-SYNPCC7002_RS14180	SignalP-6.0	n-region	1	9	.	.	.	.
+gene-SYNPCC7002_RS14180	SignalP-6.0	h-region	10	23	.	.	.	.
+gene-SYNPCC7002_RS14180	SignalP-6.0	c-region	24	27	.	.	.	.
+gene-SYNPCC7002_RS14185	SignalP-6.0	n-region	1	12	.	.	.	.
+gene-SYNPCC7002_RS14185	SignalP-6.0	h-region	13	30	.	.	.	.
+gene-SYNPCC7002_RS14185	SignalP-6.0	lipid-modified cysteine	31	31	.	.	.	.
+gene-SYNPCC7002_RS15080	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS15080	SignalP-6.0	h-region	7	20	.	.	.	.
+gene-SYNPCC7002_RS15080	SignalP-6.0	c-region	21	27	.	.	.	.
+gene-SYNPCC7002_RS15150	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS15150	SignalP-6.0	h-region	3	18	.	.	.	.
+gene-SYNPCC7002_RS15150	SignalP-6.0	c-region	19	22	.	.	.	.
+gene-SYNPCC7002_RS15155	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS15155	SignalP-6.0	h-region	2	18	.	.	.	.
+gene-SYNPCC7002_RS15155	SignalP-6.0	c-region	19	25	.	.	.	.
+gene-SYNPCC7002_RS15250	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS15250	SignalP-6.0	h-region	7	21	.	.	.	.
+gene-SYNPCC7002_RS15250	SignalP-6.0	c-region	22	27	.	.	.	.
+gene-SYNPCC7002_RS15270	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS15270	SignalP-6.0	h-region	4	22	.	.	.	.
+gene-SYNPCC7002_RS15270	SignalP-6.0	c-region	23	27	.	.	.	.
+gene-SYNPCC7002_RS15275	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS15275	SignalP-6.0	h-region	4	18	.	.	.	.
+gene-SYNPCC7002_RS15275	SignalP-6.0	c-region	19	26	.	.	.	.
+gene-SYNPCC7002_RS15295	SignalP-6.0	n-region	1	7	.	.	.	.
+gene-SYNPCC7002_RS15295	SignalP-6.0	h-region	8	23	.	.	.	.
+gene-SYNPCC7002_RS15295	SignalP-6.0	lipid-modified cysteine	24	24	.	.	.	.
+gene-SYNPCC7002_RS15295	SignalP-6.0	twin-arginine motif	5	6	.	.	.	.
+gene-SYNPCC7002_RS15595	SignalP-6.0	n-region	1	15	.	.	.	.
+gene-SYNPCC7002_RS15595	SignalP-6.0	h-region	16	33	.	.	.	.
+gene-SYNPCC7002_RS15595	SignalP-6.0	c-region	34	39	.	.	.	.
+gene-SYNPCC7002_RS15595	SignalP-6.0	twin-arginine motif	13	14	.	.	.	.
+gene-SYNPCC7002_RS15615	SignalP-6.0	n-region	1	6	.	.	.	.
+gene-SYNPCC7002_RS15615	SignalP-6.0	h-region	7	21	.	.	.	.
+gene-SYNPCC7002_RS15615	SignalP-6.0	c-region	22	28	.	.	.	.
+gene-SYNPCC7002_RS15625	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS15625	SignalP-6.0	h-region	4	19	.	.	.	.
+gene-SYNPCC7002_RS15625	SignalP-6.0	lipid-modified cysteine	20	20	.	.	.	.
+gene-SYNPCC7002_RS15660	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS15660	SignalP-6.0	h-region	5	19	.	.	.	.
+gene-SYNPCC7002_RS15660	SignalP-6.0	c-region	20	23	.	.	.	.
+gene-SYNPCC7002_RS16315	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS16315	SignalP-6.0	h-region	3	17	.	.	.	.
+gene-SYNPCC7002_RS16315	SignalP-6.0	c-region	18	24	.	.	.	.
+gene-SYNPCC7002_RS15685	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS15685	SignalP-6.0	h-region	3	24	.	.	.	.
+gene-SYNPCC7002_RS15685	SignalP-6.0	lipid-modified cysteine	25	25	.	.	.	.
+gene-SYNPCC7002_RS15690	SignalP-6.0	n-region	1	3	.	.	.	.
+gene-SYNPCC7002_RS15690	SignalP-6.0	h-region	4	21	.	.	.	.
+gene-SYNPCC7002_RS15690	SignalP-6.0	c-region	22	28	.	.	.	.
+gene-SYNPCC7002_RS15710	SignalP-6.0	n-region	1	11	.	.	.	.
+gene-SYNPCC7002_RS15710	SignalP-6.0	h-region	12	28	.	.	.	.
+gene-SYNPCC7002_RS15710	SignalP-6.0	lipid-modified cysteine	29	29	.	.	.	.
+gene-SYNPCC7002_RS15715	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS15715	SignalP-6.0	h-region	6	22	.	.	.	.
+gene-SYNPCC7002_RS15715	SignalP-6.0	c-region	23	26	.	.	.	.
+gene-SYNPCC7002_RS15760	SignalP-6.0	n-region	1	5	.	.	.	.
+gene-SYNPCC7002_RS15760	SignalP-6.0	h-region	6	23	.	.	.	.
+gene-SYNPCC7002_RS15760	SignalP-6.0	c-region	24	29	.	.	.	.
+gene-SYNPCC7002_RS16330	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS16330	SignalP-6.0	h-region	5	18	.	.	.	.
+gene-SYNPCC7002_RS16330	SignalP-6.0	c-region	19	25	.	.	.	.
+gene-SYNPCC7002_RS15890	SignalP-6.0	n-region	1	2	.	.	.	.
+gene-SYNPCC7002_RS15890	SignalP-6.0	h-region	3	18	.	.	.	.
+gene-SYNPCC7002_RS15890	SignalP-6.0	c-region	19	23	.	.	.	.
+gene-SYNPCC7002_RS15895	SignalP-6.0	n-region	1	1	.	.	.	.
+gene-SYNPCC7002_RS15895	SignalP-6.0	h-region	2	4	.	.	.	.
+gene-SYNPCC7002_RS15895	SignalP-6.0	lipid-modified cysteine	5	5	.	.	.	.
+gene-SYNPCC7002_RS15915	SignalP-6.0	n-region	1	7	.	.	.	.
+gene-SYNPCC7002_RS15915	SignalP-6.0	h-region	8	20	.	.	.	.
+gene-SYNPCC7002_RS15915	SignalP-6.0	lipid-modified cysteine	21	21	.	.	.	.
+gene-SYNPCC7002_RS15990	SignalP-6.0	n-region	1	4	.	.	.	.
+gene-SYNPCC7002_RS15990	SignalP-6.0	h-region	5	21	.	.	.	.
+gene-SYNPCC7002_RS15990	SignalP-6.0	lipid-modified cysteine	22	22	.	.	.	.

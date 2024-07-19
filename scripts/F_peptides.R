@@ -44,7 +44,7 @@ names(genome) <- genome |> names() |> str_remove(' .*$')
 
 cds.range <-
   annot |>
-  filter(type == 'protein_coding') |>
+  filter(type == 'protein-coding') |>
   select(Geneid, product, name) |>
   left_join(coord, 'Geneid') |>
   select(- Length) |>

@@ -196,13 +196,13 @@ rule F_peptides:
 # - "Incooperate" the software into the environment
 #   signalp6-register signalp-6.0*.fast.tar.gz
 # - Run snakemake for this rule
-#   snakemake --cores all H_signalp
+#   snakemake --cores all G_signalp
 
-rule H_signalp:
+rule G_signalp:
     input:  
-        'analysis/G_peptides.faa',
+        'analysis/F_peptides.faa',
     output:
-        directory('analysis/H_signalp')
+        directory('analysis/G_signalp')
     threads: 8
     shell:
         """
