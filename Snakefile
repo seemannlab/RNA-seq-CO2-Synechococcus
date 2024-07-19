@@ -114,12 +114,11 @@ rule D_deg:
         "Rscript {input.script} > {log}"
         
 ################################################################################
-# export analysis results for visualization in stringApp
-# NOTE: Run Cytoscape + stringApp and MCL cluster for the output of this rule
+# Create a beautiful treemap of the expressed genes
 
-rule E_string:
+rule E_treemap:
     input:
-        script = 'scripts/E_string.R',
+        script = 'scripts/E_treemap.R',
         xs = [
             'data/C_annotation.tsv',
             'data/C_meta.tsv',
@@ -127,10 +126,10 @@ rule E_string:
             'analysis/D_vst-expression.tsv'
         ]
     output:
-        'analysis/E_string-cutoff.jpeg',
-        'analysis/E_string-loci.txt',
-        'analysis/E_string-z-expression.tsv'
-    log: 'logs/E_string.txt'
+        'analysis/E_zvst.tsv',
+        'analysis/E_brite-hierarchy.tsv',
+        'analysis/E_treemap.jpeg',
+    log: 'logs/E_treemap.txt'
     shell:
         "Rscript {input.script} > {log}"
         
@@ -401,6 +400,8 @@ rule all:
         'data/B_characteristics.tsv',
         'data/C_raw-counts.tsv',
         'analysis/D_stagewise-adjusted-DEGs.tsv',
+        'analysis/E_treemap.jpeg',
+        
         'analysis/E_string-loci.txt',
         'analysis/F_mcl-clustering.tsv',
         'analysis/G_peptides.faa',

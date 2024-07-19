@@ -2,28 +2,65 @@
 
 library(tidyverse)
 library(ggpubr)
-library(gt)
 
 library(treemapify)
 
 ################################################################################
 # Load input
 
-enrich <-
-  'analysis/F_string-enrichment.tsv' |>
-  read_tsv()
-
-path2gene <-
-  'analysis/F_string-enrichment-genes.tsv' |>
-  read_tsv()
-
-zdat <-
-  'analysis/E_string-z-expression.tsv' |>
+annot <-
+  'data/C_annotation.tsv' |>
   read_tsv()
 
 deg <-
   'analysis/D_stagewise-adjusted-DEGs.tsv' |>
   read_tsv()
+
+vst <-
+  'analysis/D_vst-expression.tsv' |>
+  read_tsv()
+
+meta <-
+  'data/C_meta.tsv' |>
+  read_tsv() |>
+  mutate_at('CO2', ~ fct_reorder(as.character(.x), as.numeric(.x)))
+
+
+################################################################################
+# Z-scale VST expression with subsequent averaging
+
+vst.mat <-
+  vst |>
+  select(- Geneid) |>
+  as.matrix() |>
+  magrittr::set_rownames(vst$Geneid)
+
+z.mat <-
+  vst.mat |>
+  apply(1, scale) |>
+  t() |> 
+  magrittr::set_colnames(colnames(vst.mat))
+
+z.expr <-
+  z.mat |>
+  as_tibble(rownames = 'Geneid') |>
+  pivot_longer(- Geneid, names_to = 'lib', values_to = 'z.expression') |>
+  left_join(meta, 'lib')
+
+z.avg <-
+  z.expr |>
+  group_by(Geneid, CO2) |>
+  summarize(avg.z = mean(z.expression)) |>
+  ungroup() |>
+  # add locus tag with taxid for stringapp (later use)
+  left_join(annot, 'Geneid') |>
+  mutate(string = ifelse(
+    !is.na(old_locus_tag),
+    paste0('32049.', old_locus_tag),
+    NA_character_
+  ))
+
+write_tsv(z.avg, 'analysis/E_zvst.tsv')
 
 ################################################################################
 # download all brite hierarchy data from KEGG
@@ -115,6 +152,8 @@ brite <-
   inner_join(brite.info, 'row') |>
   mutate(level1 = kegg.brite.names[level1]) |>
   select(- row)
+
+write_tsv(brite, 'analysis/E_brite-hierarchy.tsv')
   
 ################################################################################
 
@@ -174,6 +213,8 @@ brite.ko |>
   theme_pubr(18) +
   theme(legend.key.width = unit(3, 'cm'))
 
-ggsave('foo.jpeg', width = 16, height = 12, dpi = 400)
+ggsave('analysis/E_treemap.jpeg', width = 16, height = 12, dpi = 500)
 
 ################################################################################
+################################################################################
+sessionInfo()
