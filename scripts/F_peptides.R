@@ -78,9 +78,10 @@ aas2 <- aas[peptide.mask]
 names(aas2) <- cds.range$Geneid[peptide.mask]
 aas2 <- Biostrings::subseq(aas2, 2, -2)
 
-writeXStringSet(aas2, 'analysis/G_peptides.faa')
+writeXStringSet(aas2, 'analysis/F_peptides.faa')
 
-# The frequencies
+################################################################################
+# The frequencies (relative to gene length)
 freqs <- alphabetFrequency(aas2, as.prob = TRUE)#* 100
 rownames(freqs) <- names(aas2)
 
@@ -93,8 +94,25 @@ colnames(freqs2) <- with(aaMap, set_names(name, let.1))[colnames(freqs2)]
 # export freqs
 freqs2 |>
   as_tibble(rownames = 'Geneid') |>
-  write_tsv('analysis/G_frequencies.tsv')
+  write_tsv('analysis/F_amino-frequencies.tsv')
 
+################################################################################
+# absolute aa counts
+
+freqs <- Biostrings::alphabetFrequency(aas2)
+rownames(freqs) <- names(aas2)
+
+# exclude all 0s columns
+mask <- apply(freqs, 2, max) > 0
+freqs2 <- freqs[, mask]
+# nicer AA names
+colnames(freqs2) <- with(aaMap, set_names(name, let.1))[colnames(freqs2)]
+
+
+freqs2 |>
+  as_tibble(rownames = 'Geneid') |>
+  write_tsv('analysis/F_amino-counts.tsv')
+################################################################################
 ################################################################################
 
 sessionInfo()

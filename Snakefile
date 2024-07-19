@@ -162,18 +162,19 @@ rule F_clusters:
 ################################################################################
 # Investigate amino acid composition
 
-rule G_peptides:
+rule F_peptides:
     input:
-        script = 'scripts/G_peptides.R',
+        script = 'scripts/F_peptides.R',
         xs = [
             'data/C_annotation.tsv',
             'raw-data/co2-adaptation-counts.tsv',
             'raw-data/PCC7002-genome.fna.gz'
         ]
     output:
-        'analysis/G_peptides.faa',
-        'analysis/G_frequencies.tsv',
-    log: 'logs/G_peptides.txt'
+        'analysis/F_peptides.faa',
+        'analysis/F_amino-frequencies.tsv',
+        'analysis/F_amino-counts.tsv'
+    log: 'logs/F_peptides.txt'
     shell:
         "Rscript {input.script} > {log}"
 
@@ -401,6 +402,7 @@ rule all:
         'data/C_raw-counts.tsv',
         'analysis/D_stagewise-adjusted-DEGs.tsv',
         'analysis/E_treemap.jpeg',
+        'analysis/F_amino-counts.tsv'
         
         'analysis/E_string-loci.txt',
         'analysis/F_mcl-clustering.tsv',
