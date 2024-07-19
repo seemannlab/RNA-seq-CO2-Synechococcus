@@ -157,11 +157,11 @@ write_tsv(brite, 'analysis/E_brite-hierarchy.tsv')
   
 ################################################################################
 
-zdat |>
+z.avg |>
   transmute(
-    old_locus_tag = str_remove(locus, '32049\\.'),
+    old_locus_tag,
     CO2 = paste0(CO2, '%') |>
-      fct_reorder(CO2),
+      fct_reorder(CO2 |> as.numeric()),
     avg.z
   ) |>
   inner_join(brite, 'old_locus_tag') |>
