@@ -159,6 +159,13 @@ annot.cl <- list(
 # only on the genes with signal
 dat <- vst.mat[rownames(row.annot), ]
 
+# z-scale data ahead of heatmap to keep clustering of rows consistent
+dat <-
+  dat |>
+  apply(1, scale) |>
+  t() |>
+  magrittr::set_colnames(colnames(dat))
+
 # Cluster columns ahead of pheatmap to rotate tree nicely
 lib.clust <-
   dat |>

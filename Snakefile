@@ -259,49 +259,34 @@ rule H_carot:
     shell:
         "Rscript {input.script} > {log}"
         
-        
 ################################################################################
-# Explorative pathway figures with expression
+# inspect potential expression/AA correlation
 
-rule L_pathways:
+rule I_aa:
     input:
-        script = 'scripts/L_pathways.R',
+        script = 'scripts/I_aa-composition.R',
         xs = [
             'data/C_annotation.tsv',
             'data/C_meta.tsv',
-            'analysis/D_vst-expression.tsv'
+            'analysis/D_stagewise-adjusted-DEGs.tsv',
+            'analysis/D_vst-expression.tsv',
+            'analysis/F_amino-counts.tsv',
+            'analysis/H_signals.tsv',
         ]
     output:
-        'analysis/L_photorespiration.jpeg',
-        'analysis/L_carotenoid.jpeg',
-        'analysis/L_biotin.jpeg',
-        'analysis/L_vancomycin.jpeg',
-        'analysis/L_peptidoglycan.jpeg',
-        'analysis/L_recombination.jpeg',
-        'analysis/L_pentose.jpeg',
-        'analysis/L_glycolysis.jpeg',
-        'analysis/L_nicotinate.jpeg',
-        'analysis/L_2component.jpeg',
-    log: 'logs/L_pathways.txt'
+        'analysis/I_correlation-aa-length.jpeg',
+        'analysis/I_length-log-normal.jpeg',
+        'analysis/I_binomial-model.jpeg',
+        'analysis/I_negative-binomial-model.jpeg',
+        'analysis/I_aa-analysis.tsv',
+        'analysis/I_volcano-like.jpeg',
+        'analysis/I_extreme-AA-deg.jpeg',
+        'analysis/I_extreme-AA.jpeg',
+    log: 'logs/I_aa.txt'
     shell:
         "Rscript {input.script} > {log}"
         
-################################################################################
-# Amino acid metabolic pathway overview
-
-rule L2_amino:
-    input:
-        script = 'scripts/L2_amino.R',
-        xs = [
-            'data/C_annotation.tsv',
-            'data/C_meta.tsv',
-            'analysis/D_vst-expression.tsv'
-        ]
-    output:
-        'analysis/L2_amino-acid-biosynthesis.jpeg',
-    log: 'logs/L2_amino.txt'
-    shell:
-        "Rscript {input.script} > {log}"
+        
         
 ################################################################################
 # Differential expression analysis
@@ -352,34 +337,6 @@ rule M2_clusters:
     shell:
         "Rscript {input.script} > {log}"
         
-################################################################################
-# inspect potential expression/AA correlation
-
-rule N_AA:
-    input:
-        script = 'scripts/N_aa-composition.R',
-        xs = [
-            'data/C_annotation.tsv',
-            'data/C_meta.tsv',
-            'analysis/G_peptides.faa',
-            'analysis/D_stagewise-adjusted-DEGs.tsv',
-            'analysis/D_vst-expression.tsv',
-            'analysis/G_frequencies.tsv',
-            'analysis/I_signals.tsv',
-        ]
-    output:
-        'analysis/N_aa-overall.jpeg',
-        'analysis/N_correlation-aa-length.jpeg',
-        'analysis/N_length-log-normal.jpeg',
-        'analysis/N_binomial-model.jpeg',
-        'analysis/N_negative-binomial-model.jpeg',
-        'analysis/N_aa-analysis.tsv',
-        'analysis/N_volcano-like.jpeg',
-        'analysis/N_extreme-AA-deg.jpeg',
-        'analysis/N_extreme-AA.jpeg',
-    log: 'logs/N_aa.txt'
-    shell:
-        "Rscript {input.script} > {log}"
 
 
 ################################################################################
@@ -395,12 +352,7 @@ rule all:
         'analysis/F_amino-counts.tsv'
         'analysis/H_signals.tsv',
         'fig-carotenoid-pathway/carotenoid-expression.jpg',
+        'analysis/I_extreme-AA.jpeg',
         
-        'analysis/E_string-loci.txt',
-        'analysis/F_mcl-clustering.tsv',
-        'analysis/G_peptides.faa',
-        'analysis/K_gsea.tsv',
-        'analysis/L_2component.jpeg',
         'analysis/M_logFC-vs-30.tsv',
         'analysis/M2_mcl-clustering.tsv',
-        'analysis/N_aa-analysis.tsv',
