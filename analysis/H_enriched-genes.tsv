@@ -1,0 +1,24 @@
+signal	KEGG	Pathway	old_locus_tag	Geneid	name	product
+Sec/SPI	syp00195	Photosynthesis	SYNPCC7002_A0112	gene-SYNPCC7002_RS00555	psbV	photosystem II cytochrome c-550
+Sec/SPI	syp00195	Photosynthesis	SYNPCC7002_A0167	gene-SYNPCC7002_RS00830	SYNPCC7002_RS00830	c-type cytochrome
+Sec/SPI	syp00195	Photosynthesis	SYNPCC7002_A1008	gene-SYNPCC7002_RS05030	SYNPCC7002_RS05030	photosystem I reaction center subunit III, PsaF
+Sec/SPI	syp00195	Photosynthesis	SYNPCC7002_A1910	gene-SYNPCC7002_RS09560	petA	apocytochrome f
+Sec/SPI	syp00195	Photosynthesis	SYNPCC7002_A2391	gene-SYNPCC7002_RS11850	SYNPCC7002_RS11850	c-type cytochrome
+Sec/SPII	syp02010	ABC transporters	SYNPCC7002_A0336	gene-SYNPCC7002_RS01655	SYNPCC7002_RS01655	putative selenate ABC transporter substrate-binding protein
+Sec/SPII	syp02010	ABC transporters	SYNPCC7002_A0500	gene-SYNPCC7002_RS02475	SYNPCC7002_RS02475	sugar ABC transporter substrate-binding protein
+Sec/SPII	syp02010	ABC transporters	SYNPCC7002_A0795	gene-SYNPCC7002_RS03970	SYNPCC7002_RS03970	sulfate ABC transporter substrate-binding protein
+Sec/SPII	syp02010	ABC transporters	SYNPCC7002_A1370	gene-SYNPCC7002_RS06850	modA	molybdate ABC transporter substrate-binding protein
+Sec/SPII	syp02010	ABC transporters	SYNPCC7002_A1837	gene-SYNPCC7002_RS09200	SYNPCC7002_RS09200	ABC transporter substrate-binding protein
+Sec/SPII	syp02010	ABC transporters	SYNPCC7002_A2038	gene-SYNPCC7002_RS10170	SYNPCC7002_RS10170	ABC transporter substrate-binding protein
+Sec/SPII	syp02010	ABC transporters	SYNPCC7002_A2201	gene-SYNPCC7002_RS10940	SYNPCC7002_RS10940	ABC transporter substrate-binding protein
+Sec/SPII	syp02010	ABC transporters	SYNPCC7002_A2284	gene-SYNPCC7002_RS11325	SYNPCC7002_RS11325	PstS family phosphate ABC transporter substrate-binding protein
+Sec/SPII	syp02010	ABC transporters	SYNPCC7002_A2501	gene-SYNPCC7002_RS12410	SYNPCC7002_RS12410	zinc ABC transporter substrate-binding protein
+Sec/SPII	syp02010	ABC transporters	SYNPCC7002_A2507	gene-SYNPCC7002_RS12440	SYNPCC7002_RS12440	Fe(3+) ABC transporter substrate-binding protein
+Sec/SPII	syp02010	ABC transporters	SYNPCC7002_G0143	gene-SYNPCC7002_RS15915	SYNPCC7002_RS15915	phosphate/phosphite/phosphonate ABC transporter substrate-binding protein
+Sec/SPII	syp02024	Quorum sensing	SYNPCC7002_A0393	gene-SYNPCC7002_RS01945	SYNPCC7002_RS01945	ABC transporter substrate-binding protein
+Sec/SPII	syp02024	Quorum sensing	SYNPCC7002_A0445	gene-SYNPCC7002_RS02205	SYNPCC7002_RS02205	peptide ABC transporter substrate-binding protein
+Sec/SPII	syp02024	Quorum sensing	SYNPCC7002_A1837	gene-SYNPCC7002_RS09200	SYNPCC7002_RS09200	ABC transporter substrate-binding protein
+Sec/SPII	syp02024	Quorum sensing	SYNPCC7002_A2019	gene-SYNPCC7002_RS10075	SYNPCC7002_RS10075	ABC transporter substrate-binding protein
+Tat/SPI	syp00195	Photosynthesis	SYNPCC7002_A1909	gene-SYNPCC7002_RS09555	SYNPCC7002_RS09555	cytochrome b6-f complex iron-sulfur subunit
+Tat/SPI	syp00195	Photosynthesis	SYNPCC7002_G0076	gene-SYNPCC7002_RS15595	SYNPCC7002_RS15595	cytochrome b6-f complex iron-sulfur subunit
+Tat/SPI	syp00906	Carotenoid biosynthesis	SYNPCC7002_A1248	gene-SYNPCC7002_RS06245	SYNPCC7002_RS06245	FAD-dependent oxidoreductase

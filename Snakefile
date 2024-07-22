@@ -217,58 +217,48 @@ rule G_signalp:
 ################################################################################
 # process the SignalP predictions
 
-rule I_process:
+rule H_process:
     input:
-        script = 'scripts/I_signalp.R',
+        script = 'scripts/H_signalp.R',
         xs = [
             'data/C_annotation.tsv',
             'analysis/D_stagewise-adjusted-DEGs.tsv',
             'data/C_meta.tsv',
             'analysis/D_vst-expression.tsv',
-            'analysis/H_signalp'
-            #'analysis/H_signalp/prediction_results.txt'
+            'analysis/G_signalp'
+            #'analysis/G_signalp/prediction_results.txt'
         ]
     output:
-        'analysis/I_signal-probs.jpeg',
-        'analysis/I_signals.tsv',
-        'analysis/I_overview.tsv',
-        'analysis/I_heatmap.jpeg',
-        'analysis/I_signal-enrichment.tsv',
-        'analysis/I_signal-enrichment.jpeg',
-        'analysis/I_gene2pathway.tsv',
-        'analysis/I_enriched-genes.tsv'
-    log: 'logs/I_signalp.txt'
+        'analysis/H_signal-probs.jpeg',
+        'analysis/H_signals.tsv',
+        'analysis/H_overview.tsv',
+        'analysis/H_heatmap.jpeg',
+        'analysis/H_signal-enrichment.tsv',
+        'analysis/H_signal-enrichment.jpeg',
+        'analysis/H_gene2pathway.tsv',
+        'analysis/H_enriched-genes.tsv'
+    log: 'logs/H_signalp.txt'
     shell:
         "Rscript {input.script} > {log}"
         
-        
-        
-################################################################################
-# Complement with GSEA plots
 
-rule K_gsea:
+
+# add expression patterns for the custom carotenoid figure
+rule H_carot:
     input:
-        script = 'scripts/K_gsea.R',
+        script = 'fig-carotenoid-pathway/add-expression.R',
         xs = [
-            'data/C_annotation.tsv',
-            'data/C_meta.tsv',
-            'analysis/D_stagewise-adjusted-DEGs.tsv',
-            'analysis/D_normalized-counts.tsv',
-            'analysis/I_gene2pathway.tsv'
+          'data/C_meta.tsv',
+          'analysis/D_vst-expression.tsv',
+          'data/C_annotation.tsv',
+          'fig-carotenoid-pathway/carotenoid.jpg',
         ]
     output:
-        'analysis/K_gsea-0.04-.30..CO2.jpeg',
-        'analysis/K_gsea-0.04-.4..CO2.jpeg',
-        'analysis/K_gsea-0.04-.8..CO2.jpeg',
-        'analysis/K_gsea-4-.30..CO2.jpeg',
-        'analysis/K_gsea-4-.8..CO2.jpeg',
-        'analysis/K_gsea-8-.30..CO2.jpeg',
-        'analysis/K_gsea.tsv',
-        'analysis/K_enrichment-overview.jpeg',
-        'analysis/K_expression-overview.jpeg',
-    log: 'logs/K_gsea.txt'
+        'fig-carotenoid-pathway/carotenoid-expression.jpg'
+    log: 'logs/H_carotenoid.txt'
     shell:
         "Rscript {input.script} > {log}"
+        
         
 ################################################################################
 # Explorative pathway figures with expression
@@ -403,6 +393,8 @@ rule all:
         'analysis/D_stagewise-adjusted-DEGs.tsv',
         'analysis/E_treemap.jpeg',
         'analysis/F_amino-counts.tsv'
+        'analysis/H_signals.tsv',
+        'fig-carotenoid-pathway/carotenoid-expression.jpg',
         
         'analysis/E_string-loci.txt',
         'analysis/F_mcl-clustering.tsv',
