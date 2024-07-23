@@ -317,22 +317,22 @@ rule K_30focused:
 # similar to F_clusters, but for the output for the M_30 network
 ## NOTE: Cytoscape with the network session loaded needs to be running for this script
 
-rule M2_clusters:
+rule K2_clusters:
     input:
-        script = 'scripts/M2_cluster-overview.R',
+        script = 'scripts/K2_cluster-overview.R',
         xs = [
             'data/C_annotation.tsv',
             # implicit dependency, don't trigger rule rerun for minor changes
             # eg of coloration or layout adjustments
-            # string.cys
+            # string30focused.cys
         ]
     output:
-        'analysis/M2_mcl-clustering.tsv',
-        'analysis/M2_cluster-enrichment-export-commands.txt',
-        directory('analysis/M2_cluster-enrichment/'),
-        'analysis/M2_string-enrichment.tsv',
-        'analysis/M2_string-enrichment-genes.tsv',
-    log: 'logs/M2_clusters.txt'
+        'analysis/K2_mcl-clustering.tsv',
+        'analysis/K2_cluster-enrichment-export-commands.txt',
+        directory('analysis/K2_cluster-enrichment/'),
+        'analysis/K2_string-enrichment.tsv',
+        'analysis/K2_string-enrichment-genes.tsv',
+    log: 'logs/K2_clusters.txt'
     shell:
         "Rscript {input.script} > {log}"
         
@@ -352,7 +352,5 @@ rule all:
         'analysis/H_signals.tsv',
         'fig-carotenoid-pathway/carotenoid-expression.jpg',
         'analysis/I_extreme-AA.jpeg',
-        'analysis/K_overview-30-focused.jpeg'
-        
-        'analysis/M_logFC-vs-30.tsv',
-        'analysis/M2_mcl-clustering.tsv',
+        'analysis/K_overview-30-focused.jpeg',
+        'analysis/K2_string-enrichment.tsv',

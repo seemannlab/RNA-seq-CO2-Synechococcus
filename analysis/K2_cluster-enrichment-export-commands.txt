@@ -1,0 +1,11 @@
+string retrieve group-wise enrichment maxGroupNumber=100 minGroupSize=5
+table export outputFile="/Users/ngz595/Local/RNAseq/RNA-seq-CO2-Synechococcus/analysis/K2_cluster-enrichment/cluster_1.csv" table="STRING Enrichment: __mclCluster 1"
+table export outputFile="/Users/ngz595/Local/RNAseq/RNA-seq-CO2-Synechococcus/analysis/K2_cluster-enrichment/cluster_2.csv" table="STRING Enrichment: __mclCluster 2"
+table export outputFile="/Users/ngz595/Local/RNAseq/RNA-seq-CO2-Synechococcus/analysis/K2_cluster-enrichment/cluster_3.csv" table="STRING Enrichment: __mclCluster 3"
+table export outputFile="/Users/ngz595/Local/RNAseq/RNA-seq-CO2-Synechococcus/analysis/K2_cluster-enrichment/cluster_4.csv" table="STRING Enrichment: __mclCluster 4"
+table export outputFile="/Users/ngz595/Local/RNAseq/RNA-seq-CO2-Synechococcus/analysis/K2_cluster-enrichment/cluster_5.csv" table="STRING Enrichment: __mclCluster 5"
+table export outputFile="/Users/ngz595/Local/RNAseq/RNA-seq-CO2-Synechococcus/analysis/K2_cluster-enrichment/cluster_6.csv" table="STRING Enrichment: __mclCluster 6"
+table export outputFile="/Users/ngz595/Local/RNAseq/RNA-seq-CO2-Synechococcus/analysis/K2_cluster-enrichment/cluster_7.csv" table="STRING Enrichment: __mclCluster 7"
+table export outputFile="/Users/ngz595/Local/RNAseq/RNA-seq-CO2-Synechococcus/analysis/K2_cluster-enrichment/cluster_8.csv" table="STRING Enrichment: __mclCluster 8"
+table export outputFile="/Users/ngz595/Local/RNAseq/RNA-seq-CO2-Synechococcus/analysis/K2_cluster-enrichment/cluster_9.csv" table="STRING Enrichment: __mclCluster 9"
+table export outputFile="/Users/ngz595/Local/RNAseq/RNA-seq-CO2-Synechococcus/analysis/K2_cluster-enrichment/cluster_10.csv" table="STRING Enrichment: __mclCluster 10"

@@ -1,7 +1,8 @@
 ## NOTE: Cytoscape with the network session loaded needs to be running for this script
 
-# Overview of the StringApp generated cluster in relationship to the
-# logFC from the DEG analysis
+# Script is nearly identical to F_cluster-overview.R
+# But run in combination with the K_30 StringApp results
+
 
 
 library(tidyverse)
@@ -35,29 +36,28 @@ mcl <-
   left_join(annot, c('locus' = 'old_locus_tag'))
 
 mcl |>
-  write_tsv('analysis/F_mcl-clustering.tsv')
-# mcl <- read_tsv('analysis/L_mcl-clustering.tsv')
+  write_tsv('analysis/K2_mcl-clustering.tsv')
 
 ################################################################################
 # use command file to export all the clusters enrichment from cytoscape
 
-x <- 1:100
+x <- 1:10
 
 # Query cytoscape for enrichment per cluster
 c(
   'string retrieve group-wise enrichment maxGroupNumber=100 minGroupSize=5',
   sprintf(
-    'table export outputFile="%s/analysis/F_cluster-enrichment/cluster_%g.csv" table="STRING Enrichment: __mclCluster %g"',
+    'table export outputFile="%s/analysis/K2_cluster-enrichment/cluster_%g.csv" table="STRING Enrichment: __mclCluster %g"',
     getwd(), x, x
   )
 ) |>
-  write_lines('analysis/F_cluster-enrichment-export-commands.txt')
+  write_lines('analysis/K2_cluster-enrichment-export-commands.txt')
 
-dir.create('analysis/F_cluster-enrichment/')
+dir.create('analysis/K2_cluster-enrichment/')
 tryCatch({
   RCy3::commandRunFile(file.path(
     getwd(),
-    'analysis/F_cluster-enrichment-export-commands.txt'
+    'analysis/K2_cluster-enrichment-export-commands.txt'
   ))
 },
 # ignore error on "empyt tables'
@@ -66,7 +66,7 @@ error=function(error_message) {}
 
 # load the exported data
 string.enrichment <-
-  'analysis/F_cluster-enrichment/*csv' |>
+  'analysis/K2_cluster-enrichment/*csv' |>
   Sys.glob() %>%
   set_names(. |> basename() |> str_remove('.csv$')) |>
   map(read_csv) %>%
@@ -109,10 +109,10 @@ set2genes <-
 
 # save for later use
 enrich |>
-  write_tsv('analysis/F_string-enrichment.tsv')
+  write_tsv('analysis/K2_string-enrichment.tsv')
 
 set2genes |>
-  write_tsv('analysis/F_string-enrichment-genes.tsv')
+  write_tsv('analysis/K2_string-enrichment-genes.tsv')
 
 ################################################################################
 ################################################################################
