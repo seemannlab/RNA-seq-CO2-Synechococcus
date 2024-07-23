@@ -292,9 +292,9 @@ rule I_aa:
 # Differential expression analysis
 # Focus: 30% CO2 vs all others
 
-rule M_30focused:
+rule K_30focused:
     input:
-        script = 'scripts/M_30-focused.R',
+        script = 'scripts/K_30-focused.R',
         xs = [
             'data/C_meta.tsv',
             'data/C_annotation.tsv',
@@ -303,14 +303,13 @@ rule M_30focused:
             'analysis/D_stagewise-adjusted-DEGs.tsv'
         ]
     output:
-        'analysis/M_logFC-vs-30.tsv',
-        'analysis/M_logFC-comparisons.jpeg',
-        'analysis/M_volcano-table.jpeg',
-        'analysis/M_heatmap-30-focused.jpeg',
-        'analysis/M_gsea.tsv',
-        'analysis/M_gsea.jpeg',
-        'analysis/M_string-30-focused.txt'
-    log: 'logs/M_30-focused.txt'
+        'analysis/K_logFC-vs-30.tsv',
+        'analysis/K_logFC-comparisons.jpeg',
+        'analysis/K_heatmap-30-focused.jpeg',
+        'analysis/K_gsea.tsv',
+        'analysis/K_string-30-focused.txt',
+        'analysis/K_overview-30-focused.jpeg'
+    log: 'logs/K_30-focused.txt'
     shell:
         "Rscript {input.script} > {log}"
         
@@ -353,6 +352,7 @@ rule all:
         'analysis/H_signals.tsv',
         'fig-carotenoid-pathway/carotenoid-expression.jpg',
         'analysis/I_extreme-AA.jpeg',
+        'analysis/K_overview-30-focused.jpeg'
         
         'analysis/M_logFC-vs-30.tsv',
         'analysis/M2_mcl-clustering.tsv',

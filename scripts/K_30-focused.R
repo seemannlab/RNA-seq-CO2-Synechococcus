@@ -84,7 +84,7 @@ des <- DESeq2::DESeqDataSetFromMatrix(
   DESeq2::DESeq()
 
 
-res.fc30 <-
+deg30 <-
   DESeq2::results(
     des,
     contrast = c('CO2', '30', 'other'),
@@ -93,12 +93,12 @@ res.fc30 <-
   as_tibble() |>
   rename(Geneid = row)
 
-write_tsv(res.fc30, 'analysis/M_logFC-vs-30.tsv')
+write_tsv(deg30, 'analysis/K_logFC-vs-30.tsv')
 
 ################################################################################
 deg |>
   select(Geneid, test, log2FoldChange.pairwise = log2FoldChange) |>
-  left_join(res.fc30, 'Geneid') |>
+  left_join(deg30, 'Geneid') |>
   ggscatter(
     'log2FoldChange', 'log2FoldChange.pairwise',
     add = 'reg.line', add.params = list(color = 'red'),
@@ -111,26 +111,13 @@ deg |>
   theme_pubr(18) +
   ggtitle('log2 Fold-Changes')
 
-ggsave('analysis/M_logFC-comparisons.jpeg',
+ggsave('analysis/K_logFC-comparisons.jpeg',
        width = 8, height = 8, dpi = 400)
-
-################################################################################
-# Volcano plot
-
-p.volcano <-
-  res.fc30 |>
-  ggplot(aes(log2FoldChange, -log10(padj))) +
-  geom_point(alpha = 0.5) +
-  geom_vline(xintercept = c(-1, 1), color = 'red') +
-  geom_hline(yintercept = -log10(.001), color = 'red') +
-  xlab('log2 Fold-Change\n30% CO2 vs all other conditions') +
-  theme_pubr(18)
-
 
 ################################################################################
 # Table for logFC / P-Value cutoff
 
-res.fc30 |>
+deg30 |>
   mutate_at('padj', cut,
             c(.1, .05, .01, .001, 0),
             include.lowest = TRUE) |>
@@ -164,18 +151,9 @@ p.tab <-
 file.remove('tmp-foo.png')
 
 ################################################################################
-
-(p.volcano | p.tab) +
-  plot_layout(widths = c(1, 1.5)) +
-  plot_annotation(tag_levels = 'A')
-
-ggsave('analysis/M_volcano-table.jpeg',
-       width = 12, height = 5, dpi = 400)
-
-################################################################################
 # Heatmap of expression
 
-res.fc30 %>%
+deg30 %>%
   filter(padj <= 0.001) |>
   filter(abs(log2FoldChange) >= 1) |>
   pull(Geneid) %>%
@@ -195,6 +173,12 @@ with(
 
 # Cluster columns ahead of pheatmap to rotate tree nicely
 dat <-  vst.mat[mask, ]
+# z-scale data ahead of heatmap to keep clustering of rows consistent
+dat <-
+  dat |>
+  apply(1, scale) |>
+  t() |>
+  magrittr::set_colnames(colnames(dat))
 
 lib.clust <-
   dat |>
@@ -212,7 +196,7 @@ lib.clust <-
 pheatmap::pheatmap(
   dat,
   border_color = NA,
-  scale = 'row',
+  scale = 'none',
   cluster_cols = lib.clust,
   show_rownames = FALSE,
   show_colnames = FALSE,
@@ -220,14 +204,26 @@ pheatmap::pheatmap(
   annotation_colors = cl,
   color = colorRampPalette(rev(
     RColorBrewer::brewer.pal(n = 7, name = "RdBu")))(59),
-  filename = 'analysis/M_heatmap-30-focused.jpeg'
+  filename = 'analysis/K_heatmap-30-focused.jpeg'
 )
+dev.off()
+
+# load as grid
+p.heat <-
+  ggdraw() +
+  draw_image(
+    'analysis/K_heatmap-30-focused.jpeg'
+  ) +
+  theme_pubr(18) +
+  theme(axis.line = element_blank())
+
+
 
 ################################################################################
 # Compute geneset enrichment of KEGG pathways
 
 gsea <-
-  res.fc30 |>
+  deg30 |>
   left_join(annot) |>
   drop_na(old_locus_tag, log2FoldChange) |>
   arrange(desc(log2FoldChange)) |>
@@ -243,7 +239,7 @@ gsea@result$Description <- str_remove(gsea$Description, ' - Picosynechococcus sp
 
 gsea |>
   as_tibble() |>
-  write_tsv('analysis/M_gsea.tsv')
+  write_tsv('analysis/K_gsea.tsv')
 
 
 i <- gsea
@@ -253,13 +249,19 @@ p <- gseaplot2(i, 1:nrow(i),
 
 # Change axis text for clarity
 p[[3]] <-  p[[3]] + ylab('log2 Fold Change')
-p[[1]] <- p[[1]] + ggtitle('30% CO2 vs all other conditions')
 
-ggsave(
-  'analysis/M_gsea.jpeg',
-  plot = p,
-  width = 9, height = 12, dpi = 400
-)
+################################################################################
+
+p2 <-
+  wrap_elements(full = print(p)) +
+ theme_pubr(18)
+
+(p.tab | p.heat) / p2 +
+  plot_layout(widths = c(1, 1.5), heights = c(1, 2)) +
+  plot_annotation(tag_levels = 'A', title = '30% vs all other conditions')
+
+ggsave('analysis/K_overview-30-focused.jpeg',
+       width = 12, height = 12, dpi = 400)
 
 ################################################################################
 
@@ -267,4 +269,4 @@ annot |>
   filter(Geneid %in% mask) |>
   drop_na(old_locus_tag) |>
   pull(old_locus_tag) |>
-  write_lines('analysis/M_string-30-focused.txt')
+  write_lines('analysis/K_string-30-focused.txt')
