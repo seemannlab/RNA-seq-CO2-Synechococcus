@@ -336,6 +336,16 @@ rule K2_clusters:
     shell:
         "Rscript {input.script} > {log}"
         
+# helper to determine cutoff for stringapp
+
+rule K3_clusters:
+    input:
+        script = 'scripts/K3_string-cutoff.R'
+    output:
+        'analysis/K3_string-cutoff.jpeg'
+    shell:
+        "Rscript {input.script}"
+        
 
 
 ################################################################################
@@ -348,9 +358,10 @@ rule all:
         'data/C_raw-counts.tsv',
         'analysis/D_stagewise-adjusted-DEGs.tsv',
         'analysis/E_treemap.jpeg',
-        'analysis/F_amino-counts.tsv'
+        'analysis/F_amino-counts.tsv',
         'analysis/H_signals.tsv',
         'fig-carotenoid-pathway/carotenoid-expression.jpg',
         'analysis/I_extreme-AA.jpeg',
         'analysis/K_overview-30-focused.jpeg',
         'analysis/K2_string-enrichment.tsv',
+        'analysis/K3_string-cutoff.jpeg'
