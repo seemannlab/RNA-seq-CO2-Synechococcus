@@ -182,6 +182,16 @@ brite.ko |>
       unique(),
     'old_locus_tag'
   ) |>
+  mutate(
+    CO2 = CO2 |>
+      paste('CO2') |>
+      fct_relevel(
+        '0.04% CO2',
+        '4% CO2',
+        '30% CO2',
+        '8% CO2'
+      )
+  ) |>
   ggplot(aes(
     area = 1, fill = avg.z,
     subgroup = level2,
@@ -200,7 +210,7 @@ brite.ko |>
   # geom_treemap_subgroup2_text(
   #   place = "centre", grow = T, alpha = 0.9,
   #   reflow = TRUE,
-  #   colour = "black",
+  #   colour = "yellow",
   #   min.size = 2
   # ) +
   geom_treemap_subgroup3_text(
