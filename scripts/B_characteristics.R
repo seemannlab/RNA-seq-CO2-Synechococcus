@@ -64,9 +64,10 @@ data  %>%
     y = 'Growth rate',
     add = 'jitter', add.params = list(color = 'blue')
   ) +
-  xlab('CO2 aeration %') +
+  # xlab('CO[2] content \\[%\\]') +
+  xlab(expression(paste(CO[2], ' content [%]'))) +
   # ylab('measurement metric (different in each facet)') +
-  ylab('Growth rate') +
+  ylab(expression(paste('Growth rate [', h^{-1}, ']'))) +
   stat_compare_means(
     comparisons = cmps,
     label = 'p.signif',
