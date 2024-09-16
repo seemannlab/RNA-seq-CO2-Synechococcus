@@ -227,4 +227,49 @@ ggsave('analysis/E_treemap.jpeg', width = 16, height = 12, dpi = 500)
 
 ################################################################################
 ################################################################################
+# Extra figure for explaining hierachy
+
+p.base <-
+  brite.ko |>
+  ggplot(aes(
+    area = 1, fill = I('white'),
+    subgroup = level2,
+    subgroup2 = level3,
+    subgroup3 = level4
+  )) +
+  geom_treemap() +
+  geom_treemap_subgroup_border(color = 'red', size = 10) +
+  geom_treemap_subgroup2_border(colour = "blue", size = 5) +
+  geom_treemap_subgroup3_border(colour = "black", size = 1) +
+  theme_pubr(18)
+
+cowplot::plot_grid(
+  p.base +
+    geom_treemap_subgroup_text(
+      place = "centre", grow = T, alpha = 0.9,
+      reflow = TRUE,
+      colour = "red",
+      min.size = 2
+    ),
+  p.base +
+    geom_treemap_subgroup2_text(
+      place = "centre", grow = T, alpha = 0.9,
+      reflow = TRUE,
+      colour = "blue",
+      min.size = 2
+    ),
+  p.base +
+    geom_treemap_subgroup3_text(
+      place = "centre", grow = T, alpha = 0.9,
+      reflow = TRUE,
+      colour = "black",
+      min.size = 2
+    ),
+  nrow = 1
+)
+
+ggsave('analysis/E_treemap-hierarchy.jpeg', width = 24, height = 6, dpi = 500)
+
+################################################################################
+################################################################################
 sessionInfo()

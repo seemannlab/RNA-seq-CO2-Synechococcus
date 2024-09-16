@@ -129,6 +129,7 @@ rule E_treemap:
         'analysis/E_zvst.tsv',
         'analysis/E_brite-hierarchy.tsv',
         'analysis/E_treemap.jpeg',
+        'analysis/E_treemap-hierarchy.jpeg,
     log: 'logs/E_treemap.txt'
     shell:
         "Rscript {input.script} > {log}"
