@@ -129,7 +129,7 @@ rule E_treemap:
         'analysis/E_zvst.tsv',
         'analysis/E_brite-hierarchy.tsv',
         'analysis/E_treemap.jpeg',
-        'analysis/E_treemap-hierarchy.jpeg,
+        'analysis/E_treemap-hierarchy.jpeg'
     log: 'logs/E_treemap.txt'
     shell:
         "Rscript {input.script} > {log}"
@@ -347,6 +347,24 @@ rule K3_clusters:
     shell:
         "Rscript {input.script}"
         
+################################################################################
+################################################################################
+# Explorative pathway figures with expression
+
+rule L_pathways:
+    input:
+        script = 'scripts/L_viz-pathway.R',
+        xs = [
+            'data/C_annotation.tsv',
+            'data/C_meta.tsv',
+            'analysis/D_vst-expression.tsv'
+        ]
+    output:
+        'analysis/L_porphyrin.jpeg',
+        'analysis/L_amino-acid-biosynthesis.jpeg'
+    log: 'logs/L_pathways.txt'
+    shell:
+        "Rscript {input.script} > {log}"
 
 
 ################################################################################
@@ -365,4 +383,5 @@ rule all:
         'analysis/I_extreme-AA.jpeg',
         'analysis/K_overview-30-focused.jpeg',
         'analysis/K2_string-enrichment.tsv',
-        'analysis/K3_string-cutoff.jpeg'
+        'analysis/K3_string-cutoff.jpeg',
+        'analysis/L_porphyrin.jpeg',
