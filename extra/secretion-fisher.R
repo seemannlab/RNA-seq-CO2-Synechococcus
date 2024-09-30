@@ -84,6 +84,10 @@ de.mat
 # DE gene              225      2622
 # not DE                26       313
 
+# per chance expected
+# 2622 / (313 + 2622) * length(secret)
+# 224.2324
+
 my.p(de.mat)
 # 0.4918274
 
@@ -96,6 +100,10 @@ aa.mat
 #                   Secretion signal No signal
 # AA divergent                   10        19
 # not AA divergent              241      2916
+
+# per chance expected
+# 19 / (2916 + 19) * length(secret)
+# 1.624872
 
 my.p(aa.mat)
 # 4.031678e-05
