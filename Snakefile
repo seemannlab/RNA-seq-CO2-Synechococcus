@@ -365,6 +365,34 @@ rule L_pathways:
     log: 'logs/L_pathways.txt'
     shell:
         "Rscript {input.script} > {log}"
+        
+################################################################################
+################################################################################
+# GSEA per logFC
+
+rule M_pairgsea:
+    input:
+        script = 'scripts/M_logFC-gsea.R',
+        xs = [
+            'data/C_annotation.tsv',
+            'analysis/D_stagewise-adjusted-DEGs.tsv'
+        ]
+    output:
+        'analysis/M_0_04__30__CO2.jpeg',
+        'analysis/M_0_04__30__CO2.tsv',
+        'analysis/M_0_04__4__CO2.jpeg',
+        'analysis/M_0_04__4__CO2.tsv',
+        'analysis/M_0_04__8__CO2.jpeg',
+        'analysis/M_0_04__8__CO2.tsv',
+        'analysis/M_4__30__CO2.jpeg',
+        'analysis/M_4__30__CO2.tsv',
+        'analysis/M_4__8__CO2.jpeg',
+        'analysis/M_4__8__CO2.tsv',
+        'analysis/M_8__30__CO2.jpeg',
+        'analysis/M_8__30__CO2.tsv'
+    log: 'logs/M_pairwisegsea.txt'
+    shell:
+        "Rscript {input.script} > {log}"
 
 
 ################################################################################
