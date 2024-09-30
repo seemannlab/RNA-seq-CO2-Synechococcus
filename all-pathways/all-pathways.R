@@ -336,9 +336,10 @@ helper.all <- function(i, f = my.path, try.again = TRUE) {
   # test default plotting function
   tryCatch({
     foo <- f(i, legend.pos = FALSE)#+
-      # unfortunately needed to plot full figure for all pathways :*(
       # remove ugly thick border
       # theme(plot.margin = unit(c(-1, -2, -1, -2), "cm"))
+      # unfortunately needed to plot full figure for all pathways :*(
+      # because removing the box changes the aspect ratio...
     'all-pathways/%s.jpeg' |>
       sprintf(i) |>
       ggsave(plot = foo,
@@ -374,3 +375,15 @@ plan(multisession)
 
 future_map(todo, helper.all)
 
+
+################################################################################
+# which pathway failed?
+
+todo |>
+  map(~ sprintf('all-pathways/%s.jpeg', .x)) |>
+  unlist() |>
+  discard(file.exists)
+  
+helper.all('syp00410')
+#?Premature end of data
+# anyhow just one, ignore
