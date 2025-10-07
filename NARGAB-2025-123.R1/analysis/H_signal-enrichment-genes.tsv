@@ -1,0 +1,23 @@
+signal	Pathway	genes
+Sec/SPI	Photosynthesis	SYNPCC7002_A0112
+Sec/SPI	Photosynthesis	SYNPCC7002_A0167
+Sec/SPI	Photosynthesis	SYNPCC7002_A1008
+Sec/SPI	Photosynthesis	SYNPCC7002_A1910
+Sec/SPI	Photosynthesis	SYNPCC7002_A2391
+Sec/SPII	ABC transporters	SYNPCC7002_A0336
+Sec/SPII	ABC transporters	SYNPCC7002_A0500
+Sec/SPII	ABC transporters	SYNPCC7002_A0795
+Sec/SPII	ABC transporters	SYNPCC7002_A1837
+Sec/SPII	ABC transporters	SYNPCC7002_A2038
+Sec/SPII	ABC transporters	SYNPCC7002_A2201
+Sec/SPII	ABC transporters	SYNPCC7002_A2284
+Sec/SPII	ABC transporters	SYNPCC7002_A2501
+Sec/SPII	ABC transporters	SYNPCC7002_A2507
+Sec/SPII	ABC transporters	SYNPCC7002_G0143
+Sec/SPII	Quorum sensing	SYNPCC7002_A0393
+Sec/SPII	Quorum sensing	SYNPCC7002_A0445
+Sec/SPII	Quorum sensing	SYNPCC7002_A1837
+Sec/SPII	Quorum sensing	SYNPCC7002_A2019
+Tat/SPI	Photosynthesis	SYNPCC7002_A1909
+Tat/SPI	Photosynthesis	SYNPCC7002_G0076
+Tat/SPI	Carotenoid biosynthesis	SYNPCC7002_A1248

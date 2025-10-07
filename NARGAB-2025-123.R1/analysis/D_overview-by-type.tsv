@@ -1,0 +1,6 @@
+test	protein-coding	tRNA	6S RNA	PsrR1	RNase P	SRP sRNA	tmRNA
+0.04->30% CO2	2322	8	1	1	0	0	1
+0.04->4+8% CO2	2600	14	0	0	1	1	1
+4+8->30% CO2	2105	10	1	1	1	0	1
+Other->30% CO2	1951	4	1	1	1	0	0
+DE in any comparison	2935	17	1	1	1	1	1

@@ -1,0 +1,628 @@
+---
+title: "Manus figures"
+author: "SES"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(gt)
+
+library(cowplot)
+library(patchwork)
+library(ggpubr)
+
+library(DESeq2)
+#library(stageR)
+
+library(enrichplot)
+library(clusterProfiler)
+library(venn)
+library(ggpolypath)
+library(magick)
+
+library(gridExtra)
+library(grid)
+
+
+# https://riptutorial.com/r/example/28354/colorblind-friendly-palettes
+cbPalette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442",
+               "#0072B2", "#D55E00", "#CC79A7", "#999999")
+```
+
+```{r load-data}
+analysis.dir <- "/media/dna/projects/rth/co2capture/subprojects/RNA-seq_1v15-pct-CO2/RNA-seq-CO2-Synechococcus/"
+analysis.dir.stefan <- "/media/dna/projects/rth/co2capture/continuation-ses/subprojects/RNA-seq_1v15-pct-CO2/RNA-seq-CO2-Synechococcus/"
+out.dir <- "/media/dna/projects/rth/co2capture/continuation-ses/subprojects/RNA-seq_1v15-pct-CO2/Manuscript-Overleaf/files-manuscript/"
+source(paste0(analysis.dir.stefan, 'scripts/helper_deg.R'))
+```
+
+## Figure 1 (old 1+2)
+
+```{r fig-1, echo=FALSE}
+## Fig. 1A
+paste0(analysis.dir, 'data/B_characteristics.tsv') |>
+  read_tsv() -> growth
+growth %>%
+  pull(`CO2%`) %>%
+  unique %>%
+  sort() %>%
+  as.character() %>%
+  tibble(a = ., b = lead(.)) %>%
+  drop_na() %>%
+  add_row(a = '0.04', b = '30') |>
+  rowwise() %>%
+  do(i = unlist(.)) %>%
+  pull(i) -> cmps
+# order for nicer overview
+cmps <- cmps[c(1, 3, 2, 4)]
+growth  %>%
+  rename(CO2 = `CO2%`) %>%
+  ggboxplot(
+    x = 'CO2',
+    y = 'Growth rate',
+    add = 'jitter', add.params = list(color = 'blue')
+  ) +
+  # xlab('CO[2] content \\[%\\]') +
+  xlab(expression(paste(CO[2], ' content [%]'))) +
+  # ylab('measurement metric (different in each facet)') +
+  ylab(expression(paste('Growth rate [', h^{-1}, ']'))) +
+  stat_compare_means(
+    comparisons = cmps,
+    label = 'p.signif',
+    method = 't.test',
+    size = 5
+  ) +
+  theme_pubr(20) -> p.1a
+annotate_figure(
+  p.1a,
+  bottom = text_grob(
+    paste(
+      'T-test P-value:',
+      'ns  not significant;',
+      '*  < 0.05;',
+      '**  < 0.01;',
+      '***  < 0.001;',
+      '****  < 0.0001',
+      sep = ' '
+    ),
+    hjust = 1, x = .9,
+    face = "italic", size = 18,
+  )
+) -> p.1a
+
+## Fig. 1B
+meta <- read_tsv(paste0(analysis.dir, 'data/C_meta.tsv')) %>%
+  mutate_at('CO2', ~ fct_reorder(as.character(.x), as.numeric(.x)))
+annot <- read_tsv(paste0(analysis.dir, 'data/C_annotation.tsv'))
+raw.counts <- read_tsv(paste0(analysis.dir, 'data/C_raw-counts.tsv'))
+raw.counts %>%
+  select(- Geneid) %>%
+  as.matrix() %>%
+  magrittr::set_rownames(raw.counts$Geneid) -> raw.counts.mat
+# Exclude rRNA, CRSs and CRISPR-DR33 (RF01343)
+annot %>%
+  filter(type != 'rRNA' & type != 'CRS' & type!= 'CRISPR-DR33') %>%
+  pull(Geneid) -> mask
+raw.noribo.mat <- as.data.frame(raw.counts.mat[mask, ])
+# Run DESeq2+stageR
+des <- DESeq2::DESeqDataSetFromMatrix(
+  countData = raw.noribo.mat,
+  colData = meta,
+  design = ~ CO2
+)
+# Normalized expression levels
+des.d <-
+  des|>
+  DESeq2::DESeq()
+des.vst <-
+  des.d|>
+  DESeq2::vst()
+# PCA
+p.1b <- helper.pca(des.vst, sh = 'lane', color_values = cbPalette[c(1, 6, 2, 7)])
+
+##Fig. 1C
+meta2 <-
+  meta |>
+  mutate(CO2 = case_when(CO2 %in% c(4,8) ~ '4.8',
+                         CO2 == 0.04 ~ '0.04',
+                         CO2 == 30 ~ '30') |>
+           fct_relevel(c('0.04', '4.8', '30')))
+
+des <- DESeq2::DESeqDataSetFromMatrix(
+  countData = raw.noribo.mat,
+  colData = meta2,
+  design = ~ CO2 + 0
+)
+des <- DESeq2::DESeq(des)
+
+#all pairwise comparisons
+deg.res <-
+  des |>
+  helper.pairwise.deg(ALPHA = 0.05) |>
+  rename(Geneid = row) |>
+  mutate("is.de" = ifelse(padj <= 0.05, TRUE, FALSE))
+
+#30% VS Rest
+deg.res <-
+  des |>
+  DESeq2::results(
+    contrast = c(
+      #DESeq2::resultsNames(des)
+      "CO20.04" = - 1/2,
+      "CO24.8" = - 1/2,
+      "CO230" = + 1
+    ),
+    tidy = TRUE
+  ) |>
+  as_tibble() |>
+  rename(Geneid = row) |>
+  mutate(test = 'Other->30% CO2') |>
+  mutate("is.de" = ifelse(padj <= 0.05, TRUE, FALSE)) |>
+  bind_rows(deg.res) |>
+  mutate(test = case_when(test == "4.8->30% CO2" ~ "4+8->30% CO2", test == "0.04->4.8% CO2" ~ "0.04->4+8% CO2", .default = test)) |>
+  select(Geneid, baseMean, test, log2FoldChange, pvalue, padj, is.de) |>
+  left_join(annot)
+
+#venn
+deg.res |> mutate(log2FoldChange = round(log2FoldChange, 2)) |> filter(is.de & abs(log2FoldChange) >= 1) |> group_by(test) |> group_split() |> as.list() -> foo
+set_names(
+  foo |> map(pull, Geneid),
+  foo |> map(pull, test) |> map(dplyr::first) |> unlist()
+) |>
+  _[c(
+    '0.04->4+8% CO2', '4+8->30% CO2',
+    '0.04->30% CO2', 'Other->30% CO2'
+  )] |>
+  set_names(
+    '0.04% vs\n 4+8%',
+    '4+8% vs\n 30%',
+    '0.04% vs\n 30%',
+    'Other vs\n 30%'
+  ) -> de.list
+de.list |>
+  venn::venn(
+    ilabels = 'counts',
+    ilcs = 1.8, sncs = 1.8,
+    zcolor = cbPalette,
+    box = FALSE,
+    ggplot = TRUE
+  ) -> p.1c
+
+## Fig. 1D
+deg.res %>%
+  filter(is.de) %>%
+  filter(abs(log2FoldChange) >= 1) |>
+  pull(Geneid) %>%
+  unique -> mask
+cl <- list(
+  'CO2' = meta %>%
+    pull(CO2) %>%
+    levels %>%
+    set_names(cbPalette[c(1, 6, 2, 7)], .)
+)
+with(
+  meta,
+  data.frame('CO2' = as.character(CO2), row.names = lib)
+) -> cl.df
+# Cluster columns ahead of pheatmap to rotate tree nicely
+dat.vst <-
+  des.vst |>
+  SummarizedExperiment::assay()
+dat <-  dat.vst[mask, ]
+# z-scale data ahead of heatmap to keep clustering of rows consistent
+dat <-
+  dat |>
+  apply(1, scale) |>
+  t() |>
+  magrittr::set_colnames(colnames(dat))
+lib.clust <-
+  dat |>
+  t() |>
+  dist() |>
+  hclust() |>
+  ape::as.phylo() |>
+  ape::rotateConstr(
+    meta |>
+      arrange(CO2, sample) |>
+      pull(lib)
+  ) |>
+  as.hclust()
+pheatmap::pheatmap(
+  dat,
+  scale = 'none',
+  cluster_cols = lib.clust,
+  show_rownames = FALSE,
+  show_colnames = FALSE,
+  treeheight_row = 0,
+  annotation_col = cl.df,
+  annotation_colors = cl,
+  breaks = seq(-2, 2, length.out = 60),
+  color = colorRampPalette(rev(
+    RColorBrewer::brewer.pal(n = 7, name = "RdBu")))(59),
+  cex = 1.1,
+  fontsize = 16,
+  fontsize.legend = 16
+  #filename = paste0(out.dir, 'D_heatmap.jpeg')
+) -> p.1d
+dev.off()
+
+ggarrange(p.1a, p.1c, p.1b, p.1d$gtable, nrow=2, ncol=2, labels=c('A','C','B','D'), widths = c(1, 1), align = "v", font.label = list(size = 30))
+ggsave(paste0(out.dir, 'fig-1-2.svg'),
+       width = 14, height = 14, dpi = 400)
+```
+
+
+## Figure 2
+
+```{r fig-2, echo=FALSE}
+library(treemapify)
+
+# Run DESeq2 for 3 conditions
+des.3 <- DESeq2::DESeqDataSetFromMatrix(
+  countData = raw.noribo.mat,
+  colData = meta2,
+  design = ~ CO2
+)
+# Normalized expression levels
+des.d.3 <-
+  des.3|>
+  DESeq2::DESeq()
+des.vst.3 <-
+  des.d.3|>
+  DESeq2::vst()
+dat.vst.3 <-
+  des.vst.3 |>
+  SummarizedExperiment::assay() |>
+  as_tibble(rownames = 'Geneid')
+vst.mat.3 <-
+  dat.vst.3 |>
+  select(- Geneid) |>
+  as.matrix() |>
+  magrittr::set_rownames(dat.vst.3$Geneid)
+z.mat.3 <-
+  vst.mat.3 |>
+  apply(1, scale) |>
+  t() |>
+  magrittr::set_colnames(colnames(vst.mat.3))
+z.expr.3 <-
+  z.mat.3 |>
+  as_tibble(rownames = 'Geneid') |>
+  pivot_longer(- Geneid, names_to = 'lib', values_to = 'z.expression') |>
+  left_join(meta2, 'lib')
+z.avg.3 <-
+  z.expr.3 |>
+  group_by(Geneid, CO2) |>
+  summarize(avg.z = mean(z.expression)) |>
+  ungroup() |>
+  # add locus tag with taxid for stringapp (later use)
+  left_join(annot, 'Geneid') |>
+  mutate(string = ifelse(
+    !is.na(old_locus_tag),
+    paste0('32049.', old_locus_tag),
+    NA_character_
+  ))
+
+# download all brite hierarchy data from KEGG
+kegg.brite <-
+  'https://rest.kegg.jp/link/syp/brite' |>
+  read_tsv(col_names = c('brite', 'syp'))
+
+kegg.brite.json <-
+  kegg.brite |>
+  pull(brite) |>
+  unique() %>%
+  paste0('https://rest.kegg.jp/get/', ., '/json') |>
+  map(read_lines)
+
+kegg.brite.names <-
+  'https://rest.kegg.jp/list/br' |>
+  read_tsv(col_names = c('br', 'name')) |>
+  with(set_names(
+    name,
+    paste0('syp', br)
+  ))
+
+# Convert KEGG hierarchy into a nice table
+build_table <- function(xs, i = 1, pre = NULL) {
+  if ('children' %in% names(xs)) {
+    # can do recursion
+    y <- paste0('level', i)
+    pre2 <- bind_cols(pre, tibble(!!y := xs$name))
+    xs$children |>
+      map(build_table, i = i + 1, pre = pre2) |>
+      bind_rows()
+    } else {
+    # return accumulated results
+    y <- paste0('level', i)
+    bind_cols(pre, tibble(!!y := xs$name))
+  }
+}
+brite.tbl <-
+  kegg.brite.json |>
+  map(safely(jsonlite::parse_json)) |>
+  map('result') |>
+  map(build_table) |>
+  bind_rows() |>
+  mutate(row = 1:n())
+brite.tbl.long <-
+  brite.tbl |>
+  pivot_longer(- row)
+# tidy up with gene names separately in one column
+brite.genes <-
+  brite.tbl.long |>
+  filter(str_detect(value, 'SYNPCC7002_')) |>
+  select(row, gene = value) |>
+  separate_rows(gene, sep = '\t') |>
+  filter(str_detect(gene, 'SYNPCC7002_')) |>
+  mutate(gene = str_remove(gene, ' .*$')) |>
+  rename(old_locus_tag = gene)
+# tidy up the levels
+brite.info <-
+  brite.tbl.long |>
+  drop_na() |>
+  filter(! str_detect(value, 'SYNPCC7002_')) |>
+  # remove all eukaryotic rows
+  anti_join(
+    brite.tbl.long |>
+      filter(value == 'Eukaryotic type'),
+    'row'
+  ) |>
+  # remove notes on prokatyoric entries (but keep the rows)
+  filter(value != 'Prokaryotic type') |>
+  # fix leveling where needed (after removing some entries)
+  group_by(row) |>
+  mutate(name = paste0('level', 1:n())) |>
+  spread(name, value, fill = '')
+# combine into one large table
+brite <-
+  brite.genes |>
+  inner_join(brite.info, 'row') |>
+  mutate(level1 = kegg.brite.names[level1]) |>
+  select(- row)
+
+z.avg.3 |>
+  transmute(
+    old_locus_tag,
+    CO2 = paste0(CO2, '%') |>
+      fct_reorder(CO2 |> as.numeric()),
+    avg.z
+  ) |>
+  inner_join(brite, 'old_locus_tag') |>
+  filter(
+    level1 == 'KEGG Orthology (KO)',
+    level2 != '09190 Not Included in Pathway or Brite',
+    level2 != '09180 Brite Hierarchies'
+  ) |>
+  mutate_at(vars(contains('level')), str_remove, ' \\[.*$') |>
+  mutate_at(vars(contains('level')), str_remove, '^[0-9]+ ') -> brite.ko
+
+brite.ko |>
+  semi_join(
+    deg.res |>
+      filter(is.de) |>
+      filter(abs(log2FoldChange) >= 1) |>
+      select(old_locus_tag) |>
+      unique(),
+    'old_locus_tag'
+  ) |>
+  mutate(CO2 = case_when(CO2 == '4.8%' ~ '4+8%', .default = CO2)) |>
+  mutate(
+    CO2 = CO2 |>
+      paste('CO2') |>
+      fct_relevel(
+        '0.04% CO2',
+        '4+8% CO2',
+        '30% CO2'
+      )
+  ) |>
+  ggplot(aes(
+    area = 1, fill = avg.z,
+    subgroup = level2,
+    subgroup2 = level3,
+    subgroup3 = level4
+  )) +
+  scale_fill_gradient2(
+    low =  RColorBrewer::brewer.pal(3, 'RdBu')[3],
+    high =  RColorBrewer::brewer.pal(3, 'RdBu')[1],
+    name = 'z-scaled expression'
+  ) +
+  geom_treemap() +
+  geom_treemap_subgroup_border(color = 'black', size = 6) +
+  geom_treemap_subgroup2_border(colour = "black", size = 3) +
+  geom_treemap_subgroup3_border(colour = "black", size = 1) +
+  geom_treemap_subgroup3_text(
+    place = "centre", grow = F, alpha = 0.9,
+    reflow = TRUE,
+    colour = "black",
+    min.size = 3
+  ) +
+  facet_wrap(~ CO2, ncol = 1) +
+  theme_pubr(20) +
+  theme(legend.key.width = unit(3, 'cm'))
+
+ggsave(paste0(out.dir, 'fig-2.pdf'), width = 14, height = 14)
+ggsave(paste0(out.dir, 'fig-2.jpeg'),
+       width = 14, height = 14, dpi = 500)
+```
+
+
+## Supplementary Figure S4
+# Extra figure for explaining hierarchy
+
+```{r fig-s4, echo=FALSE}
+p.base <- 
+  brite.ko |>
+  semi_join(
+    deg.res |>
+      filter(is.de) |>
+      filter(abs(log2FoldChange) >= 1) |>
+      select(old_locus_tag) |>
+      unique(),
+    'old_locus_tag'
+  ) |>
+  mutate(CO2 = case_when(CO2 == '4.8%' ~ '4+8%', .default = CO2)) |>
+  mutate(
+    CO2 = CO2 |>
+      paste('CO2') |>
+      fct_relevel(
+        '0.04% CO2',
+        '4+8% CO2',
+        '30% CO2'
+      )
+    ) |>
+  ggplot(aes(
+    area = 1, fill = I('white'),
+    subgroup = level2,
+    subgroup2 = level3,
+    subgroup3 = level4
+  )) +
+  geom_treemap() +
+  geom_treemap_subgroup_border(color = 'red', size = 6) +
+  geom_treemap_subgroup2_border(colour = "blue", size = 3) +
+  geom_treemap_subgroup3_border(colour = "black", size = 1) +
+  theme_pubr(20)
+
+cowplot::plot_grid(
+  p.base +
+    geom_treemap_subgroup_text(
+      place = "centre", grow = F, alpha = 0.9,
+      reflow = TRUE,
+      colour = "red",
+      min.size = 3
+    ),
+  p.base +
+    geom_treemap_subgroup2_text(
+      place = "centre", grow = F, alpha = 0.9,
+      reflow = TRUE,
+      colour = "blue",
+      min.size = 3
+    ),
+  p.base +
+    geom_treemap_subgroup3_text(
+      place = "centre", grow = F, alpha = 0.9,
+      reflow = TRUE,
+      colour = "black",
+      min.size = 3
+    ),
+  nrow = 3
+)
+
+ggsave(paste0(analysis.dir.stefan, '../Manuscript-Overleaf/files-supplement/fig-hierarchy.pdf'), width = 20, height = 25)
+ggsave(paste0(analysis.dir.stefan, '../Manuscript-Overleaf/files-supplement/fig-hierarchy.jpeg'), width = 20, height = 25, dpi = 500)
+```
+
+
+## Figure 3 (old 4+5)
+
+```{r fig-3, echo=FALSE}
+deg30avg <- deg.res %>% filter(test == "Other->30% CO2")
+gsea <-
+  deg30avg |>
+  drop_na(old_locus_tag, log2FoldChange) |>
+  arrange(desc(log2FoldChange)) |>
+  with(set_names(log2FoldChange, old_locus_tag)) |>
+  gseKEGG(
+    organism = 'syp',
+    maxGSSize = 70, # cutoff from comments above
+    minGSSize = 5,
+    pvalueCutoff = 0.05,
+    eps = 0
+  )
+gsea@result$Description <- str_remove(gsea$Description, ' - Picosynechococcus sp. PCC 7002')
+p.3a <- gseaplot2(gsea, 1:nrow(gsea), 
+               base_size = 14,
+               color = RColorBrewer::brewer.pal(nrow(gsea), 'Paired'),
+               subplots = 1:2)
+p.3a[[1]] <- p.3a[[1]] + theme(legend.position = c(.6,.8), legend.text = element_text(size=20), text = element_text(size = 20))
+p.3a[[2]] <- p.3a[[2]] + xlab('Rank in ordered dataset (sorted by log2 fold change)') + theme(text = element_text(size = 20))
+p.3a <- wrap_elements(full = print(p.3a)) + theme_pubr(20)
+
+
+string.cl3 <- paste0(analysis.dir.stefan, 'string-network/string-30VsOther-cluster3.svg')
+svg_image <- image_read_svg(string.cl3, width = 1600)
+p.3b <- image_ggplot(svg_image)
+string.cl1 <- paste0(analysis.dir.stefan, 'string-network/string-30VsOther-cluster1.svg')
+svg_image <- image_read_svg(string.cl1, width = 1600)
+p.3c <- image_ggplot(svg_image)
+string.cl5 <- paste0(analysis.dir.stefan, 'string-network/string-30VsOther-cluster5.svg')
+svg_image <- image_read_svg(string.cl5, width = 1600)
+p.3d <- image_ggplot(svg_image)
+
+(p.3a | p.3b | (p.3c / p.3d + plot_layout(heights = c(1.0, 0.4)))) +  
+    plot_layout(widths = c(1.2, .6, .8), heights = c(1.4)) + plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 40))
+ggsave(paste0(out.dir, 'fig-3.pdf'), width = 20, height = 8)
+#ggsave(paste0(out.dir, 'fig-3.jpeg'), width = 20, height = 24, dpi = 400)
+```
+
+
+## Table 1
+
+```{r tab-1, echo=FALSE}
+#Table of DEGs with highest absolute log2FC in any comparison
+paste0(analysis.dir.stefan, 'analysis/D_DEGs.tsv') |>
+  read_tsv() -> deg
+paste0(analysis.dir.stefan, 'analysis/D_tpm-expression.tsv') |>
+  read_tsv() -> tpm
+
+deg |>
+  left_join(tpm, by = "Geneid") |>
+  filter(`high expr`) |>
+  arrange(desc(abs(log2FoldChange))) |>
+  select(name, locus_tag, old_locus_tag, product, test, is.de, log2FoldChange, `max TPM`) -> lf.table
+
+lf.table |>
+  write_tsv(paste0(out.dir, 'tab-1.tsv'))
+```
+
+
+## Figure 6
+
+```{r non-protein-coding-rna, echo=FALSE}
+# colors used in JBrowser
+my.cl <- list(
+  '0.04' = c(160, 160, 160),
+  '4' = c(14, 121, 182),
+  '8' = c(231, 162, 9),
+  '30' = c(214, 99, 10)
+) |>
+  map(~ invoke(rgb, .x, maxColorValue = 255))
+
+# custom CO2 condition color legend
+p.leg <-
+  tibble(
+    co2 = names(my.cl) |> fct_inorder(),
+  ) |>
+  ggplot(aes(co2, 1, fill = co2)) +
+  scale_fill_manual(values = my.cl, name = bquote('%'~CO[2])) +
+  geom_tile() +
+  guides(fill = guide_legend(nrow = 1)) +
+  theme_pubr(18)
+
+p.leg <- ggpubr::get_legend(p.leg)
+
+png.dir <- file.path(analysis.dir.stefan, "fig-orphan-crs")
+rna.1 <- file.path(png.dir, 'jbrowse-tmrna.png')
+p.rna.1 <- ggdraw() + draw_image(magick::image_read(rna.1, density = 100)) + theme(plot.margin = margin(t=.5, l=.5, r=.5, b=.5, unit = "cm"))
+rna.3 <- file.path(png.dir, 'jbrowse-6Srna.png')
+p.rna.3 <- ggdraw() + draw_image(magick::image_read(rna.3, density = 100)) + theme(plot.margin = margin(t=.5, l=.5, r=.5, b=.5, unit = "cm"))
+rna.18 <- file.path(png.dir, 'jbrowse-RS13890_RS13895.png')
+p.rna.18 <- ggdraw() + draw_image(magick::image_read(rna.18, density = 100)) + theme(plot.margin = margin(t=.5, l=.5, r=.5, b=.5, unit = "cm"))
+rna.6 <- file.path(png.dir, 'jbrowse-TPP-riboswitch.png')
+p.rna.6 <- ggdraw() + draw_image(magick::image_read(rna.6, density = 100)) + theme(plot.margin = margin(t=.5, l=.5, r=.5, b=.5, unit = "cm"))
+plot_grid(
+  p.leg,
+  ggarrange(p.rna.1, p.rna.3, p.rna.18, p.rna.6,
+          labels = c("A", "B", "C", "D"),
+          ncol = 2, nrow = 2),
+  ncol = 1,
+  rel_heights = c(1, 10)
+)
+ggsave(paste0(out.dir, 'fig-6.jpeg'),
+       width = 14, height = 7, scale = 1.1, dpi = 400)
+```
+
+
