@@ -169,7 +169,7 @@ helper.skree <- function(x, nudge = 4, ntop = 500) {
     percentVar %>%
     tibble(
       pc = names(.) |> str_remove('PC') |> as.integer(),
-      'Explained varinace' = . * 100,
+      'Explained variance' = . * 100,
       'Cumulative' = cumsum(.) * 100
     ) |>
     select(- `.`) |>

@@ -552,6 +552,7 @@ deg.res |>
   theme_pubr(18) +
   ggtitle('log2 Fold-Changes')
 
+
 ggsave(paste0(output.dir, 'analysis/D_logFC-contrast-comparisons.jpeg'),
        width = 8, height = 8, dpi = 400)
 
@@ -638,7 +639,8 @@ gsea <-
     maxGSSize = 70, # cutoff from comments above
     minGSSize = 5,
     pvalueCutoff = 0.05,
-    eps = 0
+    eps = 0,
+    seed = TRUE
   )
 gsea@result$Description <- str_remove(gsea$Description, ' - Picosynechococcus sp. PCC 7002')
 
@@ -675,20 +677,34 @@ deg30avg %>%
 
 
 ################################################################################
-# Overrepresentation analysis of KEGG pathways
+# Overrepresentation analysis of KEGG pathways of DEGs Other->30% CO2
 
 deg30avg <- deg30avg %>% mutate(Direction = if_else(`log2FoldChange` >= 0, true = "up", false = "down"))
 deg30avg %>% mutate(log2FoldChange = round(log2FoldChange, 2)) |> filter(abs(log2FoldChange) >= 1 & padj <= 0.05) %>% select(Direction) %>% table()
-highco2_upDown <- compareCluster(Geneid ~ Direction, 
-                                 data          = deg30avg %>% mutate(log2FoldChange = round(log2FoldChange, 2)) |> filter(abs(log2FoldChange) >= 1 & padj <= 0.05),
-                                 fun           = "enrichKEGG",
-                                 universe      = deg30avg %>% dplyr::select(Geneid) %>% unlist,
-                                 organism      = 'syp',
-                                 pAdjustMethod = "BH",
-                                 qvalueCutoff  = 0.05)
-highco2_upDown %>% as.data.frame
-dotplot(highco2_upDown, showCategory = 10, label_format = 50) + 
+
+oa.30VsOther.up <- enrichKEGG(gene = deg30avg |> filter(Direction == "up") |> select(old_locus_tag) |> unlist(),
+           organism = 'syp',
+           pAdjustMethod = "BH", qvalueCutoff  = 0.05)
+oa.30VsOther.down <- enrichKEGG(gene = deg30avg |> filter(Direction == "down") |> select(old_locus_tag) |> unlist(),
+                               organism = 'syp',
+                               pAdjustMethod = "BH", qvalueCutoff  = 0.05)
+oa.30VsOther.up@result$direction <- "Upregulated"
+oa.30VsOther.down@result$direction <- "Downregulated"
+combined <- rbind(oa.30VsOther.up@result, oa.30VsOther.down@result)
+ggplot(combined[combined$p.adjust<0.05,], aes(x = direction, y = Description)) +
+  geom_point(aes(size = Count, color = direction)) +
+  scale_color_manual(values = c("Upregulated" = "red", "Downregulated" = "blue")) +
+  theme_minimal() +
+  labs(title = "Significant KEGG Pathways",
+       x = "Regulation Direction",
+       y = "Pathway",
+       color = "Direction")
+ggsave(paste0(output.dir, 'analysis/D_oa-30VsOther.jpeg'),
+      width = 8, height = 8, dpi = 400)
+dotplot(oa.30VsOther.down, showCategory = 10, label_format = 50) + 
   theme(axis.text.y = element_text(size = 8))
+ggsave(paste0(output.dir, 'analysis/D_oa-30VsOther-dotplot.jpeg'),
+       width = 8, height = 8, dpi = 400)
 
 
 ################################################################################
@@ -712,7 +728,8 @@ gsea <-
     maxGSSize = 70, # cutoff from comments above
     minGSSize = 5,
     pvalueCutoff = 0.05,
-    eps = 0
+    eps = 0,
+    seed = TRUE
   )
 gsea@result$Description <- str_remove(gsea$Description, ' - Picosynechococcus sp. PCC 7002')
 
@@ -755,7 +772,8 @@ gsea <-
     maxGSSize = 70, # cutoff from comments above
     minGSSize = 5,
     pvalueCutoff = 0.05,
-    eps = 0
+    eps = 0,
+    seed = TRUE
   )
 gsea@result$Description <- str_remove(gsea$Description, ' - Picosynechococcus sp. PCC 7002')
 
@@ -797,7 +815,8 @@ gsea <-
     maxGSSize = 70, # cutoff from comments above
     minGSSize = 5,
     pvalueCutoff = 0.05,
-    eps = 0
+    eps = 0,
+    seed = TRUE
   )
 gsea@result$Description <- str_remove(gsea$Description, ' - Picosynechococcus sp. PCC 7002')
 
@@ -814,6 +833,135 @@ p[[3]] <-  p[[3]] + ylab('log2 Fold Change')
 p
 ggsave(paste0(output.dir, 'analysis/D_gsea-OptVsAir.jpeg'),
        width = 8, height = 8, dpi = 400)
+ggsave(paste0(output.dir, 'analysis/D_gsea-OptVsAir.svg'),
+       width = 7, height = 10, dpi = 400)
+
+
+################################################################################
+# Overrepresentation analysis of KEGG pathways of DEGs from pairwise comparisons and their logical combinations
+
+deg.30VsAir <- deg.res |>
+  filter(test == "0.04->30% CO2") |>
+  mutate(Direction = if_else(`log2FoldChange` >= 0, true = "up", false = "down")) |>
+  mutate(log2FoldChange = round(log2FoldChange, 2)) |>
+  filter(abs(log2FoldChange) >= 1 & padj <= 0.05)
+
+deg.30VsOpt <- deg.res |>
+  filter(test == "4+8->30% CO2") |>
+  mutate(Direction = if_else(`log2FoldChange` >= 0, true = "up", false = "down")) |>
+  mutate(log2FoldChange = round(log2FoldChange, 2)) |>
+  filter(abs(log2FoldChange) >= 1 & padj <= 0.05)
+
+deg.OptVsAir <- deg.res |>
+  filter(test == "0.04->4+8% CO2") |>
+  mutate(Direction = if_else(`log2FoldChange` >= 0, true = "up", false = "down")) |>
+  mutate(log2FoldChange = round(log2FoldChange, 2)) |>
+  filter(abs(log2FoldChange) >= 1 & padj <= 0.05)
+
+# DEGs 30% vs 0.04% CO2
+oa.30VsAir.up <- enrichKEGG(gene = deg.30VsAir |> filter(Direction == "up") |> select(old_locus_tag) |> unlist(),
+                            organism = 'syp',
+                            pAdjustMethod = "BH", qvalueCutoff  = 0.05)
+oa.30VsAir.down <- enrichKEGG(gene = deg.30VsAir |> filter(Direction == "down") |> select(old_locus_tag) |> unlist(),
+                            organism = 'syp',
+                            pAdjustMethod = "BH", qvalueCutoff  = 0.05)
+oa.30VsAir.up@result$direction <- "Upregulated"
+oa.30VsAir.down@result$direction <- "Downregulated"
+combined <- rbind(oa.30VsAir.up@result, oa.30VsAir.down@result)
+ggplot(combined[combined$p.adjust<0.05,], aes(x = direction, y = Description)) +
+  geom_point(aes(size = Count, color = direction)) +
+  scale_color_manual(values = c("Upregulated" = "red", "Downregulated" = "blue")) +
+  theme_minimal() +
+  labs(title = "Significant KEGG Pathways",
+       x = "Regulation Direction",
+       y = "Pathway",
+       color = "Direction")
+ggsave(paste0(output.dir, 'analysis/D_oa-30VsAir.jpeg'),
+       width = 8, height = 8, dpi = 400)
+
+# DEGs 30% vs optimal growth
+oa.30VsOpt.up <- enrichKEGG(gene = deg.30VsOpt |> filter(Direction == "up") |> select(old_locus_tag) |> unlist(),
+                            organism = 'syp',
+                            pAdjustMethod = "BH", qvalueCutoff  = 0.05)
+oa.30VsOpt.down <- enrichKEGG(gene = deg.30VsOpt |> filter(Direction == "down") |> select(old_locus_tag) |> unlist(),
+                              organism = 'syp',
+                              pAdjustMethod = "BH", qvalueCutoff  = 0.05)
+oa.30VsOpt.up@result$direction <- "Upregulated"
+oa.30VsOpt.down@result$direction <- "Downregulated"
+combined <- rbind(oa.30VsOpt.up@result, oa.30VsOpt.down@result)
+ggplot(combined[combined$p.adjust<0.05,], aes(x = direction, y = Description)) +
+  geom_point(aes(size = Count, color = direction)) +
+  scale_color_manual(values = c("Upregulated" = "red", "Downregulated" = "blue")) +
+  theme_minimal() +
+  labs(title = "Significant KEGG Pathways",
+       x = "Regulation Direction",
+       y = "Pathway",
+       color = "Direction")
+ggsave(paste0(output.dir, 'analysis/D_oa-30VsOpt.jpeg'),
+       width = 8, height = 8, dpi = 400)
+
+# DEGs 8+4% vs 0.04% CO2
+oa.OptVsAir.up <- enrichKEGG(gene = deg.OptVsAir |> filter(Direction == "up") |> select(old_locus_tag) |> unlist(),
+                            organism = 'syp',
+                            pAdjustMethod = "BH", qvalueCutoff  = 0.05)
+oa.OptVsAir.down <- enrichKEGG(gene = deg.OptVsAir |> filter(Direction == "down") |> select(old_locus_tag) |> unlist(),
+                              organism = 'syp',
+                              pAdjustMethod = "BH", qvalueCutoff  = 0.05)
+oa.OptVsAir.up@result$direction <- "Upregulated"
+oa.OptVsAir.down@result$direction <- "Downregulated"
+combined <- rbind(oa.OptVsAir.up@result, oa.OptVsAir.down@result)
+ggplot(combined[combined$p.adjust<0.05,], aes(x = direction, y = Description)) +
+  geom_point(aes(size = Count, color = direction)) +
+  scale_color_manual(values = c("Upregulated" = "red", "Downregulated" = "blue")) +
+  theme_minimal() +
+  labs(title = "Significant KEGG Pathways",
+       x = "Regulation Direction",
+       y = "Pathway",
+       color = "Direction")
+ggsave(paste0(output.dir, 'analysis/D_oa-OptVsAir.jpeg'),
+       width = 8, height = 8, dpi = 400)
+
+# DEGs (30% vs 0.04% CO2) OR (30% vs optimal growth)
+oa.30VsAirOR30VsOpt <- enrichKEGG(gene = deg.30VsAir |> filter(!is.na(old_locus_tag)) |> select(old_locus_tag) |> full_join(deg.30VsOpt |> filter(!is.na(old_locus_tag)) |> select(old_locus_tag), by = "old_locus_tag") |> unlist(),
+                            organism = 'syp',
+                            pAdjustMethod = "BH", qvalueCutoff  = 0.05)
+dotplot(oa.30VsAirOR30VsOpt)
+ggsave(paste0(output.dir, 'analysis/D_oa-30VsAirOR30VsOpt.jpeg'),
+       width = 8, height = 8, dpi = 400)
+
+# DEGs (30% vs 0.04% CO2) AND (30% vs optimal growth)
+oa.30VsAirAND30VsOpt <- enrichKEGG(gene = deg.30VsAir |> filter(!is.na(old_locus_tag)) |> select(old_locus_tag) |>
+                                     inner_join(deg.30VsOpt |> filter(!is.na(old_locus_tag)) |> select(old_locus_tag), by = "old_locus_tag") |> unlist(),
+                                  organism = 'syp',
+                                  pAdjustMethod = "BH", qvalueCutoff  = 0.05)
+dotplot(oa.30VsAirAND30VsOpt)
+ggsave(paste0(output.dir, 'analysis/D_oa-30VsAirAND30VsOpt.jpeg'),
+       width = 8, height = 8, dpi = 400)
+
+# DEGs (30% vs 0.04% CO2) AND (30% vs optimal growth) AND NOT (8+4% vs 0.04% CO2)
+oa.30VsAirAND30VsOptANDNOTOptVsAir <- enrichKEGG(gene = deg.30VsAir |> filter(!is.na(old_locus_tag)) |> select(old_locus_tag) |>
+                                                   inner_join(deg.30VsOpt |> filter(!is.na(old_locus_tag)) |> select(old_locus_tag), by = "old_locus_tag") |>
+                                                   anti_join(deg.OptVsAir |> filter(!is.na(old_locus_tag)) |> select(old_locus_tag), by = "old_locus_tag") |>
+                                                   unlist(),
+                                   organism = 'syp',
+                                   pAdjustMethod = "BH", qvalueCutoff  = 0.05)
+dotplot(oa.30VsAirAND30VsOptANDNOTOptVsAir)
+ggsave(paste0(output.dir, 'analysis/D_oa-30VsAirAND30VsOptANDNOTOptVsAir.jpeg'),
+       width = 8, height = 8, dpi = 400)
+
+# The "other vs 30%" comparison misses genes that get strongly down-regulated in one pairwise comparison of 0.04% or optimal growth to 30% and
+# strongly up-regulated in the other pairwise comparison to 30%:
+# 38 genes
+deg.30VsOther <- deg.res |>
+  filter(test == "Other->30% CO2") |>
+  mutate(Direction = if_else(`log2FoldChange` >= 0, true = "up", false = "down")) |>
+  mutate(log2FoldChange = round(log2FoldChange, 2)) |>
+  filter(abs(log2FoldChange) >= 1 & padj <= 0.05)
+
+deg.30VsAir |> inner_join(deg.30VsOpt, by = "Geneid") |>
+  anti_join(deg.30VsOther, by = "Geneid") |>
+  filter(Direction.x != Direction.y) |>
+  write_tsv(paste0(output.dir, 'analysis/D_deg-30VsOptAND30VsAirANDNOT30VsOther.tsv'))
 
 
 ################################################################################
